@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://wisevision.tech/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Block access to development/admin paths (if any in the future)
+Disallow: /admin/
+Disallow: /.docusaurus/
+Disallow: /node_modules/
+
+# Allow all search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot  
+Allow: /
+
+User-agent: Slurp
+Allow: /
