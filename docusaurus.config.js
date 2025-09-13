@@ -11,7 +11,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'WiseVision',
-  tagline: 'Open-source ROS 2 & IoT stack — Connect • Analyze • Automate',
+  tagline: 'Bridging AI, IoT & Robotics for a Smarter Future',
   favicon: 'img/favicon.ico',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -22,13 +22,11 @@ const config = {
   // Set the production url of your site here
   url: 'https://wisevision.tech',
   // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  // GitHub pages deployment config
+  organizationName: 'wise-vision',
+  projectName: 'wisevision-website',
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -50,29 +48,27 @@ const config = {
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "WiseVision",
+        "description": "Bridging AI, IoT & Robotics for a Smarter Future. Transform your robotics operations with seamless IoT integration and the power of ROS 2 - experience enhanced control and real-time efficiency.",
         "url": "https://wisevision.tech",
-        "logo": "https://wisevision.tech/img/wisevision-logo.png",
-        "description": "WiseVision builds open-source ROS 2 & IoT tools for autonomous robotics. Connect, analyze, and automate with our edge-native AI platform.",
-        "foundingDate": "2024",
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": "ul. Floriańska 1",
-          "addressLocality": "Kraków",
-          "postalCode": "31-021",
-          "addressCountry": "PL"
-        },
+        "logo": "https://wisevision.tech/img/logo.svg",
         "contactPoint": {
           "@type": "ContactPoint",
-          "telephone": "+48-12-345-6789",
+          "email": "office@wisevision.tech",
           "contactType": "customer service",
-          "email": "office@wisevision.tech"
+          "areaServed": "Worldwide",
+          "availableLanguage": "English"
         },
         "sameAs": [
           "https://github.com/wise-vision",
-          "https://www.linkedin.com/company/wisevision"
+          "https://mcpmarket.com/es/server/wisevision-ros2"
         ],
-        "industry": "Robotics and Automation",
-        "keywords": ["ROS 2", "robotics", "IoT", "AI", "automation", "Model Context Protocol"]
+        "founder": {
+          "@type": "Organization",
+          "name": "WiseVision"
+        },
+        "foundingDate": "2023",
+        "industry": "Robotics and IoT Technology",
+        "keywords": ["AI robotics integration", "ROS 2 platform", "IoT for robots", "digital twin simulation", "robot automation", "WiseOS", "MCP ROS2"]
       })
     }
   ],
@@ -87,6 +83,12 @@ const config = {
         theme: {
           customCss: './src/css/custom.css',
         },
+        sitemap: {
+          changefreq: 'weekly',
+          priority: 0.5,
+          ignorePatterns: ['/tags/**'],
+          filename: 'sitemap.xml',
+        },
       }),
     ],
   ],
@@ -95,63 +97,159 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Replace with your project's social card
-      image: 'img/og-default.png',
+      image: 'img/wisevision-social-card.jpg',
       metadata: [
-        { name: 'keywords', content: 'ROS 2, robotics, AI, LoRaWAN, digital twin, WiseVision, Model Context Protocol, MCP' },
-        { name: 'description', content: 'WiseVision builds ROS 2 + IoT tools for autonomous robotics. Connect, analyze, and automate with our edge-native AI platform.' },
+        { name: 'keywords', content: 'AI robotics integration, ROS 2 platform, IoT for robots, digital twin simulation, robot automation, WiseOS, MCP ROS2' },
+        { name: 'description', content: 'WiseVision: Transform your robotics operations with seamless IoT integration and the power of ROS 2. Explore WiseOS, MCP ROS2, Digital Twins, and AI Automation services.' },
         { property: 'og:type', content: 'website' },
         { property: 'og:site_name', content: 'WiseVision' },
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:site', content: '@wisevision_tech' },
+        { name: 'twitter:site', content: '@WiseVision' },
         { name: 'author', content: 'WiseVision' },
         { name: 'robots', content: 'index, follow' },
       ],
       colorMode: {
         defaultMode: 'dark',
-        respectPrefersColorScheme: true,
+        disableSwitch: true,
+        respectPrefersColorScheme: false,
       },
       navbar: {
         title: 'WiseVision',
         logo: {
-          alt: 'WiseVision Logo',
+          alt: 'WiseVision Logo - AI, IoT & Robotics Platform',
           src: 'img/logo.svg',
         },
         items: [
-          { to: '/', label: 'Home', position: 'left' },
-          { to: '/products', label: 'Products', position: 'left' },
-          { to: '/use-cases', label: 'Use Cases', position: 'left' },
-          { to: '/technology', label: 'Technology', position: 'left' },
-          { to: '/about', label: 'About', position: 'left' },
-          { to: '/contact', label: 'Contact', position: 'left' },
-          { href: 'https://app.easy.tools/ec/wisevision/wisevision-mcp-ros-2-pro', label: 'MCP Pro Store', position: 'right' },
-          { href: 'https://github.com/wise-vision', className: 'header-github-link', 'aria-label': 'GitHub', position: 'right' },
+          {
+            label: 'Services',
+            position: 'left',
+            items: [
+              {
+                label: 'WiseOS',
+                to: '/wiseos',
+              },
+              {
+                label: 'MCP ROS2',
+                to: '/mcp-ros2',
+              },
+              {
+                label: 'Digital Twins',
+                to: '/digital-twins',
+              },
+              {
+                label: 'AI Automations',
+                to: '/ai-automations',
+              },
+            ],
+          },
+          {
+            label: 'Solutions',
+            position: 'left',
+            to: '/solutions',
+          },
+          {
+            label: 'Case Studies',
+            position: 'left',
+            to: '/case-studies',
+          },
+          {
+            label: 'Contact',
+            position: 'right',
+            to: '/contact',
+          },
+          {
+            label: 'Get Demo',
+            position: 'right',
+            to: '/demo',
+            className: 'navbar-cta-button',
+          },
         ],
       },
       footer: {
         style: 'dark',
         links: [
           {
-            title: 'Products',
+            title: 'Services',
             items: [
-              { label: 'MCP ROS 2 Pro', href: 'https://app.easy.tools/ec/wisevision/wisevision-mcp-ros-2-pro' },
+              {
+                label: 'WiseOS Platform',
+                to: '/wiseos',
+              },
+              {
+                label: 'MCP ROS2 Bridge',
+                to: '/mcp-ros2',
+              },
+              {
+                label: 'Digital Twins',
+                to: '/digital-twins',
+              },
+              {
+                label: 'AI Automations',
+                to: '/ai-automations',
+              },
             ],
           },
           {
             title: 'Company',
             items: [
-              { label: 'About', to: '/about' },
-              { label: 'Contact', to: '/contact' },
+              {
+                label: 'About Us',
+                to: '/about',
+              },
+              {
+                label: 'Case Studies',
+                to: '/case-studies',
+              },
+              {
+                label: 'Solutions',
+                to: '/solutions',
+              },
+              {
+                label: 'Contact',
+                to: '/contact',
+              },
             ],
           },
           {
             title: 'Resources',
             items: [
-              { label: 'GitHub', href: 'https://github.com/wise-vision' },
-              { html: '<a href="https://www.linkedin.com/company/wisevision" target="_blank" rel="noopener">LinkedIn</a>' },
+              {
+                label: 'Documentation',
+                href: 'https://www.wisevision.tech/static/doc/',
+              },
+              {
+                label: 'GitHub',
+                href: 'https://github.com/wise-vision',
+              },
+              {
+                label: 'MCP Market',
+                href: 'https://mcpmarket.com/es/server/wisevision-ros2',
+              },
+              {
+                label: 'Schedule Demo',
+                to: '/demo',
+              },
+            ],
+          },
+          {
+            title: 'Contact',
+            items: [
+              {
+                label: 'office@wisevision.tech',
+                href: 'mailto:office@wisevision.tech',
+              },
+              {
+                label: 'Get Support',
+                to: '/contact',
+              },
+              {
+                label: 'Request Demo',
+                to: '/demo',
+              },
             ],
           },
         ],
-        copyright: `© ${new Date().getFullYear()} WiseVision`,
+        copyright: `Copyright © ${new Date().getFullYear()} WiseVision. Bridging AI, IoT & Robotics for a Smarter Future.`,
       },
       prism: {
         theme: prismThemes.github,

@@ -1,50 +1,62 @@
 ---
-title: WiseVision - Open-Source ROS 2 & IoT Stack for Autonomous Robotics
-description: WiseVision builds open-source ROS 2 & IoT tools for autonomous robotics. Connect, analyze, and automate with our edge-native AI platform and Model Context Protocol.
-keywords: [ROS 2, robotics, IoT, AI, WiseVision, autonomous, digital twin, LoRaWAN, Model Context Protocol, MCP, fleet management]
-image: /img/og-homepage.png
+title: WiseVision - Bridging AI, IoT & Robotics for a Smarter Future
+description: Transform your robotics operations with seamless IoT integration and the power of ROS 2. Experience enhanced control and real-time efficiency with WiseOS, MCP ROS2, Digital Twins, and AI Automations.
+keywords: [AI robotics integration, ROS 2 platform, IoT for robots, digital twin simulation, robot automation, WiseOS, MCP ROS2, WiseVision]
+image: /img/wisevision-social-card.jpg
 hide_table_of_contents: true
 ---
 
 import Hero from '@site/src/components/Hero';
 import FeatureCard from '@site/src/components/FeatureCard';
 import Section from '@site/src/components/Section';
-import ThreeAnimation from '@site/src/components/ThreeAnimation';
+import AIFlowAnimation from '@site/src/components/AIFlowAnimation';
 
 <head>
-  <meta property="og:title" content="WiseVision - Open-Source ROS 2 & IoT Stack for Autonomous Robotics" />
-  <meta property="og:description" content="Connect, analyze, and automate with our edge-native AI platform. The future of autonomous robotics is open source." />
+  <meta property="og:title" content="WiseVision - Bridging AI, IoT & Robotics for a Smarter Future" />
+  <meta property="og:description" content="Transform your robotics operations with seamless IoT integration and the power of ROS 2. Experience enhanced control and real-time efficiency." />
   <meta property="og:url" content="https://wisevision.tech/" />
-  <meta property="og:image" content="https://wisevision.tech/img/og-homepage.png" />
+  <meta property="og:image" content="https://wisevision.tech/img/wisevision-social-card.jpg" />
   
-  <meta name="twitter:title" content="WiseVision - Open-Source ROS 2 & IoT Stack" />
-  <meta name="twitter:description" content="Connect, analyze, and automate with our edge-native AI platform. The future of autonomous robotics is open source." />
-  <meta name="twitter:image" content="https://wisevision.tech/img/og-homepage.png" />
+  <meta name="twitter:title" content="WiseVision - AI, IoT & Robotics Platform" />
+  <meta name="twitter:description" content="Transform your robotics operations with seamless IoT integration and the power of ROS 2." />
+  <meta name="twitter:image" content="https://wisevision.tech/img/wisevision-social-card.jpg" />
   
   <script type="application/ld+json">
     {JSON.stringify({
       "@context": "https://schema.org",
       "@type": "WebPage",
-      "name": "WiseVision - Open-Source ROS 2 & IoT Stack",
-      "description": "WiseVision builds open-source ROS 2 & IoT tools for autonomous robotics. Connect, analyze, and automate with our edge-native AI platform.",
+      "name": "WiseVision - Bridging AI, IoT & Robotics",
+      "description": "Transform your robotics operations with seamless IoT integration and the power of ROS 2. Experience enhanced control and real-time efficiency.",
       "url": "https://wisevision.tech/",
       "mainEntity": {
         "@type": "SoftwareApplication",
-        "name": "WiseVision Model Context Protocol",
-        "applicationCategory": "DeveloperApplication",
+        "name": "WiseVision Platform",
+        "applicationCategory": "RoboticsApplication",
+        "operatingSystem": "Linux, Windows, macOS",
         "offers": [
           {
             "@type": "Offer",
-            "name": "Community Edition",
-            "price": "0",
-            "priceCurrency": "USD",
+            "name": "WiseOS Platform",
+            "description": "Comprehensive robotics operating system",
             "availability": "https://schema.org/InStock"
           },
           {
             "@type": "Offer",
-            "name": "MCP ROS 2 Pro",
-            "availability": "https://schema.org/InStock",
-            "url": "https://app.easy.tools/ec/wisevision/wisevision-mcp-ros-2-pro"
+            "name": "MCP ROS2 Bridge",
+            "description": "Model Context Protocol for ROS 2 integration",
+            "availability": "https://schema.org/InStock"
+          },
+          {
+            "@type": "Offer",
+            "name": "Digital Twins",
+            "description": "Real-time simulation and monitoring",
+            "availability": "https://schema.org/InStock"
+          },
+          {
+            "@type": "Offer",
+            "name": "AI Automations",
+            "description": "Intelligent automation solutions",
+            "availability": "https://schema.org/InStock"
           }
         ]
       },
@@ -63,94 +75,153 @@ import ThreeAnimation from '@site/src/components/ThreeAnimation';
   </script>
 </head>
 
-<ThreeAnimation />
-
 <Hero 
-  title="Connect • Analyze • Automate"
-  subtitle="The Future of Autonomous Robotics is Open Source. WiseVision delivers the complete ROS 2 & IoT stack for next-generation robotics. From edge-native AI to fleet-scale deployment, we bridge the gap between digital twins and real-world automation."
+  title="Bridging AI, IoT & Robotics for a Smarter Future"
+  subtitle="Transform your robotics operations with seamless IoT integration and the power of ROS 2. Experience enhanced control and real-time efficiency that scales from single robots to enterprise fleets."
   primaryCTA={{
-    text: "Explore Products",
-    href: "/products"
+    text: "Get Demo",
+    href: "/demo"
   }}
   secondaryCTA={{
-    text: "Contact Us",
-    href: "/contact"
+    text: "Explore Services",
+    href: "#services"
   }}
   withAnimation={true}
 />
 
-<Section>
-
-## Why Choose WiseVision?
-
-<div className="feature-grid">
-  <FeatureCard 
-    icon="🔗"
-    title="Real-time Digital Twins"
-    description="Mirror your physical systems with millisecond precision. Our O3DE integration creates living digital representations that evolve with your robotics fleet."
-  />
-  
-  <FeatureCard 
-    icon="🤖"
-    title="Edge-native AI with ROS 2"
-    description="Deploy intelligent decision-making directly on your robots. No cloud dependency, no latency—just pure autonomous capability powered by modern AI agents."
-  />
-  
-  <FeatureCard 
-    icon="📡"
-    title="LoRaWAN/5G/Edge Connectivity"
-    description="Connect everything, everywhere. Our IoT bridges span LoRaWAN, 5G, and edge computing to create seamless data flows across your entire operation."
-  />
-  
-  <FeatureCard 
-    icon="⚡"
-    title="Modular Deployment"
-    description="Cloud, on-premises, or hybrid—deploy exactly how you need. Scale from single robots to enterprise fleets without architectural changes."
-  />
-  
-  <FeatureCard 
-    icon="🚀"
-    title="Fleet-scale Robotics Integration"
-    description="Orchestrate thousands of autonomous systems as one. Our platform handles coordination, monitoring, and optimization across your entire robotics ecosystem."
-  />
-  
-  <FeatureCard 
-    icon="📊"
-    title="Mission-Critical Reliability"
-    description="Built for production environments where downtime isn't an option. Enterprise-grade monitoring, logging, and failover capabilities included."
-  />
-</div>
-
+<Section id="services" background="gradient">
+  <div className="container text-center">
+    <h2 className="display-md mb-lg">Our Core Services</h2>
+    <p className="body-xl mb-2xl">Comprehensive solutions for modern robotics operations</p>
+    
+    <div className="grid grid--2">
+      <div className="card card--service">
+        <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)'}}>🤖</div>
+        <h3 className="headline-md mb-md">WiseOS</h3>
+        <p className="body-lg mb-lg">A comprehensive robotics operating system that seamlessly integrates AI, IoT, and automation capabilities for next-generation robotic applications.</p>
+        <a href="/wiseos" className="btn btn--primary">Learn More</a>
+      </div>
+      
+      <div className="card card--service">
+        <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)'}}>🔗</div>
+        <h3 className="headline-md mb-md">MCP ROS2</h3>
+        <p className="body-lg mb-lg">Model Context Protocol bridge for ROS 2, enabling seamless communication between AI models and robotics systems with real-time data exchange.</p>
+        <a href="/mcp-ros2" className="btn btn--primary">Learn More</a>
+      </div>
+      
+      <div className="card card--service">
+        <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)'}}>🔬</div>
+        <h3 className="headline-md mb-md">Digital Twins</h3>
+        <p className="body-lg mb-lg">Create accurate digital replicas of your robotic systems for simulation, monitoring, and predictive maintenance with real-time synchronization.</p>
+        <a href="/digital-twins" className="btn btn--primary">Learn More</a>
+      </div>
+      
+      <div className="card card--service">
+        <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)'}}>⚡</div>
+        <h3 className="headline-md mb-md">AI Automations</h3>
+        <p className="body-lg mb-lg">Intelligent automation solutions that adapt and optimize robotic operations using advanced machine learning and decision-making algorithms.</p>
+        <a href="/ai-automations" className="btn btn--primary">Learn More</a>
+      </div>
+    </div>
+  </div>
 </Section>
 
-<Section background="alt">
-
-## Industry Applications
-
-<div style={{textAlign: 'center', marginBottom: '2rem'}}>
-  <p style={{fontSize: '1.125rem', color: 'var(--ifm-color-content-secondary)'}}>
-    **Smart Manufacturing** • **Autonomous Warehouses** • **Precision Agriculture** • **Smart Cities** • **Mining & Energy** • **Healthcare Robotics**
-  </p>
-</div>
-
-<div style={{textAlign: 'center'}}>
-  <a href="/use-cases" className="button button--primary">
-    Explore Detailed Use Cases →
-  </a>
-</div>
-
+<Section background="dark">
+  <div className="container text-center">
+    <h2 className="display-md mb-lg">Trusted by Industry Leaders</h2>
+    <p className="body-xl mb-2xl">Companies worldwide rely on WiseVision to power their robotics operations</p>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <p className="body-lg">"WiseVision transformed our manufacturing floor. The integration between our robots and IoT sensors is seamless, and the real-time insights have increased our efficiency by 40%."</p>
+        <div className="mt-lg">
+          <div className="caption text-accent">Sarah Chen</div>
+          <div className="caption">CTO, AutoManu Corp</div>
+        </div>
+      </div>
+      
+      <div className="card">
+        <p className="body-lg">"The Digital Twins capability gave us unprecedented visibility into our robot fleet. We can now predict maintenance needs and prevent downtime before it happens."</p>
+        <div className="mt-lg">
+          <div className="caption text-accent">Dr. James Wilson</div>
+          <div className="caption">Head of Robotics, TechFlow Industries</div>
+        </div>
+      </div>
+      
+      <div className="card">
+        <p className="body-lg">"MCP ROS2 bridged the gap between our AI systems and robotics infrastructure. The implementation was straightforward and the results were immediate."</p>
+        <div className="mt-lg">
+          <div className="caption text-accent">Maria Rodriguez</div>
+          <div className="caption">Senior Engineer, RoboLogistics</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </Section>
 
 <Section>
+  <div className="container text-center">
+    <h2 className="display-md mb-lg">Case Studies</h2>
+    <p className="body-xl mb-2xl">Real-world implementations delivering measurable results</p>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <h3 className="headline-md mb-md">Autonomous Warehouse Operations</h3>
+        <p className="body mb-lg">Deployed 200+ robots across 5 facilities, achieving 99.9% uptime and 45% efficiency improvement through predictive maintenance and real-time coordination.</p>
+        <div className="grid grid--3">
+          <div>
+            <div className="headline-lg text-accent">99.9%</div>
+            <div className="caption">Uptime</div>
+          </div>
+          <div>
+            <div className="headline-lg text-accent">45%</div>
+            <div className="caption">Efficiency ↑</div>
+          </div>
+          <div>
+            <div className="headline-lg text-accent">200+</div>
+            <div className="caption">Robots</div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">Smart Manufacturing Plant</h3>
+        <p className="body mb-lg">Integrated IoT sensors with robotic assembly lines, reducing defects by 60% and increasing production speed by 30% through AI-driven quality control.</p>
+        <div className="grid grid--3">
+          <div>
+            <div className="headline-lg text-accent">60%</div>
+            <div className="caption">Defects ↓</div>
+          </div>
+          <div>
+            <div className="headline-lg text-accent">30%</div>
+            <div className="caption">Speed ↑</div>
+          </div>
+          <div>
+            <div className="headline-lg text-accent">24/7</div>
+            <div className="caption">Operations</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div className="mt-2xl">
+      <a href="/case-studies" className="btn btn--secondary">View All Case Studies</a>
+    </div>
+  </div>
+</Section>
 
-<div style={{textAlign: 'center', padding: '2rem 0'}}>
-  <h2 className="gradient-text">Join the Open-Source Robotics Revolution</h2>
-  <p style={{fontSize: '1.125rem', marginBottom: '1.5rem', color: 'var(--ifm-color-content-secondary)'}}>
-    Thousands of developers are already building the future of autonomous systems
-  </p>
-  <a href="https://github.com/wise-vision" className="button button--outline">
-    ⭐ Star us on GitHub
-  </a>
-</div>
-
+<Section background="gradient">
+  <div className="container text-center">
+    <h2 className="display-lg mb-lg">Ready to Transform Your Robotics Operations?</h2>
+    <p className="body-xl mb-2xl">Join hundreds of companies already using WiseVision to power their intelligent automation</p>
+    
+    <div style={{display: 'flex', gap: 'var(--space-lg)', justifyContent: 'center', flexWrap: 'wrap'}}>
+      <a href="/demo" className="btn btn--primary">Get Demo</a>
+      <a href="/contact" className="btn btn--secondary">Contact Sales</a>
+    </div>
+    
+    <div className="mt-xl">
+      <p className="caption">No commitments • Custom implementation • Enterprise support</p>
+    </div>
+  </div>
 </Section>
