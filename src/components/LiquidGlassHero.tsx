@@ -524,8 +524,8 @@ export default function LiquidGlassHero({
       // Draw hexagonal grid pattern
       for (let i = 0; i < 6; i++) {
         const angle = (i * Math.PI) / 3;
-        const x = Math.cos(angle) * (20 + pulseIntensity * 5);
-        const y = Math.sin(angle) * (20 + pulseIntensity * 5);
+        const x = Math.cos(angle) * (25 + pulseIntensity * 6); // Increased by 25%
+        const y = Math.sin(angle) * (25 + pulseIntensity * 6); // Increased by 25%
         
         ctx.save();
         ctx.translate(x, y);
@@ -534,8 +534,8 @@ export default function LiquidGlassHero({
         ctx.beginPath();
         for (let j = 0; j < 6; j++) {
           const hexAngle = (j * Math.PI) / 3;
-          const hexX = Math.cos(hexAngle) * 6;
-          const hexY = Math.sin(hexAngle) * 6;
+          const hexX = Math.cos(hexAngle) * 7.5; // Increased by 25%
+          const hexY = Math.sin(hexAngle) * 7.5; // Increased by 25%
           if (j === 0) ctx.moveTo(hexX, hexY);
           else ctx.lineTo(hexX, hexY);
         }
@@ -560,7 +560,7 @@ export default function LiquidGlassHero({
       }
       
       // Central processing core
-      const coreSize = 16 + pulseIntensity * 3;
+      const coreSize = 20 + pulseIntensity * 4; // Increased by 25%
       
       // Core background
       ctx.fillStyle = `rgba(139, 92, 246, 0.8)`;
@@ -589,7 +589,7 @@ export default function LiquidGlassHero({
       ctx.textAlign = 'center';
       ctx.fillText('ROS 2', 0, 3);
       ctx.font = 'bold 8px monospace';
-      ctx.fillText('MCP', 0, -8);
+      // ctx.fillText('MCP', 0, -8);
       ctx.restore();
     }
 
@@ -724,13 +724,7 @@ export default function LiquidGlassHero({
         width: '100%',
         padding: '0 var(--space-xl)'
       }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '550px 1fr',
-          gap: 'var(--space-xl)',
-          alignItems: 'center',
-          width: '100%'
-        }}>
+        <div className={withAnimation ? "liquid-glass-hero-grid" : "liquid-glass-hero-centered"}>
           {/* Content Side - Left - More space for WiseVision idea */}
           <div style={{
             background: 'rgba(255, 255, 255, 0.04)',
@@ -775,8 +769,7 @@ export default function LiquidGlassHero({
                 lineHeight: '1.6',
                 margin: 0
               }}>
-                <strong style={{ color: '#00d4ff' }}>The Bridge:</strong> AI Agents analyze → WiseOS Platform orchestrates → Robot Fleet executes. 
-                Real-time bidirectional communication creating intelligent, responsive robotic ecosystems.
+                <strong style={{ color: '#00d4ff' }}>How it works:</strong> From first sensor to fleet deployment - one platform to connect, simulate and automate. Connect with WiseOS, control via ROS 2, validate in Digital Twins, ship with AI Automations.
               </p>
             </div>
             
@@ -834,61 +827,58 @@ export default function LiquidGlassHero({
             </div>
           </div>
           
-          {/* Animation Space - Right Side for compact vertical flow */}
-          <div style={{
-            height: '70vh',
-            position: 'relative',
-            pointerEvents: 'none',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-            padding: 'var(--space-lg) 0'
-          }}>
-            {/* Only show labels when animation is enabled */}
-            {withAnimation && (
-              <>
-                {/* AI Agents label - right side below neural network */}
-                <div style={{
-                  color: 'rgba(0, 212, 255, 0.7)',
-                  fontSize: '0.9rem',
-                  textAlign: 'left',
-                  fontWeight: 'bold',
-                  position: 'absolute',
-                  top: '28%',
-                  right: '5%'
-                }}>
-                  AI Agents
-                </div>
-                
-                {/* WiseOS label - right side at MCP level */}
-                <div style={{
-                  color: 'rgba(139, 92, 246, 0.8)',
-                  fontSize: '1rem',
-                  textAlign: 'left',
-                  fontWeight: 'bold',
-                  position: 'absolute',
-                  top: '48%',
-                  right: '5%'
-                }}>
-                  WiseOS
-                </div>
-                
-                {/* Robot Fleet label - right side above robots */}
-                <div style={{
-                  color: 'rgba(255, 140, 0, 0.7)',
-                  fontSize: '0.9rem',
-                  textAlign: 'left',
-                  fontWeight: 'bold',
-                  position: 'absolute',
-                  top: '62%',
-                  right: '5%'
-                }}>
-                  Robot Fleet
-                </div>
-              </>
-            )}
-          </div>
+          {/* Animation Space - Right Side for compact vertical flow - Only when animation is enabled */}
+          {withAnimation && (
+            <div style={{
+              height: '70vh',
+              position: 'relative',
+              pointerEvents: 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+              padding: 'var(--space-lg) 0'
+            }}>
+              {/* AI Agents label - right side below neural network */}
+              <div style={{
+                color: 'rgba(0, 212, 255, 0.7)',
+                fontSize: '0.9rem',
+                textAlign: 'left',
+                fontWeight: 'bold',
+                position: 'absolute',
+                top: '28%',
+                right: '5%'
+              }}>
+                AI Agents
+              </div>
+              
+              {/* WiseOS label - right side at MCP level */}
+              <div style={{
+                color: 'rgba(139, 92, 246, 0.8)',
+                fontSize: '1rem',
+                textAlign: 'left',
+                fontWeight: 'bold',
+                position: 'absolute',
+                top: '48%',
+                right: '5%'
+              }}>
+                WiseOS
+              </div>
+              
+              {/* Robot Fleet label - right side above robots */}
+              <div style={{
+                color: 'rgba(255, 140, 0, 0.7)',
+                fontSize: '0.9rem',
+                textAlign: 'left',
+                fontWeight: 'bold',
+                position: 'absolute',
+                top: '62%',
+                right: '5%'
+              }}>
+                Robot Fleet
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

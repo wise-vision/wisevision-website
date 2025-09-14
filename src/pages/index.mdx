@@ -98,28 +98,28 @@ import AIFlowAnimation from '@site/src/components/AIFlowAnimation';
       <div className="card card--service">
         <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)'}}>🤖</div>
         <h3 className="headline-md mb-md">WiseOS</h3>
-        <p className="body-lg mb-lg">A comprehensive robotics operating system that seamlessly integrates AI, IoT, and automation capabilities for next-generation robotic applications.</p>
+        <p className="body-lg mb-lg">Zenoh-based ROS 2 connectivity with InfluxDB Data Black Box, LoRaWAN bridge, and plugin architecture. Open standards for enterprise robotics infrastructure.</p>
         <a href="/wiseos" className="btn btn--primary">Learn More</a>
       </div>
       
       <div className="card card--service">
         <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)'}}>🔗</div>
         <h3 className="headline-md mb-md">MCP ROS2</h3>
-        <p className="body-lg mb-lg">Model Context Protocol bridge for ROS 2, enabling seamless communication between AI models and robotics systems with real-time data exchange.</p>
+        <p className="body-lg mb-lg">AI agents with natural language commands for ROS 2. Universal AI integration via Model Context Protocol with advanced Pro workflows.</p>
         <a href="/mcp-ros2" className="btn btn--primary">Learn More</a>
       </div>
       
       <div className="card card--service">
         <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)'}}>🔬</div>
         <h3 className="headline-md mb-md">Digital Twins</h3>
-        <p className="body-lg mb-lg">Create accurate digital replicas of your robotic systems for simulation, monitoring, and predictive maintenance with real-time synchronization.</p>
+        <p className="body-lg mb-lg">ROS 2-native simulations with GPU acceleration and realistic physics. Photoreal environments for sim-to-real policy training and validation.</p>
         <a href="/digital-twins" className="btn btn--primary">Learn More</a>
       </div>
       
       <div className="card card--service">
         <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)'}}>⚡</div>
         <h3 className="headline-md mb-md">AI Automations</h3>
-        <p className="body-lg mb-lg">Intelligent automation solutions that adapt and optimize robotic operations using advanced machine learning and decision-making algorithms.</p>
+        <p className="body-lg mb-lg">Custom automations with InfluxDB telemetry monitoring and MCP ROS2 integration. Build streams, queries, and agent hooks for ROS 2 actions.</p>
         <a href="/ai-automations" className="btn btn--primary">Learn More</a>
       </div>
     </div>
@@ -128,31 +128,60 @@ import AIFlowAnimation from '@site/src/components/AIFlowAnimation';
 
 <Section background="dark">
   <div className="container text-center">
-    <h2 className="display-md mb-lg">Trusted by Industry Leaders</h2>
-    <p className="body-xl mb-2xl">Companies worldwide rely on WiseVision to power their robotics operations</p>
+    <h2 className="display-md mb-lg">Built on Open Standards & Ecosystem</h2>
+    <p className="body-xl mb-2xl">We build on the standards your team already trusts</p>
+    
+    <div className="grid grid--4" style={{ marginBottom: 'var(--space-2xl)' }}>
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>🤖</div>
+        <h3 className="headline-sm mb-sm">ROS 2</h3>
+        <p className="body">Industry standard robotics middleware</p>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>⚡</div>
+        <h3 className="headline-sm mb-sm">Eclipse Zenoh</h3>
+        <p className="body">High-performance pub/sub protocol</p>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>🎮</div>
+        <h3 className="headline-sm mb-sm">WiseSim</h3>
+        <p className="body">Game engine based ROS 2 simulations</p>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>📊</div>
+        <h3 className="headline-sm mb-sm">InfluxDB</h3>
+        <p className="body">Time-series database for telemetry</p>
+      </div>
+    </div>
     
     <div className="grid grid--3">
       <div className="card">
-        <p className="body-lg">"WiseVision transformed our manufacturing floor. The integration between our robots and IoT sensors is seamless, and the real-time insights have increased our efficiency by 40%."</p>
+        <h3 className="headline-md mb-md">Open Source & Transparent</h3>
+        <p className="body-lg">"Active code, open issues, real progress. Check our GitHub for continuous development and community contributions."</p>
         <div className="mt-lg">
-          <div className="caption text-accent">Sarah Chen</div>
-          <div className="caption">CTO, AutoManu Corp</div>
+          <div className="caption text-accent">GitHub Organization</div>
+          <div className="caption">Public repositories and roadmap</div>
         </div>
       </div>
       
       <div className="card">
-        <p className="body-lg">"The Digital Twins capability gave us unprecedented visibility into our robot fleet. We can now predict maintenance needs and prevent downtime before it happens."</p>
+        <h3 className="headline-md mb-md">Proven Technologies</h3>
+        <p className="body-lg">"Built on battle-tested foundations: ROS 2, Zenoh, O3DE, and InfluxDB. We integrate the ecosystem rather than reinvent it."</p>
         <div className="mt-lg">
-          <div className="caption text-accent">Dr. James Wilson</div>
-          <div className="caption">Head of Robotics, TechFlow Industries</div>
+          <div className="caption text-accent">Industry Standards</div>
+          <div className="caption">Interoperable by design</div>
         </div>
       </div>
       
       <div className="card">
-        <p className="body-lg">"MCP ROS2 bridged the gap between our AI systems and robotics infrastructure. The implementation was straightforward and the results were immediate."</p>
+        <h3 className="headline-md mb-md">Real Demos & Benchmarks</h3>
+        <p className="body-lg">"MCP controls drones, query-while-recording telemetry, LoRaWAN sensors drive ROS 2 actions. See it working."</p>
         <div className="mt-lg">
-          <div className="caption text-accent">Maria Rodriguez</div>
-          <div className="caption">Senior Engineer, RoboLogistics</div>
+          <div className="caption text-accent">Live Examples</div>
+          <div className="caption">Deployable proof points</div>
         </div>
       </div>
     </div>
@@ -161,51 +190,58 @@ import AIFlowAnimation from '@site/src/components/AIFlowAnimation';
 
 <Section>
   <div className="container text-center">
-    <h2 className="display-md mb-lg">Case Studies</h2>
-    <p className="body-xl mb-2xl">Real-world implementations delivering measurable results</p>
+    <h2 className="display-md mb-lg">Real-World Implementations</h2>
+    <p className="body-xl mb-2xl">Launch-ready solutions delivering measurable results</p>
     
-    <div className="grid grid--2">
+    <div className="grid grid--3">
       <div className="card">
-        <h3 className="headline-md mb-md">Autonomous Warehouse Operations</h3>
-        <p className="body mb-lg">Deployed 200+ robots across 5 facilities, achieving 99.9% uptime and 45% efficiency improvement through predictive maintenance and real-time coordination.</p>
-        <div className="grid grid--3">
+        <h3 className="headline-md mb-md">MCP-Driven Drone Tasking</h3>
+        <p className="body mb-lg">Natural language commands ("Pick up payload and return to pad A") translate through MCP ROS2 into verified ROS 2 actions. O3DE simulation validates before real-world execution.</p>
+        <div className="grid grid--2">
           <div>
-            <div className="headline-lg text-accent">99.9%</div>
-            <div className="caption">Uptime</div>
+            <div className="headline-lg text-accent">Safe</div>
+            <div className="caption">Sim-first validation</div>
           </div>
           <div>
-            <div className="headline-lg text-accent">45%</div>
-            <div className="caption">Efficiency ↑</div>
-          </div>
-          <div>
-            <div className="headline-lg text-accent">200+</div>
-            <div className="caption">Robots</div>
+            <div className="headline-lg text-accent">Fast</div>
+            <div className="caption">Iteration cycles</div>
           </div>
         </div>
       </div>
       
       <div className="card">
-        <h3 className="headline-md mb-md">Smart Manufacturing Plant</h3>
-        <p className="body mb-lg">Integrated IoT sensors with robotic assembly lines, reducing defects by 60% and increasing production speed by 30% through AI-driven quality control.</p>
-        <div className="grid grid--3">
+        <h3 className="headline-md mb-md">Data Black Box Integration</h3>
+        <p className="body mb-lg">InfluxDB runs alongside rosbag2 for live dashboards and long-term analytics. Teams maintain deterministic capture while gaining real-time situational awareness.</p>
+        <div className="grid grid--2">
           <div>
-            <div className="headline-lg text-accent">60%</div>
-            <div className="caption">Defects ↓</div>
+            <div className="headline-lg text-accent">Live</div>
+            <div className="caption">Real-time queries</div>
           </div>
           <div>
-            <div className="headline-lg text-accent">30%</div>
-            <div className="caption">Speed ↑</div>
+            <div className="headline-lg text-accent">Historic</div>
+            <div className="caption">Rich analysis</div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">LoRaWAN Sensor Integration</h3>
+        <p className="body mb-lg">Battery-powered sensors (soil moisture, door states, utility meters) feed through ChirpStack into ROS 2 topics. Robots react to environmental changes with wider sensing coverage.</p>
+        <div className="grid grid--2">
+          <div>
+            <div className="headline-lg text-accent">Wide</div>
+            <div className="caption">Sensing range</div>
           </div>
           <div>
-            <div className="headline-lg text-accent">24/7</div>
-            <div className="caption">Operations</div>
+            <div className="headline-lg text-accent">Low</div>
+            <div className="caption">Power usage</div>
           </div>
         </div>
       </div>
     </div>
     
     <div className="mt-2xl">
-      <a href="/case-studies" className="btn btn--secondary">View All Case Studies</a>
+      <a href="/demo" className="btn btn--secondary">Request Demo</a>
     </div>
   </div>
 </Section>

@@ -38,16 +38,153 @@ import Section from '@site/src/components/Section';
 
 <Hero 
   title="AI Automations"
-  subtitle="Streamline operations with intelligent automation workflows that reduce manual intervention, improve efficiency, and scale decision-making across your entire robotics infrastructure with adaptive AI algorithms."
+  subtitle="Build custom automations with InfluxDB telemetry monitoring and MCP ROS2 integration. Create streams, queries, and agent hooks to trigger ROS 2 actions—from simple data flows to sophisticated multi-step workflows that respond to real-time robot conditions."
   primaryCTA={{
     text: "Start Automation",
     href: "/demo"
   }}
   secondaryCTA={{
     text: "View Workflows",
-    href: "https://www.wisevision.tech/static/doc/"
+    href: "https://github.com/wise-vision"
   }}
 />
+
+<Section>
+  <div className="container">
+    <div className="grid grid--2">
+      <div>
+        <h2 className="headline-lg mb-lg">Automation Engine</h2>
+        
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">📊 InfluxDB Telemetry Monitoring</h3>
+          <p className="body-lg mb-md">
+            Monitor robot health, performance metrics, and environmental data with high-resolution time-series storage. Set thresholds, detect anomalies, and trigger automated responses.
+          </p>
+          <a href="https://www.influxdata.com/" className="btn btn--secondary btn--sm">InfluxDB</a>
+        </div>
+
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">🔗 MCP ROS2 Integration</h3>
+          <p className="body-lg mb-md">
+            Seamlessly connect monitoring data to robot actions through the Model Context Protocol. Natural language commands become executable ROS 2 workflows.
+          </p>
+          <a href="/mcp-ros2" className="btn btn--secondary btn--sm">MCP ROS2</a>
+        </div>
+
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">⚡ Real-time Streams & Queries</h3>
+          <p className="body-lg mb-md">
+            Build custom data streams with InfluxDB queries that automatically trigger ROS 2 actions when conditions are met. From sensor thresholds to complex behavioral patterns.
+          </p>
+          <a href="https://docs.influxdata.com/flux/" className="btn btn--secondary btn--sm">Flux Queries</a>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="headline-lg mb-lg">Workflow Capabilities</h2>
+        
+        <div className="card mb-xl">
+          <h3 className="headline-md mb-md">Agent Hook System</h3>
+          <p className="body-lg mb-md">
+            Create intelligent hooks that monitor specific robot behaviors, telemetry patterns, or environmental conditions. When triggered, automatically execute predefined ROS 2 action sequences.
+          </p>
+          <ul className="body-lg">
+            <li>Battery level automation</li>
+            <li>Performance optimization triggers</li>
+            <li>Safety threshold responses</li>
+            <li>Maintenance scheduling</li>
+          </ul>
+        </div>
+
+        <div className="card">
+          <h3 className="headline-md mb-md">Multi-step Workflows</h3>
+          <ul className="body-lg">
+            <li><strong>Data Collection</strong> from multiple robot sensors</li>
+            <li><strong>Pattern Recognition</strong> using InfluxDB analytics</li>
+            <li><strong>Decision Logic</strong> through MCP AI agents</li>
+            <li><strong>Action Execution</strong> via ROS 2 commands</li>
+            <li><strong>Feedback Loops</strong> for continuous optimization</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container text-center">
+    <h2 className="display-md mb-lg">Automation Examples</h2>
+    <p className="body-xl mb-2xl">Real-world automation scenarios powered by AI intelligence</p>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <div style={{ fontSize: '4rem', marginBottom: 'var(--space-lg)' }}>🔋</div>
+        <h3 className="headline-lg mb-md">Smart Battery Management</h3>
+        <p className="body-lg mb-lg">
+          Monitor battery levels across robot fleets. Automatically route robots to charging stations when thresholds are reached, optimizing uptime and preventing downtime.
+        </p>
+        <div className="label-sm">InfluxDB + ROS 2 Actions</div>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '4rem', marginBottom: 'var(--space-lg)' }}>🛡️</div>
+        <h3 className="headline-lg mb-md">Safety Response System</h3>
+        <p className="body-lg mb-lg">
+          Real-time monitoring of safety sensors and environmental conditions. Instantly trigger emergency stops, retreat sequences, or operator alerts when anomalies are detected.
+        </p>
+        <div className="label-sm">Real-time Streams + Agent Hooks</div>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '4rem', marginBottom: 'var(--space-lg)' }}>📈</div>
+        <h3 className="headline-lg mb-md">Performance Optimization</h3>
+        <p className="body-lg mb-lg">
+          Analyze robot performance metrics over time. Automatically adjust parameters, suggest maintenance, or optimize path planning based on historical data patterns.
+        </p>
+        <div className="label-sm">MCP AI + Flux Queries</div>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section>
+  <div className="container">
+    <div className="grid grid--2" style={{ alignItems: 'center' }}>
+      <div>
+        <h2 className="display-md mb-lg">Custom Automation Builder</h2>
+        <p className="body-xl mb-lg">
+          No-code visual interface for creating sophisticated automation workflows. Drag and drop conditions, actions, and logic flows to build custom solutions that fit your exact operational needs.
+        </p>
+        <div className="grid grid--1 mb-xl">
+          <div className="card">
+            <h3 className="headline-md mb-md">Visual Workflow Designer</h3>
+            <p className="body-lg">Build automation logic with intuitive drag-and-drop interface</p>
+          </div>
+          <div className="card">
+            <h3 className="headline-md mb-md">Template Library</h3>
+            <p className="body-lg">Start with proven automation patterns for common scenarios</p>
+          </div>
+          <div className="card">
+            <h3 className="headline-md mb-md">Custom Integrations</h3>
+            <p className="body-lg">Connect to any data source or external system via APIs</p>
+          </div>
+        </div>
+        <a href="/demo" className="btn btn--primary btn--lg">Build Your First Automation</a>
+      </div>
+      
+      <div style={{ padding: 'var(--space-2xl)', background: 'var(--color-surface-2)', borderRadius: 'var(--radius-lg)' }}>
+        <h3 className="headline-lg mb-lg">Quick Setup Steps</h3>
+        <ol className="body-lg" style={{ listStyle: 'decimal', paddingLeft: 'var(--space-lg)' }}>
+          <li style={{ marginBottom: 'var(--space-md)' }}>Connect your InfluxDB telemetry data</li>
+          <li style={{ marginBottom: 'var(--space-md)' }}>Define trigger conditions and thresholds</li>
+          <li style={{ marginBottom: 'var(--space-md)' }}>Map to ROS 2 actions and workflows</li>
+          <li style={{ marginBottom: 'var(--space-md)' }}>Test automation in simulation environment</li>
+          <li>Deploy and monitor automation performance</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</Section>
 
 <Section>
   <div className="container">
@@ -354,7 +491,7 @@ import Section from '@site/src/components/Section';
     
     <div style={{display: 'flex', gap: 'var(--space-lg)', justifyContent: 'center', flexWrap: 'wrap'}}>
       <a href="/demo" className="btn btn--primary">Start Automation</a>
-      <a href="mailto:sales@wisevision.tech" className="btn btn--secondary">Discuss Your Needs</a>
+      <a href="mailto:michaldobrzanski@wisevision.tech" className="btn btn--secondary">Discuss Your Needs</a>
     </div>
     
     <div className="mt-xl">

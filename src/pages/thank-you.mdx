@@ -1,0 +1,66 @@
+---
+title: Thank You - Demo Request Submitted
+description: Thank you for requesting a demo of WiseVision's robotics solutions. Our team will contact you within 24 hours.
+keywords: [demo confirmation, thank you, WiseVision contact]
+---
+
+import Hero from '@site/src/components/Hero';
+import Section from '@site/src/components/Section';
+
+<head>
+  <meta property="og:title" content="Thank You - Demo Request Submitted" />
+  <meta property="og:description" content="Thank you for requesting a demo of WiseVision's robotics solutions. Our team will contact you within 24 hours." />
+  <meta property="og:url" content="https://wisevision.tech/thank-you" />
+  <meta property="og:image" content="https://wisevision.tech/img/wisevision-social-card.jpg" />
+</head>
+
+<Hero 
+  title="Thank You!"
+  subtitle="Your demo request has been successfully submitted. Our team will contact you within 24 hours to schedule your personalized demonstration of WiseVision's intelligent robotics solutions."
+  primaryCTA={{
+    text: "Return Home",
+    href: "/"
+  }}
+  secondaryCTA={{
+    text: "Contact Us",
+    href: "/contact"
+  }}
+/>
+
+<Section>
+  <div className="container text-center">
+    <h2 className="display-md mb-lg">What Happens Next?</h2>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-lg)' }}>📧</div>
+        <h3 className="headline-md mb-md">Confirmation Email</h3>
+        <p className="body-lg">You'll receive a confirmation email with your demo request details within the next few minutes.</p>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-lg)' }}>📞</div>
+        <h3 className="headline-md mb-md">Team Contact</h3>
+        <p className="body-lg">Our demo specialist will reach out within 24 hours to schedule your personalized session.</p>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-lg)' }}>🚀</div>
+        <h3 className="headline-md mb-md">Demo Experience</h3>
+        <p className="body-lg">Experience a tailored demonstration of our AI-powered robotics solutions for your specific use case.</p>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container text-center">
+    <h2 className="display-md mb-lg">Questions Before Your Demo?</h2>
+    <p className="body-xl mb-2xl">Feel free to reach out if you have any immediate questions</p>
+    
+    <div style={{display: 'flex', gap: 'var(--space-lg)', justifyContent: 'center', flexWrap: 'wrap'}}>
+      <a href="mailto:michaldobrzanski@wisevision.tech" className="btn btn--primary">Email Us Directly</a>
+      <a href="/contact" className="btn btn--secondary">Contact Page</a>
+    </div>
+  </div>
+</Section>

@@ -38,16 +38,127 @@ import Section from '@site/src/components/Section';
 
 <Hero 
   title="WiseOS"
-  subtitle="A comprehensive robotics operating system that seamlessly integrates AI, IoT, and automation capabilities for next-generation robotic applications. Built on ROS 2 with enterprise-grade reliability and scalability."
+  subtitle="The robotics OS for real-world fleets. WiseOS is a curated set of ROS 2 packages that make robots and sensors feel like one platform: Zenoh-enabled ROS 2 transport, our InfluxDB-powered Data Black Box, LoRaWAN integration, automation hooks, and a lightweight dashboard."
   primaryCTA={{
     text: "Get Demo",
     href: "/demo"
   }}
   secondaryCTA={{
-    text: "Contact Sales",
-    href: "/contact"
+    text: "View Documentation",
+    href: "https://www.wisevision.tech/static/doc/"
   }}
 />
+
+<Section>
+  <div className="container">
+    <div className="grid grid--2">
+      <div>
+        <h2 className="headline-lg mb-lg">What You Get</h2>
+        
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">🌐 Zenoh-based ROS 2 Connectivity</h3>
+          <p className="body-lg mb-md">
+            WAN/edge scenarios and mixed networks made simple. Our Zenoh transport layer enables seamless communication across distributed robot fleets, even in challenging network environments.
+          </p>
+          <a href="https://docs.ros.org/en/rolling/" className="btn btn--secondary btn--sm">ROS Documentation</a>
+        </div>
+
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">📊 Data Black Box (InfluxDB)</h3>
+          <p className="body-lg mb-md">
+            Continuous, query-while-recording telemetry—ideal for live dashboards and long-horizon analyses. Get sub-10ms live queries, retention policies, and streaming analytics without stopping operations.
+          </p>
+          <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
+            <a href="https://github.com/wise-vision" className="btn btn--secondary btn--sm">GitHub</a>
+            <a href="https://www.influxdata.com/" className="btn btn--secondary btn--sm">InfluxDB</a>
+          </div>
+        </div>
+
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">📡 LoRaWAN→ROS 2 Bridge</h3>
+          <p className="body-lg mb-md">
+            ChirpStack compatible bridge to ingest thousands of low-power sensors into topics/services. Extend your robot's sensing capabilities with battery-powered IoT devices.
+          </p>
+          <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
+            <a href="https://github.com/wise-vision" className="btn btn--secondary btn--sm">GitHub</a>
+            <a href="https://www.chirpstack.io/" className="btn btn--secondary btn--sm">ChirpStack</a>
+          </div>
+        </div>
+
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">🔌 Plugin Architecture</h3>
+          <p className="body-lg mb-md">
+            Our wisevision_core enables adding new transports and device classes without touching app code. Bridge MQTT, proprietary RF, or industrial buses on request.
+          </p>
+          <a href="https://github.com/wise-vision" className="btn btn--secondary btn--sm">GitHub</a>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="headline-lg mb-lg">Why It Matters</h2>
+        
+        <div className="card mb-xl">
+          <h3 className="headline-md mb-md">Beyond File-Based Logging</h3>
+          <p className="body-lg mb-md">
+            File-based logging (e.g., rosbag2) shines for record/playback, whereas a time-series DB adds sub-10ms live queries, retention, and continuous queries for streaming analytics—no "stop to inspect" workflow.
+          </p>
+          <p className="body-lg">
+            WiseOS gives you both: ROS 2-native operations plus a historian built for dashboards and alerts.
+          </p>
+          <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap', marginTop: 'var(--space-md)' }}>
+            <a href="https://github.com/wise-vision" className="btn btn--secondary btn--sm">GitHub</a>
+            <a href="https://www.influxdata.com/" className="btn btn--secondary btn--sm">InfluxData</a>
+          </div>
+        </div>
+
+        <div className="card">
+          <h3 className="headline-md mb-md">Enterprise-Ready Features</h3>
+          <ul className="body-lg">
+            <li>Fleet Management for 100+ robots</li>
+            <li>Enterprise Security with role-based access</li>
+            <li>Advanced Analytics and predictive maintenance</li>
+            <li>Multi-site deployment capabilities</li>
+            <li>High availability with 99.9% uptime SLA</li>
+            <li>24/7 professional support</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container text-center">
+    <h2 className="display-md mb-lg">Built on Open Standards</h2>
+    <p className="body-xl mb-2xl">We build on the standards your team already trusts</p>
+    
+    <div className="grid grid--4">
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>🤖</div>
+        <h3 className="headline-md">ROS 2</h3>
+        <p className="body">Industry standard robotics framework</p>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>🌐</div>
+        <h3 className="headline-md">Eclipse Zenoh</h3>
+        <p className="body">High-performance data transport</p>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>📊</div>
+        <h3 className="headline-md">InfluxDB</h3>
+        <p className="body">Time-series database for telemetry</p>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>📡</div>
+        <h3 className="headline-md">LoRaWAN</h3>
+        <p className="body">Long-range IoT connectivity</p>
+      </div>
+    </div>
+  </div>
+</Section>
 
 <Section>
   <div className="container">

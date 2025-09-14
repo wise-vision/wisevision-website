@@ -12,7 +12,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 const config = {
   title: 'WiseVision',
   tagline: 'Bridging AI, IoT & Robotics for a Smarter Future',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.png',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -50,7 +50,7 @@ const config = {
         "name": "WiseVision",
         "description": "Bridging AI, IoT & Robotics for a Smarter Future. Transform your robotics operations with seamless IoT integration and the power of ROS 2 - experience enhanced control and real-time efficiency.",
         "url": "https://wisevision.tech",
-        "logo": "https://wisevision.tech/img/logo.svg",
+        "logo": "/img/wisevision_horizontal_logo.png",
         "contactPoint": {
           "@type": "ContactPoint",
           "email": "office@wisevision.tech",
@@ -117,7 +117,7 @@ const config = {
         title: 'WiseVision',
         logo: {
           alt: 'WiseVision Logo - AI, IoT & Robotics Platform',
-          src: 'img/logo.svg',
+          src: 'img/favicon.png',
         },
         items: [
           {
@@ -214,10 +214,6 @@ const config = {
             title: 'Resources',
             items: [
               {
-                label: 'Documentation',
-                href: 'https://www.wisevision.tech/static/doc/',
-              },
-              {
                 label: 'GitHub',
                 href: 'https://github.com/wise-vision',
               },
@@ -228,6 +224,10 @@ const config = {
               {
                 label: 'Schedule Demo',
                 to: '/demo',
+              },
+              {
+                label: 'Join Discord (MCP ROS2)',
+                href: 'https://discord.gg/a27PTWcV',
               },
             ],
           },

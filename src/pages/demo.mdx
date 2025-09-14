@@ -143,49 +143,59 @@ import Section from '@site/src/components/Section';
       <div>
         <div className="card" style={{padding: 'var(--space-2xl)'}}>
           <h3 className="headline-lg mb-lg">Book Your Demo</h3>
-          <form className="space-y-lg">
-            <div>
-              <label htmlFor="demo-name" className="block body font-medium mb-sm">Full Name *</label>
+          <form 
+            name="demo-booking" 
+            method="POST" 
+            data-netlify="true" 
+            action="/thank-you"
+            netlify-honeypot="bot-field"
+            className="demo-form"
+          >
+            <input type="hidden" name="form-name" value="demo-booking" />
+            <input type="hidden" name="bot-field" />
+            
+            <div className="form-group">
+              <label htmlFor="demo-name" className="form-label">Full Name *</label>
               <input 
                 type="text" 
                 id="demo-name" 
                 name="name" 
                 required 
-                className="w-full px-lg py-md border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
                 placeholder="John Smith"
               />
             </div>
             
-            <div>
-              <label htmlFor="demo-email" className="block body font-medium mb-sm">Email Address *</label>
+            <div className="form-group">
+              <label htmlFor="demo-email" className="form-label">Email Address *</label>
               <input 
                 type="email" 
                 id="demo-email" 
                 name="email" 
                 required 
-                className="w-full px-lg py-md border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
                 placeholder="john@company.com"
               />
             </div>
             
-            <div>
-              <label htmlFor="demo-company" className="block body font-medium mb-sm">Company *</label>
+            <div className="form-group">
+              <label htmlFor="demo-company" className="form-label">Company *</label>
               <input 
                 type="text" 
                 id="demo-company" 
                 name="company" 
                 required
-                className="w-full px-lg py-md border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
                 placeholder="Your Company Name"
               />
             </div>
             
-            <div>
-              <label htmlFor="demo-role" className="block body font-medium mb-sm">Your Role</label>
+            <div className="form-group">
+              <label htmlFor="demo-role" className="form-label">Your Role</label>
               <select 
                 id="demo-role" 
                 name="role" 
-                className="w-full px-lg py-md border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-select"
               >
                 <option value="">Select your role</option>
                 <option value="ceo">CEO/President</option>
@@ -198,13 +208,13 @@ import Section from '@site/src/components/Section';
               </select>
             </div>
             
-            <div>
-              <label htmlFor="demo-industry" className="block body font-medium mb-sm">Industry *</label>
+            <div className="form-group">
+              <label htmlFor="demo-industry" className="form-label">Industry *</label>
               <select 
                 id="demo-industry" 
                 name="industry" 
                 required
-                className="w-full px-lg py-md border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-select"
               >
                 <option value="">Select your industry</option>
                 <option value="manufacturing">Manufacturing</option>
@@ -219,12 +229,12 @@ import Section from '@site/src/components/Section';
               </select>
             </div>
             
-            <div>
-              <label htmlFor="demo-solution" className="block body font-medium mb-sm">Primary Interest</label>
+            <div className="form-group">
+              <label htmlFor="demo-solution" className="form-label">Primary Interest</label>
               <select 
                 id="demo-solution" 
                 name="solution" 
-                className="w-full px-lg py-md border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-select"
               >
                 <option value="">Select primary solution</option>
                 <option value="wiseos">WiseOS - Enterprise Orchestration</option>
@@ -236,12 +246,12 @@ import Section from '@site/src/components/Section';
               </select>
             </div>
             
-            <div>
-              <label htmlFor="demo-timing" className="block body font-medium mb-sm">Implementation Timeline</label>
+            <div className="form-group">
+              <label htmlFor="demo-timing" className="form-label">Implementation Timeline</label>
               <select 
                 id="demo-timing" 
                 name="timing" 
-                className="w-full px-lg py-md border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-select"
               >
                 <option value="">Select timeline</option>
                 <option value="immediate">Immediate (0-3 months)</option>
@@ -252,23 +262,23 @@ import Section from '@site/src/components/Section';
               </select>
             </div>
             
-            <div>
-              <label htmlFor="demo-challenges" className="block body font-medium mb-sm">Current Challenges</label>
+            <div className="form-group">
+              <label htmlFor="demo-challenges" className="form-label">Current Challenges</label>
               <textarea 
                 id="demo-challenges" 
                 name="challenges" 
                 rows={3}
-                className="w-full px-lg py-md border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-textarea"
                 placeholder="Describe your current operational challenges or automation needs..."
               ></textarea>
             </div>
             
-            <div>
-              <label htmlFor="demo-preferred-time" className="block body font-medium mb-sm">Preferred Demo Time</label>
+            <div className="form-group">
+              <label htmlFor="demo-preferred-time" className="form-label">Preferred Demo Time</label>
               <select 
                 id="demo-preferred-time" 
                 name="preferredTime" 
-                className="w-full px-lg py-md border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-select"
               >
                 <option value="">Select preferred time</option>
                 <option value="morning">Morning (9 AM - 12 PM)</option>
@@ -280,7 +290,7 @@ import Section from '@site/src/components/Section';
             
             <button 
               type="submit" 
-              className="btn btn--primary w-full"
+              className="btn btn--primary form-submit"
             >
               Schedule Demo
             </button>
@@ -301,7 +311,7 @@ import Section from '@site/src/components/Section';
     <p className="body-xl mb-2xl">Our team is here to help you prepare for the most productive demo experience</p>
     
     <div style={{display: 'flex', gap: 'var(--space-lg)', justifyContent: 'center', flexWrap: 'wrap'}}>
-      <a href="mailto:demo@wisevision.tech" className="btn btn--primary">Email Demo Team</a>
+      <a href="mailto:michaldobrzanski@wisevision.tech" className="btn btn--primary">Email Demo Team</a>
       <a href="/contact" className="btn btn--secondary">Contact Us</a>
     </div>
     

@@ -38,16 +38,101 @@ import Section from '@site/src/components/Section';
 
 <Hero 
   title="MCP ROS2"
-  subtitle="Bridge the gap between AI and robotics with our Model Context Protocol implementation for ROS 2. Enable seamless communication between AI models and robotics systems with real-time data exchange and intelligent decision-making."
+  subtitle="AI agents that can actually do things in ROS 2. MCP ROS2 is our Model Context Protocol server that lets any MCP-compatible client (Claude Desktop, Copilot-style tools, terminals) discover topics/services, subscribe, publish, call services, and query historical data."
   primaryCTA={{
     text: "Get Demo",
     href: "/demo"
   }}
   secondaryCTA={{
-    text: "View Documentation",
-    href: "https://www.wisevision.tech/static/doc/"
+    text: "View on GitHub",
+    href: "https://github.com/wise-vision"
   }}
 />
+
+<Section>
+  <div className="container">
+    <div className="grid grid--2">
+      <div>
+        <h2 className="headline-lg mb-lg">Use It To</h2>
+        
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">🗣️ Natural Language Commands</h3>
+          <p className="body-lg mb-md">
+            Turn natural-language instructions into ROS 2 actions (pub/sub, service calls). Simply tell your AI assistant what you want your robot to do, and MCP ROS2 handles the translation.
+          </p>
+          <a href="https://github.com/wise-vision" className="btn btn--secondary btn--sm">GitHub</a>
+        </div>
+
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">🔌 Universal AI Integration</h3>
+          <p className="body-lg mb-md">
+            Wire editors and shells to robots via the open MCP standard ("USB-C for AI apps"). Connect Claude Desktop, Copilot-style tools, or any MCP-compatible client to your robotics infrastructure.
+          </p>
+          <a href="https://www.anthropic.com/news/model-context-protocol" className="btn btn--secondary btn--sm">Anthropic MCP</a>
+        </div>
+
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">⚡ Advanced Workflows (Pro)</h3>
+          <p className="body-lg mb-md">
+            Run multi-step flows and parallel streams with our Pro version. Execute complex robotic procedures with higher-throughput workflows and advanced orchestration capabilities.
+          </p>
+          <a href="https://github.com/wise-vision" className="btn btn--secondary btn--sm">GitHub</a>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="headline-lg mb-lg">Why It Matters</h2>
+        
+        <div className="card mb-xl">
+          <h3 className="headline-md mb-md">Future-Proof AI Integration</h3>
+          <p className="body-lg mb-md">
+            MCP is becoming a cross-vendor way to connect agents to real tools—now including robotics platforms—so choosing MCP ROS2 keeps your robotics interface aligned with where the AI ecosystem is going.
+          </p>
+          <a href="https://www.theverge.com/2024/11/25/24306138/anthropic-model-context-protocol-ai-agents-claude" className="btn btn--secondary btn--sm">The Verge</a>
+        </div>
+
+        <div className="card">
+          <h3 className="headline-md mb-md">Core Features</h3>
+          <ul className="body-lg">
+            <li><strong>Open-source core</strong> with community support</li>
+            <li><strong>Topic discovery</strong> and real-time subscription</li>
+            <li><strong>Service calls</strong> with parameter validation</li>
+            <li><strong>Historical data queries</strong> from Data Black Box</li>
+            <li><strong>Multi-topic publish/subscribe</strong> (Pro)</li>
+            <li><strong>Enterprise security</strong> and access controls (Pro)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="gradient">
+  <div className="container text-center">
+    <h2 className="display-md mb-lg">Compatible Ecosystem</h2>
+    <p className="body-xl mb-2xl">Works with leading AI platforms and development tools</p>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>🤖</div>
+        <h3 className="headline-md">Claude Desktop</h3>
+        <p className="body">Native integration with Anthropic's Claude</p>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>💻</div>
+        <h3 className="headline-md">Development Tools</h3>
+        <p className="body">Terminal, VS Code, and editor integrations</p>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>🔧</div>
+        <h3 className="headline-md">Custom Clients</h3>
+        <p className="body">Build your own MCP-compatible tools</p>
+      </div>
+    </div>
+  </div>
+</Section>
 
 <Section>
   <div className="container">
