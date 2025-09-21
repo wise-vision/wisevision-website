@@ -57,10 +57,47 @@ export default function LiquidGlassHero({
   const animationRef = useRef<number | undefined>(undefined);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isBrowser, setIsBrowser] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isReducedMotion, setIsReducedMotion] = useState(false);
+  const [sweep, setSweep] = useState(false);
+  const sweepTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     setIsBrowser(typeof window !== 'undefined');
   }, []);
+
+  // Track mobile viewport to tailor layout/animation
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(max-width: 768px)');
+    const handleChange = () => setIsMobile(mq.matches);
+    handleChange();
+    mq.addEventListener?.('change', handleChange);
+    return () => mq.removeEventListener?.('change', handleChange);
+  }, []);
+
+  // Detect prefers-reduced-motion to avoid auto reveal
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const r = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const onChange = () => setIsReducedMotion(r.matches);
+    onChange();
+    r.addEventListener?.('change', onChange);
+    return () => r.removeEventListener?.('change', onChange);
+  }, []);
+
+  // Periodic horizontal sweep to showcase crisp animation area on mobile
+  useEffect(() => {
+    if (!isBrowser || !withAnimation || !isMobile || isReducedMotion) return;
+    const INTERVAL = 8000; // every 8s
+    const ACTIVE = 3800; // sweep visible ~3.8s (longer exposure)
+    const id = window.setInterval(() => {
+      setSweep(true);
+      if (sweepTimeoutRef.current) window.clearTimeout(sweepTimeoutRef.current);
+      sweepTimeoutRef.current = window.setTimeout(() => setSweep(false), ACTIVE);
+    }, INTERVAL);
+    return () => window.clearInterval(id);
+  }, [isBrowser, withAnimation, isMobile, isReducedMotion]);
 
   useEffect(() => {
     if (!isBrowser || !withAnimation) return;
@@ -72,14 +109,20 @@ export default function LiquidGlassHero({
     if (!ctx) return;
 
     // Enhanced responsive sizing
+    let width = 0;
+    let height = 0;
     const resizeCanvas = () => {
       const rect = canvas.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
+      // Setting width/height resets the context state; set transform after
+      canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+      canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(dpr, dpr);
       canvas.style.width = rect.width + 'px';
       canvas.style.height = rect.height + 'px';
+      width = rect.width;
+      height = rect.height;
     };
 
     resizeCanvas();
@@ -87,18 +130,25 @@ export default function LiquidGlassHero({
 
     // Animation state
     let lastTime = 0;
-    const width = canvas.width / (window.devicePixelRatio || 1);
-    const height = canvas.height / (window.devicePixelRatio || 1);
+  // initialize width/height once after initial resize
+  const dprInit = window.devicePixelRatio || 1;
+  width = canvas.width / dprInit;
+  height = canvas.height / dprInit;
 
     // Neural Network (Top Right) - More compact positioning
     const neuralNodes: NeuralNode[] = Array.from({ length: 15 }, (_, i) => {
       const layer = Math.floor(i / 5); // 3 layers of 5 nodes each
       const nodeInLayer = i % 5;
+      // Bring animation more into view on mobile
+      const baseX = isMobile ? 0.42 : 0.65;
+      const colSpread = isMobile ? 0.065 : 0.06;
+      const baseY = isMobile ? 0.22 : 0.2;
+      const rowSpread = isMobile ? 0.075 : 0.06;
       return {
-        x: width * 0.65 + nodeInLayer * (width * 0.06) + (Math.random() - 0.5) * 15,
-        y: height * 0.2 + layer * (height * 0.06) + (Math.random() - 0.5) * 10,
-        radius: 4 + Math.random() * 3,
-        opacity: 0.7 + Math.random() * 0.3,
+        x: width * baseX + nodeInLayer * (width * colSpread) + (Math.random() - 0.5) * (isMobile ? 10 : 15),
+        y: height * baseY + layer * (height * rowSpread) + (Math.random() - 0.5) * (isMobile ? 8 : 10),
+        radius: (isMobile ? 5 : 4) + Math.random() * (isMobile ? 3.5 : 3),
+        opacity: (isMobile ? 0.9 : 0.7) + Math.random() * 0.3,
         pulsePhase: Math.random() * Math.PI * 2,
         connections: []
       };
@@ -106,33 +156,33 @@ export default function LiquidGlassHero({
 
     // MCP Hub (Center Right) - Closer to neural network
     const mcpHub = {
-      x: width * 0.75,
+      x: width * (isMobile ? 0.6 : 0.75),
       y: height * 0.5,
       radius: 30
     };
 
     // Robots (Bottom Right) - Closer to MCP, more compact
-    const robots: Robot3D[] = [
+  const robots: Robot3D[] = [
       {
-        x: width * 0.68, y: height * 0.7, z: 0,
+  x: width * (isMobile ? 0.25 : 0.68), y: height * (isMobile ? 0.74 : 0.7), z: 0,
         rotationX: 0, rotationY: 0, rotationZ: 0,
         scale: 1, glowIntensity: 0, animationPhase: 0,
         type: 'industrial_arm'
       },
       {
-        x: width * 0.75, y: height * 0.72, z: 20,
+  x: width * (isMobile ? 0.48 : 0.75), y: height * (isMobile ? 0.71 : 0.72), z: 20,
         rotationX: 0, rotationY: 0, rotationZ: 0,
         scale: 1, glowIntensity: 0, animationPhase: Math.PI / 3,
         type: 'autonomous_drone'
       },
       {
-        x: width * 0.82, y: height * 0.72, z: 10,
+  x: width * (isMobile ? 0.70 : 0.82), y: height * (isMobile ? 0.71 : 0.72), z: 10,
         rotationX: 0, rotationY: 0, rotationZ: 0,
         scale: 1, glowIntensity: 0, animationPhase: Math.PI / 1.5,
         type: 'mobile_rover'
       },
       {
-        x: width * 0.89, y: height * 0.7, z: 30,
+  x: width * (isMobile ? 0.90 : 0.89), y: height * (isMobile ? 0.74 : 0.7), z: 30,
         rotationX: 0, rotationY: 0, rotationZ: 0,
         scale: 1, glowIntensity: 0, animationPhase: Math.PI,
         type: 'humanoid'
@@ -177,10 +227,10 @@ export default function LiquidGlassHero({
     // Draw functions
     function drawLiquidGlassBackground(ctx: CanvasRenderingContext2D, time: number) {
       // Compact vertical gradient background
-      const gradient = ctx.createLinearGradient(0, height * 0.1, 0, height * 0.9);
-      gradient.addColorStop(0, 'rgba(0, 30, 60, 0.9)'); // Neural network area
-      gradient.addColorStop(0.5, 'rgba(20, 10, 40, 0.8)'); // MCP area
-      gradient.addColorStop(1, 'rgba(40, 20, 10, 0.9)'); // Robot area
+  const gradient = ctx.createLinearGradient(0, height * 0.1, 0, height * 0.9);
+  gradient.addColorStop(0, `rgba(0, 30, 60, ${isMobile ? 1 : 0.9})`);
+  gradient.addColorStop(0.5, `rgba(20, 10, 40, ${isMobile ? 0.9 : 0.8})`);
+  gradient.addColorStop(1, `rgba(40, 20, 10, ${isMobile ? 1 : 0.9})`);
       
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, width, height);
@@ -191,13 +241,13 @@ export default function LiquidGlassHero({
         const waveX = Math.sin(time * 0.0008 + i * 0.8) * 20;
         const waveY = Math.cos(time * 0.0006 + i * 0.5) * 15;
         
-        ctx.globalAlpha = 0.08;
+        ctx.globalAlpha = isMobile ? 0.12 : 0.08;
         ctx.fillStyle = `hsl(${220 + i * 25}, 60%, 50%)`;
         
-        // More compact vertical flow shapes
+        // More compact vertical flow shapes; center more on mobile
         ctx.beginPath();
         ctx.ellipse(
-          width * 0.7 + i * (width * 0.05) + waveX, 
+          (isMobile ? width * 0.45 : width * 0.7) + i * (width * (isMobile ? 0.07 : 0.05)) + waveX, 
           height * 0.4 + waveY,
           15 + i * 5, 
           80 + i * 15,
@@ -207,11 +257,11 @@ export default function LiquidGlassHero({
       }
       
       // Subtle data flow indicator lines
-      ctx.globalAlpha = 0.06;
+  ctx.globalAlpha = isMobile ? 0.1 : 0.06;
       ctx.strokeStyle = '#00d4ff';
       ctx.lineWidth = 1;
       for (let i = 0; i < 2; i++) {
-        const x = width * (0.7 + i * 0.1);
+        const x = width * (isMobile ? (0.35 + i * 0.3) : (0.7 + i * 0.1));
         ctx.beginPath();
         ctx.moveTo(x, height * 0.15);
         ctx.quadraticCurveTo(
@@ -224,6 +274,29 @@ export default function LiquidGlassHero({
       }
       
       ctx.restore();
+
+      // Extra gentle pulsing glows on mobile so movement is visible even under card
+      if (isMobile) {
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        const t = time * 0.0015;
+        const pulses = [
+          { x: width * 0.25, y: height * 0.28, base: 28 },
+          { x: width * 0.8, y: height * 0.6, base: 36 },
+        ];
+        pulses.forEach((p, i) => {
+          const r = p.base + Math.sin(t + i) * 10;
+          const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r);
+          const color = i % 2 === 0 ? '0, 212, 255' : '139, 92, 246';
+          g.addColorStop(0, `rgba(${color}, 0.28)`);
+          g.addColorStop(1, `rgba(${color}, 0)`);
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        ctx.restore();
+      }
     }
 
     function drawAdvanced3DRobot(ctx: CanvasRenderingContext2D, robot: Robot3D, time: number) {
@@ -560,7 +633,7 @@ export default function LiquidGlassHero({
       }
       
       // Central processing core
-      const coreSize = 20 + pulseIntensity * 4; // Increased by 25%
+  const coreSize = (isMobile ? 24 : 20) + pulseIntensity * (isMobile ? 6 : 4);
       
       // Core background
       ctx.fillStyle = `rgba(139, 92, 246, 0.8)`;
@@ -594,7 +667,7 @@ export default function LiquidGlassHero({
     }
 
     function drawFlowingParticles(ctx: CanvasRenderingContext2D, deltaTime: number) {
-      particles.forEach((particle, index) => {
+  particles.forEach((particle, index) => {
         particle.progress += deltaTime * 0.0008;
         
         if (particle.progress >= 1) {
@@ -655,10 +728,10 @@ export default function LiquidGlassHero({
       });
       
       // Create new particles periodically (bidirectional)
-      if (Math.random() < 0.015) {
+  if (Math.random() < (isMobile ? 0.02 : 0.015)) {
         createDownwardParticle(); // Neural → Robot
       }
-      if (Math.random() < 0.01) {
+  if (Math.random() < (isMobile ? 0.015 : 0.01)) {
         createUpwardParticle(); // Robot → Neural (feedback)
       }
       
@@ -683,12 +756,12 @@ export default function LiquidGlassHero({
       }
       window.removeEventListener('resize', resizeCanvas);
     };
-  }, [isBrowser, withAnimation]);
+  }, [isBrowser, withAnimation, isMobile]);
 
   return (
     <section className="section section--hero" style={{ 
       position: 'relative',
-      minHeight: '80vh',
+      minHeight: isMobile ? 'auto' : '80vh',
       display: 'flex',
       alignItems: 'center',
       overflow: 'hidden'
@@ -720,28 +793,42 @@ export default function LiquidGlassHero({
         zIndex: 10,
         display: 'flex',
         alignItems: 'center',
-        minHeight: '70vh',
+        minHeight: isMobile ? 'auto' : '70vh',
         width: '100%',
-        padding: '0 var(--space-xl)'
+        padding: isMobile ? 'var(--space-lg) var(--space-md)' : '0 var(--space-xl)'
       }}>
         <div className={withAnimation ? "liquid-glass-hero-grid" : "liquid-glass-hero-centered"}>
           {/* Content Side - Left - More space for WiseVision idea */}
           <div style={{
-            background: 'rgba(255, 255, 255, 0.04)',
-            backdropFilter: 'blur(25px)',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
+            background: isMobile ? 'rgba(255, 255, 255, 0.02)' : 'rgba(255, 255, 255, 0.04)',
+            backdropFilter: isMobile ? 'blur(12px)' : 'blur(25px)',
+            border: isMobile ? '1px solid rgba(255, 255, 255, 0.18)' : '1px solid rgba(255, 255, 255, 0.12)',
             borderRadius: 'var(--radius-xl)',
-            padding: 'var(--space-3xl) var(--space-2xl)',
+            padding: isMobile ? 'var(--space-xl) var(--space-lg)' : 'var(--space-3xl) var(--space-2xl)',
             boxShadow: '0 25px 50px rgba(0, 0, 0, 0.4)',
-            marginLeft: 'var(--space-lg)'
-          }}>
+            marginLeft: isMobile ? 0 : 'var(--space-lg)',
+            width: isMobile ? '100%' : 'auto',
+            position: 'relative',
+            transition: 'transform 1400ms cubic-bezier(0.22,0.61,0.36,1), background 450ms ease, backdrop-filter 450ms ease, border-color 450ms ease, box-shadow 450ms ease',
+            // Mobile: horizontal sweep to reveal crisp animation on the left
+            transform: isMobile && sweep ? 'translateX(90vw)' : 'translateX(0)'
+          }}
+          // Tap to trigger sweep manually on mobile
+          onClick={() => {
+            if (!isMobile) return;
+            setSweep(true);
+            if (sweepTimeoutRef.current) window.clearTimeout(sweepTimeoutRef.current);
+            sweepTimeoutRef.current = window.setTimeout(() => setSweep(false), 1500);
+          }}
+          >
             <h1 className="display-xl mb-lg animate-fadeInUp" style={{
               background: 'linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #8b5cf6 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               lineHeight: '1.2',
-              fontSize: '2.75rem',
-              marginBottom: 'var(--space-xl)'
+              fontSize: 'clamp(1.75rem, 5.5vw, 2.75rem)',
+              marginBottom: 'var(--space-xl)',
+              textAlign: isMobile ? 'center' : 'left'
             }}>
               {title}
             </h1>
@@ -749,8 +836,9 @@ export default function LiquidGlassHero({
             <p className="body-xl mb-2xl animate-fadeInUp" style={{
               color: 'rgba(255, 255, 255, 0.9)',
               lineHeight: '1.7',
-              fontSize: '1.2rem',
-              marginBottom: 'var(--space-2xl)'
+              fontSize: 'clamp(1rem, 3.8vw, 1.2rem)',
+              marginBottom: 'var(--space-2xl)',
+              textAlign: isMobile ? 'center' : 'left'
             }}>
               {subtitle}
             </p>
@@ -767,7 +855,8 @@ export default function LiquidGlassHero({
                 color: 'rgba(255, 255, 255, 0.8)',
                 fontSize: '0.95rem',
                 lineHeight: '1.6',
-                margin: 0
+                margin: 0,
+                textAlign: isMobile ? 'center' : 'left'
               }}>
                 <strong style={{ color: '#00d4ff' }}>How it works:</strong> From first sensor to fleet deployment - one platform to connect, simulate and automate. Connect with WiseOS, control via ROS 2, validate in Digital Twins, ship with AI Automations.
               </p>
@@ -776,20 +865,21 @@ export default function LiquidGlassHero({
             <div style={{
               display: 'flex',
               gap: 'var(--space-md)',
-              flexDirection: 'column'
+              flexDirection: 'column',
+              alignItems: isMobile ? 'stretch' : 'flex-start'
             }} className="animate-fadeInUp">
               {primaryCTA && (
                 <a 
                   href={primaryCTA.href} 
                   className="btn btn--primary"
                   style={{
-                    fontSize: '1.125rem',
-                    padding: 'var(--space-lg) var(--space-xl)',
+                    fontSize: isMobile ? '1rem' : '1.125rem',
+                    padding: isMobile ? 'var(--space-md) var(--space-lg)' : 'var(--space-lg) var(--space-xl)',
                     background: 'linear-gradient(135deg, #00d4ff, #8b5cf6)',
                     border: 'none',
                     position: 'relative',
                     overflow: 'hidden',
-                    width: 'fit-content'
+                    width: isMobile ? '100%' : 'fit-content'
                   }}
                 >
                   <span style={{ position: 'relative', zIndex: 2 }}>
@@ -812,13 +902,13 @@ export default function LiquidGlassHero({
                   href={secondaryCTA.href} 
                   className="btn btn--secondary"
                   style={{
-                    fontSize: '1rem',
-                    padding: 'var(--space-md) var(--space-lg)',
+                    fontSize: isMobile ? '0.95rem' : '1rem',
+                    padding: isMobile ? 'var(--space-sm) var(--space-md)' : 'var(--space-md) var(--space-lg)',
                     background: 'rgba(255, 255, 255, 0.06)',
                     backdropFilter: 'blur(10px)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     color: '#ffffff',
-                    width: 'fit-content'
+                    width: isMobile ? '100%' : 'fit-content'
                   }}
                 >
                   {secondaryCTA.text}
@@ -827,54 +917,69 @@ export default function LiquidGlassHero({
             </div>
           </div>
           
-          {/* Animation Space - Right Side for compact vertical flow - Only when animation is enabled */}
+          {/* Animation labels: desktop fixed on right; mobile show during sweep on left */}
           {withAnimation && (
-            <div style={{
-              height: '70vh',
-              position: 'relative',
-              pointerEvents: 'none',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              padding: 'var(--space-lg) 0'
-            }}>
-              {/* AI Agents label - right side below neural network */}
-              <div style={{
-                color: 'rgba(0, 212, 255, 0.7)',
-                fontSize: '0.9rem',
-                textAlign: 'left',
-                fontWeight: 'bold',
-                position: 'absolute',
-                top: '28%',
-                right: '5%'
-              }}>
+            <div
+              style={{
+                position: isMobile ? 'absolute' : 'relative',
+                top: isMobile ? 0 : undefined,
+                left: isMobile ? 0 : undefined,
+                height: isMobile ? '100%' : '70vh',
+                width: '100%',
+                pointerEvents: 'none',
+                display: isMobile ? (sweep ? 'block' : 'none') : 'flex',
+                flexDirection: isMobile ? undefined : 'column',
+                justifyContent: isMobile ? undefined : 'flex-start',
+                alignItems: isMobile ? undefined : 'center',
+                padding: isMobile ? 0 : 'var(--space-lg) 0',
+                zIndex: 20
+              }}
+            >
+              {/* AI Agents */}
+              <div
+                style={{
+                  color: 'rgba(0, 212, 255, 0.9)',
+                  fontSize: isMobile ? '0.95rem' : '0.9rem',
+                  fontWeight: 'bold',
+                  position: 'absolute',
+                  top: isMobile ? '24%' : '28%',
+                  left: isMobile ? '6%' : undefined,
+                  right: isMobile ? undefined : '5%',
+                  textShadow: '0 2px 10px rgba(0,0,0,0.6)'
+                }}
+              >
                 AI Agents
               </div>
-              
-              {/* WiseOS label - right side at MCP level */}
-              <div style={{
-                color: 'rgba(139, 92, 246, 0.8)',
-                fontSize: '1rem',
-                textAlign: 'left',
-                fontWeight: 'bold',
-                position: 'absolute',
-                top: '48%',
-                right: '5%'
-              }}>
+
+              {/* WiseOS */}
+              <div
+                style={{
+                  color: 'rgba(139, 92, 246, 0.9)',
+                  fontSize: isMobile ? '1.05rem' : '1rem',
+                  fontWeight: 'bold',
+                  position: 'absolute',
+                  top: isMobile ? '46%' : '48%',
+                  left: isMobile ? '6%' : undefined,
+                  right: isMobile ? undefined : '5%',
+                  textShadow: '0 2px 10px rgba(0,0,0,0.6)'
+                }}
+              >
                 WiseOS
               </div>
-              
-              {/* Robot Fleet label - right side above robots */}
-              <div style={{
-                color: 'rgba(255, 140, 0, 0.7)',
-                fontSize: '0.9rem',
-                textAlign: 'left',
-                fontWeight: 'bold',
-                position: 'absolute',
-                top: '62%',
-                right: '5%'
-              }}>
+
+              {/* Robot Fleet */}
+              <div
+                style={{
+                  color: 'rgba(255, 140, 0, 0.9)',
+                  fontSize: isMobile ? '0.95rem' : '0.9rem',
+                  fontWeight: 'bold',
+                  position: 'absolute',
+                  top: isMobile ? '66%' : '62%',
+                  left: isMobile ? '6%' : undefined,
+                  right: isMobile ? undefined : '5%',
+                  textShadow: '0 2px 10px rgba(0,0,0,0.6)'
+                }}
+              >
                 Robot Fleet
               </div>
             </div>

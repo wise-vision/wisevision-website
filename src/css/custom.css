@@ -596,8 +596,8 @@
   }
   
   .section--hero {
-    padding: var(--space-3xl) 0;
-    min-height: auto;
+  padding: calc(var(--space-2xl) + env(safe-area-inset-top)) 0 var(--space-2xl) 0;
+  min-height: auto;
   }
   
   .card {
@@ -730,6 +730,14 @@ article .markdown {
   .liquid-glass-hero-grid {
     grid-template-columns: 1fr;
     gap: var(--space-md);
+  }
+  .section--hero canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+  .container {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
   }
   
   .liquid-glass-hero-centered {
