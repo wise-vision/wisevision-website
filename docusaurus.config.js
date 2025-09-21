@@ -43,6 +43,16 @@ const config = {
   headTags: [
     {
       tagName: 'script',
+      attributes: {
+        id: 'Cookiebot',
+        src: 'https://consent.cookiebot.com/uc.js',
+        'data-cbid': '24595929-19c7-44ae-b97c-3d9af81ee156',
+        'data-blockingmode': 'auto',
+        type: 'text/javascript',
+      },
+    },
+    {
+      tagName: 'script',
       attributes: { type: 'application/ld+json' },
       innerHTML: JSON.stringify({
         "@context": "https://schema.org",
