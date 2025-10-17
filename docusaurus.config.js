@@ -70,7 +70,7 @@ const config = {
         },
         "sameAs": [
           "https://github.com/wise-vision",
-          "https://mcpmarket.com/es/server/wisevision-ros2"
+          "https://app.easy.tools/ec/wisevision"
         ],
         "founder": {
           "@type": "Organization",
@@ -168,7 +168,7 @@ const config = {
             to: '/contact',
           },
           {
-            label: 'Get Demo',
+            label: 'See Demo',
             position: 'right',
             to: '/demo',
             className: 'navbar-cta-button',
@@ -229,7 +229,7 @@ const config = {
               },
               {
                 label: 'MCP Market',
-                href: 'https://mcpmarket.com/es/server/wisevision-ros2',
+                href: 'https://app.easy.tools/ec/wisevision',
               },
               {
                 label: 'Schedule Demo',
