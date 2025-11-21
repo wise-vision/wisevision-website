@@ -22,6 +22,19 @@ export const GifModal: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        closeModal();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [isOpen]);
+
   const closeModal = () => {
     setIsOpen(false);
     document.body.style.overflow = 'unset';
