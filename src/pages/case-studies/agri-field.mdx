@@ -1,0 +1,185 @@
+---
+title: Case Study – Field Monitoring with LoRaWAN Sensors & Drone Verification
+description: How WiseOS, MCP ROS2 and Digital Twins enabled agricultural field monitoring with LoRaWAN sensors and coordinated drone inspections.
+keywords: [agriculture, field monitoring, LoRaWAN, WiseOS, MCP ROS2, Digital Twins, precision agriculture]
+---
+
+import Hero from '@site/src/components/Hero';
+import Section from '@site/src/components/Section';
+
+<Hero 
+  title="Case Study – Field Monitoring with LoRaWAN Sensors & Drone Verification"
+  subtitle="Agriculture & Environment"
+/>
+
+<Section>
+  <div className="container">
+    <div className="card" style={{background: 'var(--bg-secondary)', padding: 'var(--space-xl)', marginBottom: 'var(--space-2xl)'}}>
+      <h2 className="headline-lg mb-lg">Summary</h2>
+      <p className="body-lg">
+        An agricultural operator managed <strong>large, distributed fields</strong> and wanted better insight into soil moisture and temperature, local weather conditions, and crop status in hard-to-reach areas.
+      </p>
+      <p className="body-lg mt-md">
+        WiseVision's stack enabled:
+      </p>
+      <ul className="body-lg">
+        <li>LoRaWAN sensors integrated into <strong>WiseOS</strong></li>
+        <li>Drone flights coordinated via <strong>MCP ROS2</strong> to verify anomalies</li>
+        <li>A simple <strong>Digital Twin</strong> of fields and zones for planning and analysis</li>
+      </ul>
+    </div>
+
+    <div className="grid grid--2">
+      <div>
+        <h2 className="headline-lg mb-lg">Stack Used</h2>
+        <ul className="body-lg">
+          <li>WiseOS</li>
+          <li>MCP ROS2</li>
+          <li>Digital Twins</li>
+          <li>LoRaWAN</li>
+          <li>ROS 2</li>
+        </ul>
+      </div>
+      <div>
+        <h2 className="headline-lg mb-lg">Key Benefits</h2>
+        <ul className="body-lg">
+          <li>Better targeted drone inspections</li>
+          <li>Understanding of field variability over time</li>
+          <li>Scalable pattern for new fields</li>
+          <li>Visual spatial context</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container">
+    <h2 className="display-md mb-2xl">Challenges</h2>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <p className="body-lg">Wide, heterogeneous terrain</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">Limited connectivity for traditional IT infrastructure</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">Sensor data siloed away from drone operations</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">Difficult to decide when and where to send inspection flights</p>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section>
+  <div className="container">
+    <h2 className="display-md text-center mb-2xl">Solution</h2>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <h3 className="headline-md mb-md">1. WiseOS – LoRaWAN Integration</h3>
+        <p className="body mb-md">WiseOS connected:</p>
+        <ul className="body">
+          <li>Soil and weather sensors via LoRaWAN into ROS 2 topics</li>
+          <li>Edge gateways at strategic locations</li>
+          <li>Telemetry stored in InfluxDB</li>
+          <li>Single view of field conditions over time</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">2. MCP ROS2 – Drone Verification</h3>
+        <p className="body mb-md">MCP ROS2 exposed tools for:</p>
+        <ul className="body">
+          <li>Listing zones and their sensor statuses</li>
+          <li>Requesting drone inspections over zones with anomalies</li>
+          <li>Retrieving recent measurements and flight results</li>
+          <li>Correlating sensor readings with aerial imagery</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">3. Digital Twin – Field Layout</h3>
+        <p className="body mb-md">A lean Digital Twin of field zones:</p>
+        <ul className="body">
+          <li>Basic terrain model and zone boundaries</li>
+          <li>Integration with WiseOS telemetry as overlays</li>
+          <li>Playback of drone paths and inspection results</li>
+          <li>Visual spatial context</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="gradient">
+  <div className="container">
+    <h2 className="display-md mb-lg">Architecture Overview</h2>
+    
+    <div className="card" style={{background: 'var(--bg-primary)', padding: 'var(--space-xl)'}}>
+      <ol className="body-lg" style={{lineHeight: '2'}}>
+        <li><strong>LoRaWAN sensors</strong> → network server → WiseOS bridge → ROS 2 topics</li>
+        <li><strong>Drones</strong> → ROS 2 → WiseOS / MCP ROS2</li>
+        <li><strong>InfluxDB</strong> → historical field condition data</li>
+        <li><strong>Digital Twin</strong> → field visualisation & scenario exploration</li>
+      </ol>
+    </div>
+  </div>
+</Section>
+
+<Section>
+  <div className="container">
+    <h2 className="display-md mb-lg">Outcomes</h2>
+    
+    <p className="body-xl mb-xl">The approach typically leads to:</p>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Targeted Inspections</h3>
+        <ul className="body-lg">
+          <li>Better targeted drone inspections based on sensor data</li>
+          <li>Reduced unnecessary flights</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Better Understanding</h3>
+        <ul className="body-lg">
+          <li>Improved understanding of field variability over time</li>
+          <li>Data-driven agronomic decisions</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Scalability</h3>
+        <ul className="body-lg">
+          <li>A scalable pattern that can be extended to new fields and crops</li>
+          <li>Reusable infrastructure</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Visual Context</h3>
+        <ul className="body-lg">
+          <li>Visual, spatial context for agronomists and operations teams</li>
+          <li>Better communication across teams</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container text-center">
+    <h2 className="display-lg mb-lg">Next Steps</h2>
+    <p className="body-xl mb-2xl">Extensions include more advanced analytics, additional mobile platforms (ground robots, UGVs), and tighter integration with agronomic decision tools</p>
+    
+    <div style={{display: 'flex', gap: 'var(--space-lg)', justifyContent: 'center', flexWrap: 'wrap'}}>
+      <a href="/contact" className="btn btn--primary">Discuss Agriculture & Environment</a>
+      <a href="/case-studies" className="btn btn--secondary">View All Case Studies</a>
+    </div>
+  </div>
+</Section>

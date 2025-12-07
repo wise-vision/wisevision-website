@@ -1,7 +1,7 @@
 ---
-title: WiseVision - Bridging AI, IoT & Robotics for a Smarter Future
-description: Transform your robotics operations with seamless IoT integration and the power of ROS 2. Experience enhanced control and real-time efficiency with WiseOS, MCP ROS2, Digital Twins, and AI Automations.
-keywords: [AI robotics integration, ROS 2 platform, IoT for robots, digital twin simulation, robot automation, WiseOS, MCP ROS2, WiseVision]
+title: WiseVision – Operating System for Robotics, IoT & Digital Twins
+description: WiseVision is a deep-tech company building an operating system for distributed robotics and IoT. We connect robots, drones, sensors and digital twins into one coherent operational layer.
+keywords: [AI robotics integration, ROS 2 platform, IoT for robots, digital twin simulation, robot automation, WiseOS, MCP ROS2, WiseVision, O3DE, NVIDIA Isaac Sim, Genesis]
 image: /img/wisevision-social-card.jpg
 hide_table_of_contents: true
 ---
@@ -12,21 +12,21 @@ import Section from '@site/src/components/Section';
 import AIFlowAnimation from '@site/src/components/AIFlowAnimation';
 
 <head>
-  <meta property="og:title" content="WiseVision - Bridging AI, IoT & Robotics for a Smarter Future" />
-  <meta property="og:description" content="Transform your robotics operations with seamless IoT integration and the power of ROS 2. Experience enhanced control and real-time efficiency." />
+  <meta property="og:title" content="WiseVision – Operating System for Robotics, IoT & Digital Twins" />
+  <meta property="og:description" content="WiseVision is a deep-tech company building an operating system for distributed robotics and IoT. Connect robots, drones, sensors and digital twins into one coherent operational layer." />
   <meta property="og:url" content="https://wisevision.tech/" />
   <meta property="og:image" content="https://wisevision.tech/img/wisevision-social-card.jpg" />
   
-  <meta name="twitter:title" content="WiseVision - AI, IoT & Robotics Platform" />
-  <meta name="twitter:description" content="Transform your robotics operations with seamless IoT integration and the power of ROS 2." />
+  <meta name="twitter:title" content="WiseVision – Operating System for Robotics, IoT & Digital Twins" />
+  <meta name="twitter:description" content="Connect robots, drones, sensors and digital twins into one coherent operational layer." />
   <meta name="twitter:image" content="https://wisevision.tech/img/wisevision-social-card.jpg" />
   
   <script type="application/ld+json">
     {JSON.stringify({
       "@context": "https://schema.org",
       "@type": "WebPage",
-      "name": "WiseVision - Bridging AI, IoT & Robotics",
-      "description": "Transform your robotics operations with seamless IoT integration and the power of ROS 2. Experience enhanced control and real-time efficiency.",
+      "name": "WiseVision – Operating System for Robotics, IoT & Digital Twins",
+      "description": "WiseVision is a deep-tech company building an operating system for distributed robotics and IoT. Connect robots, drones, sensors and digital twins into one coherent operational layer.",
       "url": "https://wisevision.tech/",
       "mainEntity": {
         "@type": "SoftwareApplication",
@@ -36,26 +36,20 @@ import AIFlowAnimation from '@site/src/components/AIFlowAnimation';
         "offers": [
           {
             "@type": "Offer",
-            "name": "WiseOS Platform",
-            "description": "Comprehensive robotics operating system",
+            "name": "WiseOS",
+            "description": "Operating system for robotics & IoT",
             "availability": "https://schema.org/InStock"
           },
           {
             "@type": "Offer",
-            "name": "MCP ROS2 Bridge",
-            "description": "Model Context Protocol for ROS 2 integration",
+            "name": "MCP ROS2",
+            "description": "Operational bridge between AI agents and ROS 2",
             "availability": "https://schema.org/InStock"
           },
           {
             "@type": "Offer",
             "name": "Digital Twins",
-            "description": "Real-time simulation and monitoring",
-            "availability": "https://schema.org/InStock"
-          },
-          {
-            "@type": "Offer",
-            "name": "AI Automations",
-            "description": "Intelligent automation solutions",
+            "description": "High-fidelity 3D environments built on O3DE, NVIDIA Isaac Sim and Genesis",
             "availability": "https://schema.org/InStock"
           }
         ]
@@ -77,51 +71,48 @@ import AIFlowAnimation from '@site/src/components/AIFlowAnimation';
 
 <Hero 
   title="Bridging AI, IoT & Robotics for a Smarter Future"
-  subtitle="Transform your robotics operations with seamless IoT integration and the power of ROS 2. Experience enhanced control and real-time efficiency that scales from single robots to enterprise fleets."
+  subtitle="WiseVision is a deep-tech company building an operating system for distributed robotics and IoT. We connect robots, drones, sensors and digital twins into one coherent operational layer – so you can monitor, simulate and control complex environments in real time."
   primaryCTA={{
-    text: "See Demo",
+    text: "Explore Demo",
     href: "/demo"
   }}
   secondaryCTA={{
-    text: "Explore Services",
-    href: "#services"
+    text: "See GitHub",
+    href: "https://github.com/wise-vision"
   }}
   withAnimation={true}
 />
 
 <Section id="services" background="gradient">
   <div className="container text-center">
-    <h2 className="display-md mb-lg">Our Core Services</h2>
-    <p className="body-xl mb-2xl">Comprehensive solutions for modern robotics operations</p>
+    <h2 className="display-md mb-lg">What We Do</h2>
+    <p className="body-xl mb-2xl">One platform for real-world autonomous operations. Most organizations today run silos of robotics, IoT and data systems that don't talk to each other. WiseVision turns them into a single, connected stack.</p>
     
-    <div className="grid grid--2">
+    <div className="grid grid--3">
       <div className="card card--service">
         <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)'}}>🤖</div>
         <h3 className="headline-md mb-md">WiseOS</h3>
-        <p className="body-lg mb-lg">Zenoh-based ROS 2 connectivity with InfluxDB Data Black Box, LoRaWAN bridge, and plugin architecture. Open standards for enterprise robotics infrastructure.</p>
+        <p className="body-lg mb-lg">Operating system for robotics & IoT. Zenoh-enabled ROS 2 transport, InfluxDB-based Data Black Box for telemetry, LoRaWAN↔ROS 2 bridge for wide-area sensors, and lightweight dashboard with plugin architecture.</p>
         <a href="/wiseos" className="btn btn--primary">Learn More</a>
       </div>
       
       <div className="card card--service">
         <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)'}}>🔗</div>
         <h3 className="headline-md mb-md">MCP ROS2</h3>
-        <p className="body-lg mb-lg">AI agents with natural language commands for ROS 2. Universal AI integration via Model Context Protocol with advanced Pro workflows.</p>
+        <p className="body-lg mb-lg">Operational bridge between AI agents and ROS 2. Connect AI agents (Claude, Cursor, VS Code, etc.) to ROS 2. Discover topics and services, read/write data, call actions using natural language.</p>
         <a href="/mcp-ros2" className="btn btn--primary">Learn More</a>
       </div>
       
       <div className="card card--service">
         <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)'}}>🔬</div>
         <h3 className="headline-md mb-md">Digital Twins</h3>
-        <p className="body-lg mb-lg">ROS 2-native simulations with GPU acceleration and realistic physics. Photoreal environments for sim-to-real policy training and validation.</p>
+        <p className="body-lg mb-lg">High-fidelity 3D environments built on O3DE, NVIDIA Isaac Sim and Genesis. Visualize operations, test scenarios, validate AI decisions and de-risk deployments.</p>
         <a href="/digital-twins" className="btn btn--primary">Learn More</a>
       </div>
-      
-      <div className="card card--service">
-        <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)'}}>⚡</div>
-        <h3 className="headline-md mb-md">AI Automations</h3>
-        <p className="body-lg mb-lg">Custom automations with InfluxDB telemetry monitoring and MCP ROS2 integration. Build streams, queries, and agent hooks for ROS 2 actions.</p>
-        <a href="/ai-automations" className="btn btn--primary">Learn More</a>
-      </div>
+    </div>
+    
+    <div className="mt-2xl">
+      <p className="body-lg" style={{fontStyle: 'italic'}}>Open-source core (MPL-2.0), with commercial support and custom integrations.</p>
     </div>
   </div>
 </Section>
@@ -135,54 +126,112 @@ import AIFlowAnimation from '@site/src/components/AIFlowAnimation';
       <div className="card">
         <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>🤖</div>
         <h3 className="headline-sm mb-sm">ROS 2</h3>
-        <p className="body">Industry standard robotics middleware</p>
+        <p className="body">Industry-standard robotics middleware</p>
       </div>
       
       <div className="card">
         <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>⚡</div>
         <h3 className="headline-sm mb-sm">Eclipse Zenoh</h3>
-        <p className="body">High-performance pub/sub protocol</p>
-      </div>
-      
-      <div className="card">
-        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>🎮</div>
-        <h3 className="headline-sm mb-sm">WiseSim</h3>
-        <p className="body">Game engine based ROS 2 simulations</p>
+        <p className="body">Data-centric pub/sub for distributed systems</p>
       </div>
       
       <div className="card">
         <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>📊</div>
         <h3 className="headline-sm mb-sm">InfluxDB</h3>
-        <p className="body">Time-series database for telemetry</p>
+        <p className="body">Time-series storage for telemetry and logs</p>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>📡</div>
+        <h3 className="headline-sm mb-sm">LoRaWAN</h3>
+        <p className="body">Long-range IoT connectivity</p>
       </div>
     </div>
     
     <div className="grid grid--3">
       <div className="card">
-        <h3 className="headline-md mb-md">Open Source & Transparent</h3>
-        <p className="body-lg">"Active code, open issues, real progress. Check our GitHub for continuous development and community contributions."</p>
-        <div className="mt-lg">
-          <div className="caption text-accent">GitHub Organization</div>
-          <div className="caption">Public repositories and roadmap</div>
-        </div>
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>🎮</div>
+        <h3 className="headline-sm mb-sm">O3DE</h3>
+        <p className="body">Open 3D Engine with ROS 2 Gem</p>
       </div>
       
       <div className="card">
-        <h3 className="headline-md mb-md">Proven Technologies</h3>
-        <p className="body-lg">"Built on battle-tested foundations: ROS 2, Zenoh, O3DE, and InfluxDB. We integrate the ecosystem rather than reinvent it."</p>
-        <div className="mt-lg">
-          <div className="caption text-accent">Industry Standards</div>
-          <div className="caption">Interoperable by design</div>
-        </div>
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>🚀</div>
+        <h3 className="headline-sm mb-sm">NVIDIA Isaac Sim</h3>
+        <p className="body">Robotics-focused simulator</p>
       </div>
       
       <div className="card">
-        <h3 className="headline-md mb-md">Real Demos & Benchmarks</h3>
-        <p className="body-lg">"MCP controls drones, query-while-recording telemetry, LoRaWAN sensors drive ROS 2 actions. See it working."</p>
-        <div className="mt-lg">
-          <div className="caption text-accent">Live Examples</div>
-          <div className="caption">Deployable proof points</div>
-        </div>
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>⚙️</div>
+        <h3 className="headline-sm mb-sm">Genesis</h3>
+        <p className="body">Advanced physics for dynamics</p>
+      </div>
+    </div>
+    
+    <p className="body-lg mt-xl">This makes WiseVision easy to integrate into existing systems and future-proof as your infrastructure grows.</p>
+  </div>
+</Section>
+
+<Section>
+  <div className="container text-center">
+    <h2 className="display-md mb-lg">How WiseVision Works</h2>
+    <p className="body-xl mb-2xl">Connect, Control, Simulate</p>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <h3 className="headline-md mb-md">1. Connect</h3>
+        <p className="body-lg">Standardize communication across ROS 2, sensors, edge devices and networks with WiseOS.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">2. Control</h3>
+        <p className="body-lg">Use MCP ROS2 to let AI agents and operators issue mission-level commands instead of low-level signals.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">3. Simulate</h3>
+        <p className="body-lg">Validate plans and policies in Digital Twins built on O3DE, NVIDIA Isaac Sim and Genesis physics before deployment.</p>
+      </div>
+    </div>
+    
+    <p className="body-xl mt-xl"><strong>Result:</strong> Faster deployments, better situational awareness, less integration pain and lower operational risk.</p>
+  </div>
+</Section>
+
+<Section background="gradient">
+  <div className="container text-center">
+    <h2 className="display-md mb-lg">Where WiseVision Helps</h2>
+    <p className="body-xl mb-2xl">WiseVision is designed for teams that operate fleets of robots, drones and sensors in complex environments</p>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <h3 className="headline-md mb-md">⚡ Energy & Utilities</h3>
+        <p className="body">PV farms, wind turbines, substations, power lines</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🏭 Manufacturing & Logistics</h3>
+        <p className="body">Warehouses, AMR fleets, automated lines</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🏙️ Smart Cities & Infrastructure</h3>
+        <p className="body">City-scale sensing and response</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🛡️ Defence & Security</h3>
+        <p className="body">Situational awareness and autonomous patrols</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🌾 Agriculture & Environment</h3>
+        <p className="body">Distributed sensing and field robotics</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🔬 Research & Development</h3>
+        <p className="body">Robotics labs and academic institutions</p>
       </div>
     </div>
   </div>
@@ -190,74 +239,46 @@ import AIFlowAnimation from '@site/src/components/AIFlowAnimation';
 
 <Section>
   <div className="container text-center">
-    <h2 className="display-md mb-lg">Real-World Implementations</h2>
-    <p className="body-xl mb-2xl">Launch-ready solutions delivering measurable results</p>
+    <h2 className="display-md mb-lg">See Examples in Our Case Studies</h2>
+    <p className="body-xl mb-2xl">Explore real-world applications of WiseOS + MCP ROS2 + Digital Twins across energy, manufacturing, smart cities, defence and agriculture</p>
     
     <div className="grid grid--3">
       <div className="card">
-        <h3 className="headline-md mb-md">MCP-Driven Drone Tasking</h3>
-        <p className="body mb-lg">Natural language commands ("Pick up payload and return to pad A") translate through MCP ROS2 into verified ROS 2 actions. O3DE simulation validates before real-world execution.</p>
-        <div className="grid grid--2">
-          <div>
-            <div className="headline-lg text-accent">Safe</div>
-            <div className="caption">Sim-first validation</div>
-          </div>
-          <div>
-            <div className="headline-lg text-accent">Fast</div>
-            <div className="caption">Iteration cycles</div>
-          </div>
-        </div>
+        <h3 className="headline-md mb-md">⚡ PV Farm Inspection</h3>
+        <p className="body">Autonomous drone and robot inspections with LoRaWAN sensor integration</p>
       </div>
       
       <div className="card">
-        <h3 className="headline-md mb-md">Data Black Box Integration</h3>
-        <p className="body mb-lg">InfluxDB runs alongside rosbag2 for live dashboards and long-term analytics. Teams maintain deterministic capture while gaining real-time situational awareness.</p>
-        <div className="grid grid--2">
-          <div>
-            <div className="headline-lg text-accent">Live</div>
-            <div className="caption">Real-time queries</div>
-          </div>
-          <div>
-            <div className="headline-lg text-accent">Historic</div>
-            <div className="caption">Rich analysis</div>
-          </div>
-        </div>
+        <h3 className="headline-md mb-md">🏭 Unified AMR Fleet</h3>
+        <p className="body">Multi-vendor warehouse robotics on a single operational layer</p>
       </div>
       
       <div className="card">
-        <h3 className="headline-md mb-md">LoRaWAN Sensor Integration</h3>
-        <p className="body mb-lg">Battery-powered sensors (soil moisture, door states, utility meters) feed through ChirpStack into ROS 2 topics. Robots react to environmental changes with wider sensing coverage.</p>
-        <div className="grid grid--2">
-          <div>
-            <div className="headline-lg text-accent">Wide</div>
-            <div className="caption">Sensing range</div>
-          </div>
-          <div>
-            <div className="headline-lg text-accent">Low</div>
-            <div className="caption">Power usage</div>
-          </div>
-        </div>
+        <h3 className="headline-md mb-md">🏙️ Smart City Monitoring</h3>
+        <p className="body">City-wide infrastructure monitoring with event-driven inspections</p>
       </div>
     </div>
     
-    <div className="mt-2xl">
-      <a href="/demo" className="btn btn--secondary">Request Demo</a>
+    <div className="mt-xl">
+      <a href="/case-studies" className="btn btn--primary">View All Case Studies</a>
     </div>
   </div>
 </Section>
 
-<Section background="gradient">
+<Section background="dark">
   <div className="container text-center">
-    <h2 className="display-lg mb-lg">Ready to Transform Your Robotics Operations?</h2>
-    <p className="body-xl mb-2xl">Join hundreds of companies already using WiseVision to power their intelligent automation</p>
+    <h2 className="display-lg mb-lg">Turn Your Robots, Sensors and Simulations Into One Coherent System</h2>
+    <p className="body-xl mb-2xl">Open-source core (MPL-2.0), with commercial support and custom integrations</p>
     
     <div style={{display: 'flex', gap: 'var(--space-lg)', justifyContent: 'center', flexWrap: 'wrap'}}>
-      <a href="/demo" className="btn btn--primary">See Demo</a>
-      <a href="/contact" className="btn btn--secondary">Contact Sales</a>
+      <a href="/demo" className="btn btn--primary">Explore Demo</a>
+      <a href="/contact" className="btn btn--secondary">Talk to Us About Your Use Case</a>
     </div>
     
     <div className="mt-xl">
-      <p className="caption">No commitments • Custom implementation • Enterprise support</p>
+      <p className="caption">
+        <a href="https://github.com/wise-vision" style={{color: 'inherit'}}>See GitHub</a> • <a href="/contact" style={{color: 'inherit'}}>Contact us</a>
+      </p>
     </div>
   </div>
 </Section>

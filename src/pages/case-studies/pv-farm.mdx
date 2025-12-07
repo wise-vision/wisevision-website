@@ -1,0 +1,184 @@
+---
+title: Case Study – Autonomous PV Farm Inspection
+description: How WiseOS, MCP ROS2 and Digital Twins enabled autonomous inspection of a large solar PV farm with LoRaWAN sensors, drones and ground robots.
+keywords: [PV farm, solar inspection, autonomous inspection, WiseOS, MCP ROS2, Digital Twins, LoRaWAN, energy]
+---
+
+import Hero from '@site/src/components/Hero';
+import Section from '@site/src/components/Section';
+
+<Hero 
+  title="Case Study – Autonomous PV Farm Inspection"
+  subtitle="Energy & Utilities"
+/>
+
+<Section>
+  <div className="container">
+    <div className="card" style={{background: 'var(--bg-secondary)', padding: 'var(--space-xl)', marginBottom: 'var(--space-2xl)'}}>
+      <h2 className="headline-lg mb-lg">Summary</h2>
+      <p className="body-lg">
+        A large solar PV farm wanted to <strong>reduce manual inspection effort</strong> and improve visibility into the condition of panels, structures and substations.
+      </p>
+      <p className="body-lg mt-md">
+        WiseVision delivered a solution that:
+      </p>
+      <ul className="body-lg">
+        <li>Connected <strong>LoRaWAN sensors, inspection drones and ground robots</strong> via WiseOS</li>
+        <li>Used <strong>MCP ROS2</strong> to coordinate inspection missions and data collection</li>
+        <li>Built a <strong>Digital Twin</strong> of the PV farm to test routes and procedures before live deployment</li>
+      </ul>
+    </div>
+
+    <div className="grid grid--2">
+      <div>
+        <h2 className="headline-lg mb-lg">Stack Used</h2>
+        <ul className="body-lg">
+          <li>WiseOS</li>
+          <li>MCP ROS2</li>
+          <li>Digital Twins (O3DE / Isaac Sim / Genesis)</li>
+          <li>LoRaWAN</li>
+          <li>ROS 2</li>
+        </ul>
+      </div>
+      <div>
+        <h2 className="headline-lg mb-lg">Key Benefits</h2>
+        <ul className="body-lg">
+          <li>Single telemetry and control fabric</li>
+          <li>Repeatable inspection missions</li>
+          <li>Historical logs in one place</li>
+          <li>Safe experimentation using Digital Twin</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container">
+    <h2 className="display-md mb-2xl">Challenges</h2>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <p className="body-lg">PV farm spread across a large area with limited connectivity in some zones</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">Manual inspections were time-consuming and difficult to standardize</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">Sensor data, drone imagery and robot telemetry were handled in separate systems</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">Changes to inspection routines were hard to test without disrupting operations</p>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section>
+  <div className="container">
+    <h2 className="display-md text-center mb-2xl">Solution</h2>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <h3 className="headline-md mb-md">1. WiseOS – Operational Layer</h3>
+        <p className="body mb-md">WiseOS was deployed as the <strong>central operating layer</strong>:</p>
+        <ul className="body">
+          <li>LoRaWAN sensors integrated via the WiseOS <strong>LoRaWAN↔ROS 2 bridge</strong></li>
+          <li>Drones and ground robots connected over ROS 2 with <strong>Zenoh-based transport</strong></li>
+          <li>Telemetry stored in the <strong>Data Black Box (InfluxDB)</strong></li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">2. MCP ROS2 – Mission Orchestration</h3>
+        <p className="body mb-md">MCP ROS2 provided <strong>tool-based access</strong>:</p>
+        <ul className="body">
+          <li>List robots, sensors and available missions</li>
+          <li>Pre-defined inspection workflows as MCP tools</li>
+          <li>Launch drones, subscribe to feeds, log events</li>
+          <li>Script missions without low-level glue code</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">3. Digital Twin – Validation</h3>
+        <p className="body mb-md">A <strong>Digital Twin</strong> using O3DE / Isaac Sim / Genesis:</p>
+        <ul className="body">
+          <li>3D layout of panel rows and substations</li>
+          <li>Simulated robots and drones</li>
+          <li>Integration with WiseOS and MCP ROS2</li>
+          <li>End-to-end testing before live deployment</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="gradient">
+  <div className="container">
+    <h2 className="display-md mb-lg">Architecture Overview</h2>
+    
+    <div className="card" style={{background: 'var(--bg-primary)', padding: 'var(--space-xl)'}}>
+      <ol className="body-lg" style={{lineHeight: '2'}}>
+        <li><strong>LoRaWAN sensors</strong> → ChirpStack → WiseOS LoRaWAN bridge → ROS 2 topics</li>
+        <li><strong>Robots & drones</strong> → ROS 2 nodes → WiseOS (Zenoh transport, Data Black Box)</li>
+        <li><strong>MCP ROS2 server</strong> → exposes ROS 2 interfaces as MCP tools for operators/agents</li>
+        <li><strong>Digital Twin</strong> → subscribes to ROS 2 topics and interacts with MCP ROS2 for simulated missions</li>
+      </ol>
+    </div>
+  </div>
+</Section>
+
+<Section>
+  <div className="container">
+    <h2 className="display-md mb-lg">Outcomes</h2>
+    
+    <p className="body-xl mb-xl">Illustrative outcomes for this type of deployment:</p>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Operational Efficiency</h3>
+        <ul className="body-lg">
+          <li>More consistent inspection routines with repeatable missions</li>
+          <li>Reduced time spent on manual walk-through inspections</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Better Traceability</h3>
+        <ul className="body-lg">
+          <li>Historical telemetry and mission logs in one place</li>
+          <li>Single unified stack for robotic inspections</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Risk Reduction</h3>
+        <ul className="body-lg">
+          <li>Safer experimentation using the Digital Twin before live changes</li>
+          <li>Test routes and procedures virtually first</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Scalability</h3>
+        <ul className="body-lg">
+          <li>Reusable architecture across additional PV sites or wind farms</li>
+          <li>Easy integration with third-party analytics</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container text-center">
+    <h2 className="display-lg mb-lg">Next Steps</h2>
+    <p className="body-xl mb-2xl">The same architecture can be extended to additional sites, wind farms, or integrated with advanced analytics and AI-based route planning</p>
+    
+    <div style={{display: 'flex', gap: 'var(--space-lg)', justifyContent: 'center', flexWrap: 'wrap'}}>
+      <a href="/contact" className="btn btn--primary">Discuss Your Energy Project</a>
+      <a href="/case-studies" className="btn btn--secondary">View All Case Studies</a>
+    </div>
+  </div>
+</Section>

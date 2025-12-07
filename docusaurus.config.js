@@ -11,7 +11,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'WiseVision',
-  tagline: 'Bridging AI, IoT & Robotics for a Smarter Future',
+  tagline: 'Operating System for Robotics, IoT & Digital Twins',
   favicon: 'img/favicon.png',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
@@ -58,7 +58,7 @@ const config = {
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "WiseVision",
-        "description": "Bridging AI, IoT & Robotics for a Smarter Future. Transform your robotics operations with seamless IoT integration and the power of ROS 2 - experience enhanced control and real-time efficiency.",
+        "description": "WiseVision is a deep-tech company building an operating system for distributed robotics and IoT. We connect robots, drones, sensors and digital twins into one coherent operational layer.",
         "url": "https://wisevision.tech",
         "logo": "/img/wisevision_horizontal_logo.png",
         "contactPoint": {
@@ -78,7 +78,7 @@ const config = {
         },
         "foundingDate": "2023",
         "industry": "Robotics and IoT Technology",
-        "keywords": ["AI robotics integration", "ROS 2 platform", "IoT for robots", "digital twin simulation", "robot automation", "WiseOS", "MCP ROS2"]
+        "keywords": ["WiseOS", "MCP ROS2", "Digital Twins", "ROS 2", "robotics", "IoT", "O3DE", "NVIDIA Isaac Sim", "Genesis"]
       })
     }
   ],
@@ -109,8 +109,8 @@ const config = {
       // Replace with your project's social card
       image: 'img/wisevision-social-card.jpg',
       metadata: [
-        { name: 'keywords', content: 'AI robotics integration, ROS 2 platform, IoT for robots, digital twin simulation, robot automation, WiseOS, MCP ROS2' },
-        { name: 'description', content: 'WiseVision: Transform your robotics operations with seamless IoT integration and the power of ROS 2. Explore WiseOS, MCP ROS2, Digital Twins, and AI Automation services.' },
+        { name: 'keywords', content: 'WiseOS, MCP ROS2, Digital Twins, ROS 2, robotics, IoT, O3DE, NVIDIA Isaac Sim, Genesis, distributed robotics' },
+        { name: 'description', content: 'WiseVision is a deep-tech company building an operating system for distributed robotics and IoT. Connect robots, drones, sensors and digital twins into one coherent operational layer.' },
         { property: 'og:type', content: 'website' },
         { property: 'og:site_name', content: 'WiseVision' },
         { name: 'twitter:card', content: 'summary_large_image' },
@@ -145,10 +145,6 @@ const config = {
               {
                 label: 'Digital Twins',
                 to: '/digital-twins',
-              },
-              {
-                label: 'AI Automations',
-                to: '/ai-automations',
               },
             ],
           },
@@ -192,10 +188,6 @@ const config = {
               {
                 label: 'Digital Twins',
                 to: '/digital-twins',
-              },
-              {
-                label: 'AI Automations',
-                to: '/ai-automations',
               },
             ],
           },

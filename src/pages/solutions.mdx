@@ -1,85 +1,264 @@
 ---
-title: Solutions - Comprehensive Robotics Solutions
-description: Explore our comprehensive robotics solutions designed for various industries. From manufacturing automation to logistics optimization, find the perfect solution for your needs.
-keywords: [robotics solutions, automation solutions, industry solutions, manufacturing robotics, logistics automation]
+title: Solutions – Turning Robotics, IoT & Digital Twins into Real-World Outcomes
+description: WiseVision solutions for energy, manufacturing, smart cities, defence and agriculture. Built on WiseOS, MCP ROS2 and Digital Twins – one coherent platform for robotics and IoT operations.
+keywords: [robotics solutions, IoT solutions, WiseOS, MCP ROS2, Digital Twins, energy, manufacturing, smart cities, defence, agriculture]
 ---
 
 import Hero from '@site/src/components/Hero';
 import Section from '@site/src/components/Section';
 
 <Hero 
-  title="Comprehensive Robotics Solutions"
-  subtitle="Discover tailored robotics solutions designed for your industry needs. From small-scale automation to enterprise-wide robotics deployments, we have the expertise to deliver results."
+  title="Solutions – Turning Robotics, IoT & Digital Twins into Real-World Outcomes"
+  subtitle="WiseVision provides solutions built on our core stack: WiseOS, MCP ROS2 and Digital Twins. Instead of one-off integrations, you get a coherent platform that can be reused across sites and projects."
   primaryCTA={{
-    text: "Explore Solutions",
-    href: "#solutions"
+    text: "Talk to Us",
+    href: "/contact"
   }}
   secondaryCTA={{
-    text: "Contact Us",
-    href: "/contact"
+    text: "Explore Demo",
+    href: "/demo"
   }}
 />
 
-<Section id="solutions">
+<Section>
   <div className="container">
-    <h2 className="display-md text-center mb-2xl">Industry Solutions</h2>
+    <h2 className="display-md text-center mb-lg">How It Works</h2>
+    <p className="body-xl text-center mb-2xl">From the first sensor to fleet-wide deployment, WiseVision gives you one platform to connect, simulate and operate</p>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <div style={{fontSize: '2.5rem', marginBottom: 'var(--space-md)', textAlign: 'center'}}>🌐</div>
+        <h3 className="headline-md mb-md">1. Connect with WiseOS</h3>
+        <p className="body">Connect robots, drones, sensors and edge devices. Standardize communication (ROS 2, Zenoh, LoRaWAN, time-series telemetry).</p>
+      </div>
+      
+      <div className="card">
+        <div style={{fontSize: '2.5rem', marginBottom: 'var(--space-md)', textAlign: 'center'}}>🔗</div>
+        <h3 className="headline-md mb-md">2. Control with MCP ROS2</h3>
+        <p className="body">Let operators and AI agents interact with ROS 2 systems via standard MCP tools. Inspect, debug and orchestrate missions and workflows.</p>
+      </div>
+      
+      <div className="card">
+        <div style={{fontSize: '2.5rem', marginBottom: 'var(--space-md)', textAlign: 'center'}}>🔬</div>
+        <h3 className="headline-md mb-md">3. Validate in Digital Twins</h3>
+        <p className="body">Use O3DE / NVIDIA Isaac Sim / Genesis-based twins to test and visualize scenarios. Run "sim-before-deploy" for new missions and AI logic.</p>
+      </div>
+    </div>
+    
+    <p className="body-xl text-center mt-2xl">The same stack underpins all our solutions — you avoid vendor lock-in and one-off architectures.</p>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container">
+    <h2 className="display-md text-center mb-lg">AI-Accelerated Operations</h2>
+    <p className="body-xl text-center mb-2xl">MCP ROS2 enables AI agents to work alongside operators, dramatically accelerating troubleshooting, inspection and decision-making</p>
     
     <div className="grid grid--2">
-      <div className="card card--service">
-        <h3 className="headline-lg mb-lg">🏭 Manufacturing Automation</h3>
-        <p className="body-lg mb-lg">End-to-end manufacturing automation with intelligent robotics, quality control, and predictive maintenance.</p>
-        <ul className="body mb-lg">
-          <li>Automated assembly lines</li>
-          <li>Quality inspection systems</li>
-          <li>Predictive maintenance</li>
-          <li>Supply chain optimization</li>
+      <div className="card">
+        <h3 className="headline-md mb-md">🤖 AI-Assisted Workflows</h3>
+        <p className="body mb-lg">Operators can ask AI agents natural language questions about robot status, inspect historical telemetry, and get contextual recommendations — all through the same MCP ROS2 interface.</p>
+        <ul className="body">
+          <li>Query robot states and logs using plain language</li>
+          <li>Generate reports and summaries on demand</li>
+          <li>Identify anomalies and suggest corrective actions</li>
+          <li>Automate routine inspection and data collection tasks</li>
         </ul>
-        <a href="/wiseos" className="btn btn--primary">Learn More</a>
       </div>
       
-      <div className="card card--service">
-        <h3 className="headline-lg mb-lg">🚛 Logistics & Warehousing</h3>
-        <p className="body-lg mb-lg">Optimize warehouse operations with autonomous vehicles, inventory management, and order fulfillment automation.</p>
-        <ul className="body mb-lg">
-          <li>Autonomous mobile robots (AMRs)</li>
-          <li>Inventory tracking systems</li>
-          <li>Order picking automation</li>
-          <li>Fleet management</li>
+      <div className="card">
+        <h3 className="headline-md mb-md">⚡ Faster Problem Resolution</h3>
+        <p className="body mb-lg">When issues arise, AI agents can correlate data from multiple sources, propose hypotheses and even draft operational procedures — reducing time from incident to resolution.</p>
+        <ul className="body">
+          <li>Cross-reference telemetry, logs and environmental data</li>
+          <li>Suggest likely root causes based on patterns</li>
+          <li>Draft incident reports and handover notes</li>
+          <li>Propose and validate fixes in Digital Twins first</li>
         </ul>
-        <a href="/ai-automations" className="btn btn--primary">Learn More</a>
-      </div>
-      
-      <div className="card card--service">
-        <h3 className="headline-lg mb-lg">🏥 Healthcare Robotics</h3>
-        <p className="body-lg mb-lg">Advanced robotics for healthcare environments, including surgical assistance, patient care, and laboratory automation.</p>
-        <ul className="body mb-lg">
-          <li>Surgical robotics</li>
-          <li>Patient care automation</li>
-          <li>Laboratory robotics</li>
-          <li>Disinfection systems</li>
-        </ul>
-        <a href="/digital-twins" className="btn btn--primary">Learn More</a>
-      </div>
-      
-      <div className="card card--service">
-        <h3 className="headline-lg mb-lg">🌾 Agriculture & Food Processing</h3>
-        <p className="body-lg mb-lg">Precision agriculture and food processing automation with AI-powered crop monitoring and harvesting systems.</p>
-        <ul className="body mb-lg">
-          <li>Autonomous farming equipment</li>
-          <li>Crop monitoring drones</li>
-          <li>Food processing automation</li>
-          <li>Quality control systems</li>
-        </ul>
-        <a href="/mcp-ros2" className="btn btn--primary">Learn More</a>
       </div>
     </div>
   </div>
 </Section>
 
-<Section background="dark">
+<Section id="energy">
+  <div className="container">
+    <h2 className="display-md mb-lg">⚡ Energy & Utilities</h2>
+    <p className="headline-md mb-xl">Smarter inspections and monitoring for PV, wind and grids</p>
+    
+    <div className="grid grid--2">
+      <div>
+        <p className="body-lg mb-lg">Energy operators need reliable, continuous insights into distributed assets: PV fields, wind turbines, substations, overhead lines.</p>
+        
+        <h3 className="headline-md mb-md">WiseVision helps you:</h3>
+        <ul className="body-lg mb-lg">
+          <li>Combine drones, ground robots and fixed sensors into one operational picture</li>
+          <li>Use WiseOS to stream telemetry into a central Data Black Box (InfluxDB)</li>
+          <li>Use MCP ROS2 to orchestrate inspection missions and data collection</li>
+          <li>Build Digital Twins of farms and substations to validate procedures and AI logic</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">Typical Scenarios</h3>
+        <ul className="body-lg">
+          <li>Autonomous drone/robot inspections of PV panels and substations</li>
+          <li>Condition monitoring based on LoRaWAN sensors + robot verification</li>
+          <li>Incident response workflows tested first in a digital twin environment</li>
+          <li>AI agents assist operators in analyzing inspection data and prioritizing maintenance</li>
+        </ul>
+        <div className="mt-lg">
+          <a href="/contact" className="btn btn--primary">Discuss an Energy Use Case</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="gradient" id="manufacturing">
+  <div className="container">
+    <h2 className="display-md mb-lg">🏭 Manufacturing & Intralogistics</h2>
+    <p className="headline-md mb-xl">Coordinated robotics for warehouses and factories</p>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <h3 className="headline-md mb-md">What WiseVision Provides</h3>
+        <ul className="body-lg">
+          <li>WiseOS unifies ROS 2 robots and IoT devices across the shop floor</li>
+          <li>MCP ROS2 lets engineers and AI agents inspect and control fleets via mission-level tools</li>
+          <li>Digital Twins simulate warehouse layouts, traffic flows and what-if scenarios</li>
+          <li>AI agents help operators optimize routes, diagnose bottlenecks and predict maintenance needs</li>
+        </ul>
+      </div>
+      
+      <div>
+        <p className="body-lg mb-lg">Modern factories and warehouses operate fleets of AMRs, AGVs, fixed robots, cobots, sensors, conveyors and safety systems.</p>
+        
+        <h3 className="headline-md mb-md">Benefits</h3>
+        <ul className="body-lg mb-lg">
+          <li>Better visibility into robot operations and bottlenecks</li>
+          <li>Faster roll-out of new routes and workflows</li>
+          <li>Safer experimentation with changes in a simulated twin before deployment</li>
+          <li>AI-accelerated troubleshooting and operational decision-making</li>
+        </ul>
+        <div className="mt-lg">
+          <a href="/contact" className="btn btn--primary">Discuss a Logistics or Factory Project</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section id="smart-cities">
+  <div className="container">
+    <h2 className="display-md mb-lg">🏙️ Smart Cities & Infrastructure</h2>
+    <p className="headline-md mb-xl">City-wide sensing and robotics on one platform</p>
+    
+    <div className="grid grid--2">
+      <div>
+        <p className="body-lg mb-lg">Cities and infrastructure operators manage thousands of distributed assets: environmental and structural sensors (often over LoRaWAN), cameras, edge devices, service robots and drones for inspection and intervention.</p>
+        
+        <h3 className="headline-md mb-md">WiseVision helps turn this into a single operational fabric:</h3>
+        <ul className="body-lg mb-lg">
+          <li>WiseOS connects LoRaWAN sensors, ROS 2 robots and edge compute</li>
+          <li>MCP ROS2 exposes the whole system to AI agents and operator tools</li>
+          <li>Digital Twins provide 3D context for critical assets and zones</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">Use Cases</h3>
+        <ul className="body-lg">
+          <li>Monitoring bridges, tunnels and public infrastructure with mixed IoT + robotics</li>
+          <li>Environmental monitoring with distributed sensors and mobile robots</li>
+          <li>City-scale trials of autonomous operations in a safe, simulated environment first</li>
+          <li>AI agents help operators correlate events, identify issues and recommend responses</li>
+        </ul>
+        <div className="mt-lg">
+          <a href="/contact" className="btn btn--primary">Talk About Smart City Needs</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark" id="defence">
+  <div className="container">
+    <h2 className="display-md mb-lg">🛡️ Defence & Security</h2>
+    <p className="headline-md mb-xl">Situational awareness and autonomous operations</p>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <h3 className="headline-md mb-md">What We Provide</h3>
+        <ul className="body-lg">
+          <li>WiseOS for secure, segmented connectivity between assets</li>
+          <li>MCP ROS2 to integrate AI agents into surveillance and patrol workflows</li>
+          <li>Digital Twins (O3DE / Isaac Sim / Genesis) to model sites and run realistic training or what-if exercises</li>
+          <li>AI-assisted decision support for operators in complex scenarios</li>
+        </ul>
+      </div>
+      
+      <div>
+        <p className="body-lg mb-lg">For defence and security teams, WiseVision can serve as a neutral, ROS 2-based infrastructure layer for ground and aerial robotics, static and mobile sensors, command-and-control and training environments.</p>
+        
+        <h3 className="headline-md mb-md">Potential Applications</h3>
+        <ul className="body-lg mb-lg">
+          <li>Perimeter and facility monitoring with mixed fleets</li>
+          <li>Training and evaluation of autonomous patrol logic in synthetic environments</li>
+          <li>Integration of LoRaWAN / RF sensors into robotics workflows</li>
+          <li>AI agents support operators with threat assessment and response planning</li>
+        </ul>
+        <p className="body" style={{fontStyle: 'italic'}}>Note: Defence projects are evaluated individually with appropriate controls and NDAs.</p>
+        <div className="mt-lg">
+          <a href="/contact" className="btn btn--primary">Contact for Defence & Security</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section id="agriculture">
+  <div className="container">
+    <h2 className="display-md mb-lg">🌾 Agriculture & Environment</h2>
+    <p className="headline-md mb-xl">Field robotics and distributed sensing</p>
+    
+    <div className="grid grid--2">
+      <div>
+        <p className="body-lg mb-lg">Agriculture and environmental monitoring depend on wide-area sensing and growing use of mobile platforms.</p>
+        
+        <h3 className="headline-md mb-md">WiseVision enables:</h3>
+        <ul className="body-lg mb-lg">
+          <li>Integration of LoRaWAN and other long-range sensors into ROS 2 via WiseOS</li>
+          <li>Coordination of field robots or drones for inspection and sampling</li>
+          <li>Digital Twins of fields, zones and assets for planning and evaluation</li>
+          <li>AI agents help analyze crop data, optimize inspection routes and predict issues</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">Example Scenarios</h3>
+        <ul className="body-lg">
+          <li>Crop and soil monitoring with static sensors + drone verification</li>
+          <li>Automated inspection routes across large, hard-to-reach areas</li>
+          <li>Simulation of new workflows in a twin before committing hardware</li>
+          <li>AI-assisted analysis of environmental data and trend detection</li>
+        </ul>
+        <div className="mt-lg">
+          <a href="/contact" className="btn btn--primary">Discuss Agriculture or Environment</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="gradient">
   <div className="container text-center">
-    <h2 className="display-lg mb-lg">Ready to Transform Your Operations?</h2>
-    <p className="body-xl mb-2xl">Let's discuss how our robotics solutions can optimize your specific industry challenges</p>
-    <a href="/contact" className="btn btn--primary">Get Started</a>
+    <h2 className="display-lg mb-lg">Not Sure Where Your Use Case Fits?</h2>
+    <p className="body-xl mb-2xl">If your challenge involves multiple robots, sensors and complex environments, we can likely map it onto WiseOS + MCP ROS2 + Digital Twins</p>
+    
+    <div style={{display: 'flex', gap: 'var(--space-lg)', justifyContent: 'center', flexWrap: 'wrap'}}>
+      <a href="/contact" className="btn btn--primary">Describe Your Use Case</a>
+      <a href="/case-studies" className="btn btn--secondary">See Case Studies</a>
+      <a href="/demo" className="btn btn--secondary">Explore Demo</a>
+    </div>
   </div>
 </Section>

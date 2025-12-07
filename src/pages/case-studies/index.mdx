@@ -1,0 +1,81 @@
+---
+title: Case Studies - Real-World Applications of WiseOS, MCP ROS2 & Digital Twins
+description: Explore real-world scenarios where the WiseOS + MCP ROS2 + Digital Twins stack has been applied across energy, manufacturing, smart cities, defence and agriculture.
+keywords: [case studies, robotics case studies, WiseOS, MCP ROS2, Digital Twins, energy, manufacturing, smart cities, defence, agriculture]
+---
+
+import Hero from '@site/src/components/Hero';
+import Section from '@site/src/components/Section';
+
+<Hero 
+  title="Case Studies"
+  subtitle="Real-world scenarios where the WiseOS + MCP ROS2 + Digital Twins stack can be applied. Explore how the same core platform supports different industries and use cases."
+  primaryCTA={{
+    text: "Talk to Us",
+    href: "/contact"
+  }}
+  secondaryCTA={{
+    text: "Explore Demo",
+    href: "/demo"
+  }}
+/>
+
+<Section>
+  <div className="container">
+    <h2 className="display-md text-center mb-2xl">Case Studies by Industry</h2>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <div style={{fontSize: '2.5rem', marginBottom: 'var(--space-md)'}}>🏭</div>
+        <h3 className="headline-md mb-md">Unified AMR Warehouse Fleet</h3>
+        <p className="body-sm mb-sm" style={{color: 'var(--text-secondary)'}}>Manufacturing & Intralogistics</p>
+        <p className="body mb-lg">A distribution warehouse wanted to unify multiple AMR vendors and sensing systems. With WiseOS as the ROS 2 operating layer and MCP ROS2 as the control interface, engineering teams could monitor, orchestrate and debug the fleet through a single stack, validated in a Digital Twin of the warehouse.</p>
+        <a href="/case-studies/warehouse-amr" className="btn btn--primary">Read Case Study</a>
+      </div>
+      
+      <div className="card">
+        <div style={{fontSize: '2.5rem', marginBottom: 'var(--space-md)'}}>⚡</div>
+        <h3 className="headline-md mb-md">Autonomous PV Farm Inspection</h3>
+        <p className="body-sm mb-sm" style={{color: 'var(--text-secondary)'}}>Energy & Utilities</p>
+        <p className="body mb-lg">A large solar PV farm wanted to reduce manual inspection effort and improve visibility into the condition of panels, structures and substations. WiseVision delivered a solution that connected LoRaWAN sensors, inspection drones and ground robots via WiseOS, coordinated missions via MCP ROS2, and validated everything in a Digital Twin.</p>
+        <a href="/case-studies/pv-farm" className="btn btn--primary">Read Case Study</a>
+      </div>
+      
+      <div className="card">
+        <div style={{fontSize: '2.5rem', marginBottom: 'var(--space-md)'}}>🏙️</div>
+        <h3 className="headline-md mb-md">City Infrastructure Monitoring</h3>
+        <p className="body-sm mb-sm" style={{color: 'var(--text-secondary)'}}>Smart Cities & Infrastructure</p>
+        <p className="body mb-lg">A city operator deployed LoRaWAN sensors for structural and environmental monitoring across bridges, underpasses and public spaces. WiseOS ingested sensor data, MCP ROS2 enabled event-driven drone inspections, and a Digital Twin provided planning and incident review capabilities.</p>
+        <a href="/case-studies/smart-city" className="btn btn--primary">Read Case Study</a>
+      </div>
+      
+      <div className="card">
+        <div style={{fontSize: '2.5rem', marginBottom: 'var(--space-md)'}}>🛡️</div>
+        <h3 className="headline-md mb-md">Perimeter Surveillance & Training Twin</h3>
+        <p className="body-sm mb-sm" style={{color: 'var(--text-secondary)'}}>Defence & Security</p>
+        <p className="body mb-lg">A secured facility required a flexible, vendor-neutral infrastructure for perimeter surveillance using fixed sensors, ground robots and aerial drones. WiseOS provided the ROS 2-based operational layer, MCP ROS2 integrated AI-assisted workflows, and a high-fidelity Digital Twin was used for training and simulation.</p>
+        <a href="/case-studies/defence-twin" className="btn btn--primary">Read Case Study</a>
+      </div>
+      
+      <div className="card">
+        <div style={{fontSize: '2.5rem', marginBottom: 'var(--space-md)'}}>🌾</div>
+        <h3 className="headline-md mb-md">Field Monitoring with LoRaWAN & Drones</h3>
+        <p className="body-sm mb-sm" style={{color: 'var(--text-secondary)'}}>Agriculture & Environment</p>
+        <p className="body mb-lg">An agricultural operator managed large, distributed fields and wanted better insight into soil moisture, temperature and crop status. WiseOS enabled LoRaWAN sensor integration, MCP ROS2 coordinated drone verification flights, and a Digital Twin of field zones supported planning and analysis.</p>
+        <a href="/case-studies/agri-field" className="btn btn--primary">Read Case Study</a>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="gradient">
+  <div className="container text-center">
+    <h2 className="display-lg mb-lg">Interested in a Similar Solution?</h2>
+    <p className="body-xl mb-2xl">These case studies illustrate patterns that can be adapted to your specific environment and requirements</p>
+    
+    <div style={{display: 'flex', gap: 'var(--space-lg)', justifyContent: 'center', flexWrap: 'wrap'}}>
+      <a href="/contact" className="btn btn--primary">Discuss Your Use Case</a>
+      <a href="/solutions" className="btn btn--secondary">View Solutions</a>
+    </div>
+  </div>
+</Section>

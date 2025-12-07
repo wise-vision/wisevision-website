@@ -1,0 +1,211 @@
+---
+title: Case Study – Perimeter Surveillance with Digital Twin Training
+description: How WiseOS, MCP ROS2 and Digital Twins enabled secure perimeter surveillance with training capabilities for defence and security applications.
+keywords: [defence, security, perimeter surveillance, WiseOS, MCP ROS2, Digital Twins, training simulation]
+---
+
+import Hero from '@site/src/components/Hero';
+import Section from '@site/src/components/Section';
+
+<Hero 
+  title="Case Study – Perimeter Surveillance with Digital Twin Training"
+  subtitle="Defence & Security"
+/>
+
+<Section>
+  <div className="container">
+    <div className="card" style={{background: 'var(--bg-secondary)', padding: 'var(--space-xl)', marginBottom: 'var(--space-2xl)'}}>
+      <h2 className="headline-lg mb-lg">Summary</h2>
+      <p className="body-lg">
+        A secured facility required a <strong>flexible, vendor-neutral infrastructure</strong> for perimeter surveillance using fixed sensors, ground robots and aerial drones.
+      </p>
+      <p className="body-lg mt-md">
+        WiseVision provided:
+      </p>
+      <ul className="body-lg">
+        <li>WiseOS as a ROS 2-based <strong>operational layer</strong></li>
+        <li>MCP ROS2 for integrating AI-assisted workflows and operator tools</li>
+        <li>A high-fidelity <strong>Digital Twin</strong> environment for training and scenario simulation</li>
+      </ul>
+    </div>
+
+    <div className="grid grid--2">
+      <div>
+        <h2 className="headline-lg mb-lg">Stack Used</h2>
+        <ul className="body-lg">
+          <li>WiseOS</li>
+          <li>MCP ROS2</li>
+          <li>Digital Twins (O3DE / Isaac Sim / Genesis)</li>
+          <li>ROS 2</li>
+          <li>LoRaWAN (optional)</li>
+        </ul>
+      </div>
+      <div>
+        <h2 className="headline-lg mb-lg">Key Benefits</h2>
+        <ul className="body-lg">
+          <li>Vendor-neutral infrastructure</li>
+          <li>Safe AI adoption via sim-before-deploy</li>
+          <li>Realistic training scenarios</li>
+          <li>Full auditability and control</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container">
+    <h2 className="display-md mb-2xl">Challenges</h2>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <p className="body-lg">Mix of existing and new assets from different vendors</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">Need to experiment with surveillance tactics without affecting live operations</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">Requirements for auditability and control over what AI agents can do</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">Desire to train operators and evaluate autonomous policies safely</p>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section>
+  <div className="container">
+    <h2 className="display-md text-center mb-2xl">Solution</h2>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <h3 className="headline-md mb-md">1. WiseOS – Unified Perimeter Fabric</h3>
+        <p className="body mb-md">WiseOS connected:</p>
+        <ul className="body">
+          <li>Fixed perimeter sensors (cameras, motion, RF, optional LoRaWAN) into ROS 2</li>
+          <li>Ground and aerial platforms as ROS 2 nodes or via bridges</li>
+          <li>Telemetry and alerts into Data Black Box (InfluxDB)</li>
+          <li>Status and events from all assets in one place</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">2. MCP ROS2 – Operator & AI Tools</h3>
+        <p className="body mb-md">MCP ROS2 exposed tools with role-based controls:</p>
+        <ul className="body">
+          <li>List perimeter assets</li>
+          <li>Run patrol routes</li>
+          <li>Get recent alerts</li>
+          <li>Human-in-the-loop for restricted zones</li>
+          <li>All actions logged for review</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">3. Digital Twin – Training & Evaluation</h3>
+        <p className="body mb-md">A Digital Twin of the facility with O3DE / Isaac Sim / Genesis:</p>
+        <ul className="body">
+          <li>3D representation of buildings, fences and terrain</li>
+          <li>Simulated robots, drones and sensor coverage</li>
+          <li>Same interfaces as real operations</li>
+          <li>Training and policy testing</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="gradient">
+  <div className="container">
+    <h2 className="display-md mb-lg">Architecture Overview</h2>
+    
+    <div className="card" style={{background: 'var(--bg-primary)', padding: 'var(--space-xl)'}}>
+      <ol className="body-lg" style={{lineHeight: '2'}}>
+        <li><strong>Sensors, robots and drones</strong> → ROS 2 → WiseOS connectivity & telemetry</li>
+        <li><strong>WiseOS</strong> → InfluxDB → event logs and analysis</li>
+        <li><strong>MCP ROS2</strong> → operator tools and AI-assisted workflows</li>
+        <li><strong>Digital Twin</strong> → training, testing and visual context</li>
+      </ol>
+    </div>
+  </div>
+</Section>
+
+<Section>
+  <div className="container">
+    <h2 className="display-md mb-lg">Digital Twin Use Cases</h2>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <h3 className="headline-md mb-md">🎓 Operator Training</h3>
+        <p className="body">Training in simulated incident scenarios without risk to live operations</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🧪 Policy Evaluation</h3>
+        <p className="body">Evaluation of new patrol routes and policies before deployment</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🤖 AI Testing</h3>
+        <p className="body">Testing AI-driven behavior before allowing it on live assets</p>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container">
+    <h2 className="display-md mb-lg">Outcomes</h2>
+    
+    <p className="body-xl mb-xl">This pattern typically provides:</p>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Vendor Independence</h3>
+        <ul className="body-lg">
+          <li>A neutral infrastructure layer independent of specific robot vendors</li>
+          <li>Freedom to choose best-of-breed components</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Safe AI Adoption</h3>
+        <ul className="body-lg">
+          <li>Sim-before-deploy workflows for AI-assisted surveillance</li>
+          <li>Risk-free experimentation in Digital Twin</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Better Preparedness</h3>
+        <ul className="body-lg">
+          <li>Realistic training through Digital Twin scenarios</li>
+          <li>Improved operator readiness</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Full Auditability</h3>
+        <ul className="body-lg">
+          <li>Complete logging of all actions and AI decisions</li>
+          <li>Role-based access controls</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="gradient">
+  <div className="container text-center">
+    <h2 className="display-lg mb-lg">Next Steps</h2>
+    <p className="body-xl mb-2xl">The same architecture can be extended to larger sites, multiple facilities, or integrated with existing command-and-control tools</p>
+    
+    <p className="body mb-2xl" style={{fontStyle: 'italic'}}>Note: Defence projects are evaluated individually with appropriate controls and NDAs.</p>
+    
+    <div style={{display: 'flex', gap: 'var(--space-lg)', justifyContent: 'center', flexWrap: 'wrap'}}>
+      <a href="/contact" className="btn btn--primary">Contact for Defence & Security</a>
+      <a href="/case-studies" className="btn btn--secondary">View All Case Studies</a>
+    </div>
+  </div>
+</Section>

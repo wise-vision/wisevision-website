@@ -925,7 +925,7 @@ export default function LiquidGlassHero({
                 margin: 0,
                 textAlign: isMobile ? 'center' : 'left'
               }}>
-                <strong style={{ color: '#00d4ff' }}>How it works:</strong> From first sensor to fleet deployment - one platform to connect, simulate and automate. Connect with WiseOS, control via ROS 2, validate in Digital Twins, ship with AI Automations.
+                <strong style={{ color: '#00d4ff' }}>How it works:</strong> From first sensor to fleet deployment - one platform to connect, simulate and control. Connect with WiseOS, control via MCP ROS2, validate in Digital Twins.
               </p>
             </div>
             

@@ -1,7 +1,7 @@
 ---
-title: WiseOS - Comprehensive Robotics Operating System
-description: WiseOS is a comprehensive robotics operating system that seamlessly integrates AI, IoT, and automation capabilities for next-generation robotic applications. Built on ROS 2 with enterprise-grade reliability.
-keywords: [WiseOS, robotics operating system, ROS 2, AI robotics, IoT integration, robot automation, enterprise robotics]
+title: WiseOS – Operating System for Robotics & IoT
+description: WiseOS is a robotics-centric operating layer that connects robots, drones, IoT devices and digital twins into one unified system. Built on ROS 2 with Zenoh connectivity and InfluxDB telemetry.
+keywords: [WiseOS, robotics operating system, ROS 2, IoT integration, Zenoh, InfluxDB, LoRaWAN, robot automation, enterprise robotics]
 image: /img/wiseos-social-card.jpg
 ---
 
@@ -9,13 +9,13 @@ import Hero from '@site/src/components/Hero';
 import Section from '@site/src/components/Section';
 
 <head>
-  <meta property="og:title" content="WiseOS - Comprehensive Robotics Operating System" />
-  <meta property="og:description" content="Seamlessly integrate AI, IoT, and automation capabilities for next-generation robotic applications. Built on ROS 2 with enterprise-grade reliability." />
+  <meta property="og:title" content="WiseOS – Operating System for Robotics & IoT" />
+  <meta property="og:description" content="WiseOS is a robotics-centric operating layer that connects robots, drones, IoT devices and digital twins into one unified system." />
   <meta property="og:url" content="https://wisevision.tech/wiseos" />
   <meta property="og:image" content="https://wisevision.tech/img/wiseos-social-card.jpg" />
   
-  <meta name="twitter:title" content="WiseOS - Robotics Operating System" />
-  <meta name="twitter:description" content="Comprehensive robotics OS with AI, IoT, and automation capabilities. Built on ROS 2." />
+  <meta name="twitter:title" content="WiseOS – Operating System for Robotics & IoT" />
+  <meta name="twitter:description" content="Connect robots, drones, IoT devices and digital twins into one unified system. Built on ROS 2." />
   <meta name="twitter:image" content="https://wisevision.tech/img/wiseos-social-card.jpg" />
   
   <script type="application/ld+json">
@@ -23,13 +23,13 @@ import Section from '@site/src/components/Section';
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
       "name": "WiseOS",
-      "description": "Comprehensive robotics operating system that seamlessly integrates AI, IoT, and automation capabilities for next-generation robotic applications.",
+      "description": "WiseOS is a robotics-centric operating layer that connects robots, drones, IoT devices and digital twins into one unified system.",
       "url": "https://wisevision.tech/wiseos",
       "applicationCategory": "RoboticsApplication",
-      "operatingSystem": "Linux, Windows, macOS",
+      "operatingSystem": "Linux",
       "offers": {
         "@type": "Offer",
-        "description": "Enterprise robotics operating system",
+        "description": "Operating system for robotics & IoT",
         "availability": "https://schema.org/InStock"
       }
     })}
@@ -37,125 +37,46 @@ import Section from '@site/src/components/Section';
 </head>
 
 <Hero 
-  title="WiseOS"
-  subtitle="One Place for Robotics. WiseOS is the operational layer that unites all sensors and actuators into a single, unified domain. Built on ROS 2, it provides structure—from data standardization to connectivity, observability, and access policies—so teams see the whole system, not just individual devices."
+  title="WiseOS – Operating System for Robotics & IoT"
+  subtitle="WiseOS is a robotics-centric operating layer that connects robots, drones, IoT devices and digital twins into one unified system. It reduces the cost and complexity of running multi-robot, multi-sensor systems at scale."
   primaryCTA={{
-    text: "See Demo",
+    text: "Explore Demo",
     href: "/demo"
   }}
   secondaryCTA={{
-    text: "View Documentation",
-    href: "https://www.wisevision.tech/static/doc/"
+    text: "View on GitHub",
+    href: "https://github.com/wise-vision"
   }}
 />
 
 <Section background="dark">
   <div className="container">
-    <h2 className="display-md text-center mb-lg">How WiseOS Works</h2>
-    <p className="body-xl text-center mb-2xl">Imagine a factory or a large city with robots as drivers and sensors as senses</p>
+    <h2 className="display-md text-center mb-lg">What WiseOS Standardizes</h2>
+    <p className="body-xl text-center mb-2xl">A curated set of ROS 2 packages and services that make robots, drones and sensors feel like one platform</p>
     
-    <div className="grid grid--3">
+    <div className="grid grid--2">
       <div className="card">
-        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>🏢</div>
-        <h3 className="headline-md mb-md">WiseOS: The Control Center</h3>
-        <p className="body">
-          Collects all messages from sensors (eyes, ears, nose) and robots in one language—ROS 2. This way, everyone knows what's happening. WiseOS connects everything into one domain, providing structure and observability across your entire robotics system.
-        </p>
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>🌐</div>
+        <h3 className="headline-md mb-md">Communication</h3>
+        <p className="body">Standardize communication across mixed networks (LAN, WAN, edge) using Zenoh-based ROS 2 connectivity.</p>
       </div>
       
       <div className="card">
-        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>🎯</div>
-        <h3 className="headline-md mb-md">MCP: The Dispatcher</h3>
-        <p className="body">
-          Listens to those messages and tells robots what to do with simple commands ("pick this up", "move it there", "fly to location A"). Instead of controlling topics, you define intentions; MCP translates them into plans, schedules, and constraints.
-        </p>
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>📊</div>
+        <h3 className="headline-md mb-md">Telemetry & Observability</h3>
+        <p className="body">Time-series storage via InfluxDB-powered Data Black Box for continuous recording and analysis.</p>
       </div>
       
       <div className="card">
-        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>🗺️</div>
-        <h3 className="headline-md mb-md">Digital Twin: The City Map</h3>
-        <p className="body">
-          A live screen showing what sensors feel and where robots move. You can safely "test" different scenarios before doing it for real. Import CAD, synchronize real-time, test without stopping production.
-        </p>
-      </div>
-    </div>
-    
-    <div className="text-center mt-2xl">
-      <p className="body-xl">
-        <strong>The Result:</strong> Sensors see and communicate, WiseOS connects everyone into one ROS 2 domain, MCP issues commands, and the digital twin shows it all live—making the entire "city" work fast, smart, and safely.
-      </p>
-    </div>
-  </div>
-</Section>
-
-<Section>
-  <div className="container">
-    <h2 className="display-md text-center mb-lg">Why Now</h2>
-    <p className="body-xl text-center mb-2xl">
-      Robots, sensors, and applications are growing faster than the ability to coordinate them. A layer is needed that understands operational context. WiseOS consolidates distributed component environments into one cohesive operating model.
-    </p>
-    
-    <div className="grid grid--3">
-      <div className="card">
-        <h3 className="headline-md mb-md">🌐 Common Domain (Ontology)</h3>
-        <p className="body">
-          We normalize events, states, and commands into one semantic framework. Regardless of vendor—same concepts, same contracts. This eliminates integration complexity and ensures consistency.
-        </p>
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>📡</div>
+        <h3 className="headline-md mb-md">Bridges</h3>
+        <p className="body">Native bridges between ROS 2 and long-range IoT (LoRaWAN) for wide-area sensor coverage.</p>
       </div>
       
       <div className="card">
-        <h3 className="headline-md mb-md">☁️ Frictionless Edge-Cloud</h3>
-        <p className="body">
-          Data streams and commands flow according to QoS policies; offline buffering, synchronization, and artifact versioning ensure continuous operation even in challenging network conditions.
-        </p>
-      </div>
-      
-      <div className="card">
-        <h3 className="headline-md mb-md">👁️ Observability & Governance</h3>
-        <p className="body">
-          Telemetry, logs, traces, and change auditing. Roles and permissions at the domain object level, not just devices. Full visibility and control over your robotics infrastructure.
-        </p>
-      </div>
-    </div>
-  </div>
-</Section>
-
-<Section background="dark">
-  <div className="container">
-    <h2 className="display-md text-center mb-2xl">Platform Pillars</h2>
-    
-    <div className="grid grid--3">
-      <div className="card">
-        <h3 className="headline-md mb-lg">🤖 WiseOS</h3>
-        <h4 className="body-lg mb-md" style={{ fontWeight: 600 }}>Common Operating Layer & DDS</h4>
-        <p className="body mb-lg">
-          Integrates sensors, actuators, and applications into one monitored system. Provides resource catalog, data routing, security policies, and APIs to MES/ERP/CMMS.
-        </p>
-        <p className="body" style={{ fontStyle: 'italic' }}>
-          <strong>Result:</strong> Less ad-hoc integration, faster launches, data consistency.
-        </p>
-      </div>
-      
-      <div className="card">
-        <h3 className="headline-md mb-lg">🎯 MCP</h3>
-        <h4 className="body-lg mb-md" style={{ fontWeight: 600 }}>Command & Control for Robotics</h4>
-        <p className="body mb-lg">
-          Orchestrates tasks between robots and production lines. Define intentions at operation level ("move pallet A to zone B", "reschedule tasks for night shift") instead of individual signals.
-        </p>
-        <p className="body" style={{ fontStyle: 'italic' }}>
-          <strong>Result:</strong> Predictable execution, easy fleet scaling, reduced operator complexity.
-        </p>
-      </div>
-      
-      <div className="card">
-        <h3 className="headline-md mb-lg">🗺️ Digital Twin</h3>
-        <h4 className="body-lg mb-md" style={{ fontWeight: 600 }}>See Before It Acts</h4>
-        <p className="body mb-lg">
-          Common visualization of state and sandbox for "what-if" scenarios. CAD import, real-time synchronization, testing without stopping production.
-        </p>
-        <p className="body" style={{ fontStyle: 'italic' }}>
-          <strong>Result:</strong> Faster iterations, safe changes, fewer surprises on the floor.
-        </p>
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>🖥️</div>
+        <h3 className="headline-md mb-md">Operator View</h3>
+        <p className="body">Lightweight dashboards and APIs for monitoring, inspection, and integration with external systems.</p>
       </div>
     </div>
   </div>
@@ -163,278 +84,60 @@ import Section from '@site/src/components/Section';
 
 <Section>
   <div className="container">
+    <h2 className="display-md text-center mb-2xl">Key Capabilities</h2>
+    
     <div className="grid grid--2">
       <div>
-        <h2 className="headline-lg mb-lg">What You Get</h2>
-        
         <div className="mb-xl">
           <h3 className="headline-md mb-md">🌐 Zenoh-based ROS 2 Connectivity</h3>
-          <p className="body-lg mb-md">
-            WAN/edge scenarios and mixed networks made simple. Our Zenoh transport layer enables seamless communication across distributed robot fleets, even in challenging network environments.
-          </p>
-          <a href="https://docs.ros.org/en/rolling/" className="btn btn--secondary btn--sm">ROS Documentation</a>
+          <p className="body-lg mb-md">WAN and edge scenarios made simple.</p>
+          <ul className="body-lg">
+            <li>Use <strong>Eclipse Zenoh</strong> as transport for ROS 2 topics across unreliable or segmented networks</li>
+            <li>Connect fleets operating across factories, cities or remote sites</li>
+            <li>Reduce the need for custom VPNs or ad-hoc networking hacks</li>
+          </ul>
+          <p className="body-lg mt-md" style={{ fontStyle: 'italic' }}>"Treat your robots and sensors as if they were on one network – even when they aren't."</p>
         </div>
 
         <div className="mb-xl">
-          <h3 className="headline-md mb-md">📊 Data Black Box (InfluxDB)</h3>
-          <p className="body-lg mb-md">
-            Continuous, query-while-recording telemetry—ideal for live dashboards and long-horizon analyses. Get sub-10ms live queries, retention policies, and streaming analytics without stopping operations.
-          </p>
-          <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
-            <a href="https://github.com/wise-vision" className="btn btn--secondary btn--sm">GitHub</a>
-            <a href="https://www.influxdata.com/" className="btn btn--secondary btn--sm">InfluxDB</a>
-          </div>
-        </div>
-
-        <div className="mb-xl">
-          <h3 className="headline-md mb-md">📡 LoRaWAN→ROS 2 Bridge</h3>
-          <p className="body-lg mb-md">
-            ChirpStack compatible bridge to ingest thousands of low-power sensors into topics/services. Extend your robot's sensing capabilities with battery-powered IoT devices.
-          </p>
-          <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
-            <a href="https://github.com/wise-vision" className="btn btn--secondary btn--sm">GitHub</a>
-            <a href="https://www.chirpstack.io/" className="btn btn--secondary btn--sm">ChirpStack</a>
-          </div>
-        </div>
-
-        <div className="mb-xl">
-          <h3 className="headline-md mb-md">🔌 Plugin Architecture</h3>
-          <p className="body-lg mb-md">
-            Our wisevision_core enables adding new transports and device classes without touching app code. Bridge MQTT, proprietary RF, or industrial buses on request.
-          </p>
-          <a href="https://github.com/wise-vision" className="btn btn--secondary btn--sm">GitHub</a>
+          <h3 className="headline-md mb-md">📊 Data Black Box – InfluxDB Telemetry Layer</h3>
+          <p className="body-lg mb-md">WiseOS provides an InfluxDB-powered Data Black Box for robotics:</p>
+          <ul className="body-lg">
+            <li>Continuous recording of ROS 2 telemetry and events</li>
+            <li>Query data during and after missions</li>
+            <li>Build dashboards and alerts (e.g. via Grafana)</li>
+            <li>Use the same data both for operations and analytics</li>
+          </ul>
+          <p className="body-lg mt-md">This gives operators and engineers a <strong>single source of truth</strong> for system health and behavior.</p>
         </div>
       </div>
 
       <div>
-        <h2 className="headline-lg mb-lg">Why It Matters</h2>
-        
-        <div className="card mb-xl">
-          <h3 className="headline-md mb-md">Beyond File-Based Logging</h3>
-          <p className="body-lg mb-md">
-            File-based logging (e.g., rosbag2) shines for record/playback, whereas a time-series DB adds sub-10ms live queries, retention, and continuous queries for streaming analytics—no "stop to inspect" workflow.
-          </p>
-          <p className="body-lg">
-            WiseOS gives you both: ROS 2-native operations plus a historian built for dashboards and alerts.
-          </p>
-          <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap', marginTop: 'var(--space-md)' }}>
-            <a href="https://github.com/wise-vision" className="btn btn--secondary btn--sm">GitHub</a>
-            <a href="https://www.influxdata.com/" className="btn btn--secondary btn--sm">InfluxData</a>
-          </div>
-        </div>
-
-        <div className="card">
-          <h3 className="headline-md mb-md">Enterprise-Ready Features</h3>
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">📡 LoRaWAN↔ROS 2 Bridge</h3>
+          <p className="body-lg mb-md">Connect long-range, low-power sensors directly into ROS 2.</p>
           <ul className="body-lg">
-            <li>Fleet Management for 100+ robots</li>
-            <li>Enterprise Security with role-based access</li>
-            <li>Advanced Analytics and predictive maintenance</li>
-            <li>Multi-site deployment capabilities</li>
-            <li>High availability with 99.9% uptime SLA</li>
-            <li>24/7 professional support</li>
+            <li>Native integration with <strong>ChirpStack</strong> and LoRaWAN networks</li>
+            <li>Forward sensor events into ROS 2 topics</li>
+            <li>Use them to trigger robot missions, monitoring tasks or human alerts</li>
+          </ul>
+          <p className="body-lg mt-md"><strong>Typical use cases:</strong></p>
+          <ul className="body-lg">
+            <li>Environmental & infrastructure sensing (temperature, vibration, leaks)</li>
+            <li>Perimeter and area monitoring</li>
+            <li>Coverage extension beyond Wi-Fi / 5G</li>
           </ul>
         </div>
-      </div>
-    </div>
-  </div>
-</Section>
 
-<Section background="dark">
-  <div className="container text-center">
-    <h2 className="display-md mb-lg">Built on Open Standards</h2>
-    <p className="body-xl mb-2xl">We build on the standards your team already trusts</p>
-    
-    <div className="grid grid--4">
-      <div className="card">
-        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>🤖</div>
-        <h3 className="headline-md">ROS 2</h3>
-        <p className="body">Industry standard robotics framework</p>
-      </div>
-      
-      <div className="card">
-        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>🌐</div>
-        <h3 className="headline-md">Eclipse Zenoh</h3>
-        <p className="body">High-performance data transport</p>
-      </div>
-      
-      <div className="card">
-        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>📊</div>
-        <h3 className="headline-md">InfluxDB</h3>
-        <p className="body">Time-series database for telemetry</p>
-      </div>
-      
-      <div className="card">
-        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>📡</div>
-        <h3 className="headline-md">LoRaWAN</h3>
-        <p className="body">Long-range IoT connectivity</p>
-      </div>
-    </div>
-  </div>
-</Section>
-
-<Section>
-  <div className="container">
-    <div className="grid grid--2">
-      <div>
-        <h2 className="display-md mb-lg">Next-Generation Robotics Platform</h2>
-        <p className="body-xl mb-lg">
-          WiseOS revolutionizes robotics development by providing a unified platform that combines the power of ROS 2 with advanced AI capabilities, seamless IoT integration, and enterprise-grade reliability.
-        </p>
-        <div className="grid grid--2">
-          <div className="card">
-            <h3 className="headline-md mb-md">🤖 ROS 2 Foundation</h3>
-            <p className="body">Built on the latest ROS 2 architecture for real-time performance and distributed computing.</p>
-          </div>
-          <div className="card">
-            <h3 className="headline-md mb-md">🧠 AI Integration</h3>
-            <p className="body">Native AI model integration with support for TensorFlow, PyTorch, and ONNX frameworks.</p>
-          </div>
-          <div className="card">
-            <h3 className="headline-md mb-md">🌐 IoT Connectivity</h3>
-            <p className="body">Seamless connection to IoT ecosystems with support for MQTT, LoRaWAN, and edge computing.</p>
-          </div>
-          <div className="card">
-            <h3 className="headline-md mb-md">⚡ Real-time Performance</h3>
-            <p className="body">Deterministic real-time capabilities for mission-critical robotic applications.</p>
-          </div>
-        </div>
-      </div>
-      <div className="text-center">
-        <div className="card" style={{background: 'linear-gradient(135deg, var(--primary-800), var(--primary-700))', padding: 'var(--space-2xl)'}}>
-          <div style={{fontSize: '4rem', marginBottom: 'var(--space-lg)'}}>🤖</div>
-          <h3 className="headline-lg mb-lg">Ready to Transform Your Robotics?</h3>
-          <p className="body-lg mb-xl">Join hundreds of companies using WiseOS to power their intelligent automation.</p>
-          <a href="/demo" className="btn btn--primary">Schedule Demo</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</Section>
-
-<Section background="dark">
-  <div className="container">
-    <h2 className="display-md text-center mb-2xl">Key Features</h2>
-    
-    <div className="grid grid--3">
-      <div className="card card--service">
-        <h3 className="headline-md mb-md">Distributed Architecture</h3>
-        <p className="body mb-lg">Scalable microservices architecture that grows with your robotics fleet from single robots to enterprise deployments.</p>
-        <ul className="body">
-          <li>Horizontal scaling capabilities</li>
-          <li>Fault-tolerant design</li>
-          <li>Load balancing and failover</li>
-          <li>Cloud and edge deployment</li>
-        </ul>
-      </div>
-      
-      <div className="card card--service">
-        <h3 className="headline-md mb-md">Advanced AI Pipeline</h3>
-        <p className="body mb-lg">Integrated machine learning pipeline with support for computer vision, natural language processing, and decision-making AI.</p>
-        <ul className="body">
-          <li>Real-time inference engine</li>
-          <li>Model versioning and A/B testing</li>
-          <li>Edge AI optimization</li>
-          <li>Multi-modal AI support</li>
-        </ul>
-      </div>
-      
-      <div className="card card--service">
-        <h3 className="headline-md mb-md">Enterprise Security</h3>
-        <p className="body mb-lg">Bank-level security with end-to-end encryption, secure communication channels, and comprehensive access control.</p>
-        <ul className="body">
-          <li>TLS 1.3 encryption</li>
-          <li>Role-based access control</li>
-          <li>Audit logging and compliance</li>
-          <li>Secure OTA updates</li>
-        </ul>
-      </div>
-      
-      <div className="card card--service">
-        <h3 className="headline-md mb-md">Real-time Monitoring</h3>
-        <p className="body mb-lg">Comprehensive monitoring and diagnostics with real-time metrics, alerting, and performance optimization.</p>
-        <ul className="body">
-          <li>Performance metrics dashboard</li>
-          <li>Predictive maintenance alerts</li>
-          <li>Resource utilization tracking</li>
-          <li>Custom KPI monitoring</li>
-        </ul>
-      </div>
-      
-      <div className="card card--service">
-        <h3 className="headline-md mb-md">Simulation Environment</h3>
-        <p className="body mb-lg">Integrated simulation capabilities for testing and validation before deployment to physical robots.</p>
-        <ul className="body">
-          <li>Physics-based simulation</li>
-          <li>Digital twin integration</li>
-          <li>Scenario testing framework</li>
-          <li>Virtual commissioning</li>
-        </ul>
-      </div>
-      
-      <div className="card card--service">
-        <h3 className="headline-md mb-md">Developer Tools</h3>
-        <p className="body mb-lg">Complete development ecosystem with APIs, SDKs, debugging tools, and comprehensive documentation.</p>
-        <ul className="body">
-          <li>RESTful and GraphQL APIs</li>
-          <li>Multi-language SDKs</li>
-          <li>Visual debugging tools</li>
-          <li>Automated testing framework</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</Section>
-
-<Section>
-  <div className="container">
-    <h2 className="display-md text-center mb-2xl">Technical Specifications</h2>
-    
-    <div className="grid grid--2">
-      <div className="card">
-        <h3 className="headline-md mb-lg">System Requirements</h3>
-        <div className="grid grid--2">
-          <div>
-            <h4 className="body-lg mb-md">Minimum Requirements</h4>
-            <ul className="body">
-              <li>CPU: 4-core ARM64 or x86_64</li>
-              <li>RAM: 8GB</li>
-              <li>Storage: 64GB SSD</li>
-              <li>OS: Ubuntu 22.04 LTS</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="body-lg mb-md">Recommended</h4>
-            <ul className="body">
-              <li>CPU: 8-core ARM64 or x86_64</li>
-              <li>RAM: 32GB</li>
-              <li>Storage: 512GB NVMe SSD</li>
-              <li>GPU: NVIDIA Jetson or RTX series</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      
-      <div className="card">
-        <h3 className="headline-md mb-lg">Supported Protocols</h3>
-        <div className="grid grid--2">
-          <div>
-            <h4 className="body-lg mb-md">Communication</h4>
-            <ul className="body">
-              <li>DDS (Data Distribution Service)</li>
-              <li>MQTT/MQTT-SN</li>
-              <li>WebSocket/WebRTC</li>
-              <li>HTTP/2 and gRPC</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="body-lg mb-md">Industrial</h4>
-            <ul className="body">
-              <li>OPC-UA</li>
-              <li>Modbus TCP/RTU</li>
-              <li>EtherCAT</li>
-              <li>CANbus/CAN-FD</li>
-            </ul>
-          </div>
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">🤖 Fleet & Device Management</h3>
+          <p className="body-lg mb-md">WiseOS helps you treat robots, drones and sensors as one fleet:</p>
+          <ul className="body-lg">
+            <li>Track status, connectivity and basic health</li>
+            <li>Organize devices by site, zone or mission</li>
+            <li>AI agentic capabilities (integrated with ROS 2)</li>
+          </ul>
+          <p className="body-lg mt-md">It gives a <strong>robotics-aware operations layer</strong> aligned with ROS 2.</p>
         </div>
       </div>
     </div>
@@ -442,17 +145,107 @@ import Section from '@site/src/components/Section';
 </Section>
 
 <Section background="gradient">
-  <div className="container text-center">
-    <h2 className="display-lg mb-lg">Ready to Get Started?</h2>
-    <p className="body-xl mb-2xl">Transform your robotics operations with WiseOS's comprehensive platform</p>
+  <div className="container">
+    <h2 className="display-md text-center mb-lg">Operator Dashboards & APIs</h2>
+    <p className="body-xl text-center mb-2xl">WiseOS comes with a lightweight dashboard and APIs that let you:</p>
     
-    <div style={{display: 'flex', gap: 'var(--space-lg)', justifyContent: 'center', flexWrap: 'wrap'}}>
-      <a href="/demo" className="btn btn--primary">Schedule Demo</a>
-      <a href="/contact" className="btn btn--secondary">Contact Sales</a>
+    <div className="grid grid--3">
+      <div className="card">
+        <h3 className="headline-md mb-md">📈 Visualize</h3>
+        <p className="body">See key metrics and events across your fleet in real-time.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🔍 Inspect</h3>
+        <p className="body">Examine devices and topics to understand system behavior.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🔗 Integrate</h3>
+        <p className="body">Connect with external systems (SCADA, BI, ticketing) via APIs.</p>
+      </div>
     </div>
     
-    <div className="mt-xl">
-      <p className="caption">Enterprise support • Custom integration • 24/7 monitoring</p>
+    <p className="body-xl text-center mt-xl">You keep full control over your stack – WiseOS adds the <strong>glue</strong> between robots and the rest of your infrastructure.</p>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container">
+    <h2 className="display-md text-center mb-2xl">Business Benefits</h2>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <h3 className="headline-md mb-md">⏱️ Shorter Integration Timelines</h3>
+        <p className="body">Reuse WiseOS components instead of building infra from scratch.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🔧 Lower Maintenance Effort</h3>
+        <p className="body">Standardized connectivity, logging and monitoring reduce operational overhead.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">👁️ Better Observability</h3>
+        <p className="body">One place to inspect telemetry, historical data and status.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🌐 Vendor-Neutral</h3>
+        <p className="body">Built on open standards and open-source components.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">📈 Scalable Architecture</h3>
+        <p className="body">From a single robot to fleets across multiple sites.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🔓 Open Core</h3>
+        <p className="body">MPL-2.0 license for the open core, with optional commercial support.</p>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section>
+  <div className="container">
+    <h2 className="display-md text-center mb-2xl">Technical Foundations</h2>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <h3 className="headline-md mb-lg">Built On</h3>
+        <ul className="body-lg">
+          <li><strong>ROS 2</strong> (Humble, Jazzy and newer)</li>
+          <li><strong>Eclipse Zenoh</strong> for distributed communication</li>
+          <li><strong>InfluxDB</strong> for time-series telemetry</li>
+          <li><strong>LoRaWAN / ChirpStack</strong> for long-range IoT</li>
+          <li>Container-friendly deployment (Docker, on-prem or cloud)</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-lg">Deployment Options</h3>
+        <ul className="body-lg">
+          <li><strong>On-premises</strong> for air-gapped or sensitive environments</li>
+          <li><strong>Cloud</strong> for managed infrastructure</li>
+          <li><strong>Hybrid</strong> with edge nodes and central coordination</li>
+          <li><strong>Docker</strong> for container orchestration</li>
+        </ul>
+        <p className="body-lg mt-md"><strong>License:</strong> MPL-2.0 for the open core, with optional commercial support.</p>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="gradient">
+  <div className="container text-center">
+    <h2 className="display-lg mb-lg">Bring Your Robots, Sensors and Infrastructure Under One Operational Umbrella</h2>
+    <p className="body-xl mb-2xl">Get started with WiseOS and simplify your robotics operations</p>
+    
+    <div style={{display: 'flex', gap: 'var(--space-lg)', justifyContent: 'center', flexWrap: 'wrap'}}>
+      <a href="/contact" className="btn btn--primary">Talk to Us About Integrating WiseOS</a>
+      <a href="https://github.com/wise-vision" className="btn btn--secondary">View on GitHub</a>
     </div>
   </div>
 </Section>

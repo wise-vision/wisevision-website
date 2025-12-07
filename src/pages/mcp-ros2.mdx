@@ -1,7 +1,7 @@
 ---
-title: MCP ROS2 - Model Context Protocol Bridge for ROS 2
-description: MCP ROS2 enables seamless communication between AI models and robotics systems with real-time data exchange. Bridge the gap between AI and robotics with our Model Context Protocol implementation.
-keywords: [MCP ROS2, Model Context Protocol, ROS 2 integration, AI robotics, real-time data exchange, robotics AI bridge]
+title: MCP ROS2 – Operational Bridge Between AI & ROS 2
+description: MCP ROS2 is a Model Context Protocol (MCP) server for ROS 2 that lets AI agents and tools talk to robots in a structured, safe and observable way.
+keywords: [MCP ROS2, Model Context Protocol, ROS 2 integration, AI robotics, Claude, Cursor, AI agents, robotics automation]
 image: /img/mcp-ros2-social-card.jpg
 ---
 
@@ -9,13 +9,13 @@ import Hero from '@site/src/components/Hero';
 import Section from '@site/src/components/Section';
 
 <head>
-  <meta property="og:title" content="MCP ROS2 - Model Context Protocol Bridge for ROS 2" />
-  <meta property="og:description" content="Enable seamless communication between AI models and robotics systems with real-time data exchange through our Model Context Protocol implementation." />
+  <meta property="og:title" content="MCP ROS2 – Operational Bridge Between AI & ROS 2" />
+  <meta property="og:description" content="MCP ROS2 is a Model Context Protocol server for ROS 2 that lets AI agents and tools talk to robots in a structured, safe and observable way." />
   <meta property="og:url" content="https://wisevision.tech/mcp-ros2" />
   <meta property="og:image" content="https://wisevision.tech/img/mcp-ros2-social-card.jpg" />
   
-  <meta name="twitter:title" content="MCP ROS2 - AI-Robotics Bridge" />
-  <meta name="twitter:description" content="Seamless communication between AI models and robotics systems with real-time data exchange." />
+  <meta name="twitter:title" content="MCP ROS2 – Operational Bridge Between AI & ROS 2" />
+  <meta name="twitter:description" content="Model Context Protocol server for ROS 2. Connect AI agents to robots safely." />
   <meta name="twitter:image" content="https://wisevision.tech/img/mcp-ros2-social-card.jpg" />
   
   <script type="application/ld+json">
@@ -23,13 +23,13 @@ import Section from '@site/src/components/Section';
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
       "name": "MCP ROS2",
-      "description": "Model Context Protocol bridge for ROS 2, enabling seamless communication between AI models and robotics systems with real-time data exchange.",
+      "description": "Model Context Protocol server for ROS 2, enabling AI agents and tools to interact with robots in a structured, safe and observable way.",
       "url": "https://wisevision.tech/mcp-ros2",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Linux, Windows, macOS",
       "offers": {
         "@type": "Offer",
-        "description": "AI-Robotics communication bridge",
+        "description": "Operational bridge between AI agents and ROS 2",
         "availability": "https://schema.org/InStock"
       }
     })}
@@ -37,69 +37,102 @@ import Section from '@site/src/components/Section';
 </head>
 
 <Hero 
-  title="MCP ROS2"
-  subtitle="AI agents that can actually do things in ROS 2. MCP ROS2 is our Model Context Protocol server that lets any MCP-compatible client (Claude Desktop, Copilot-style tools, terminals) discover topics/services, subscribe, publish, call services, and query historical data."
+  title="MCP ROS2 – Operational Bridge Between AI & ROS 2"
+  subtitle="MCP ROS2 is a Model Context Protocol (MCP) server for ROS 2 that lets AI agents and tools talk to robots in a structured, safe and observable way. Think of it as a translator between AI agents (Claude, Cursor, custom LLM tools) and ROS 2 systems (topics, services, actions, telemetry)."
   primaryCTA={{
-    text: "See Demo",
+    text: "Explore Demo",
     href: "/demo"
   }}
   secondaryCTA={{
-    text: "View on GitHub",
-    href: "https://github.com/wise-vision/mcp_server_ros_2"
+    text: "Explore on GitHub",
+    href: "https://github.com/wise-vision/ros2_mcp"
   }}
 />
 
+<Section background="dark">
+  <div className="container">
+    <h2 className="display-md text-center mb-lg">What MCP ROS2 Enables</h2>
+    <p className="body-xl text-center mb-2xl">Instead of writing custom glue code for each use case, you expose your ROS 2 environment as standard MCP tools that any compatible client can discover and use.</p>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>🤖</div>
+        <h3 className="headline-md mb-md">AI-Assisted Debugging</h3>
+        <p className="body">Use AI assistants to inspect, debug and control robots via ROS 2. Ask questions and get structured answers about your robot's state.</p>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>💻</div>
+        <h3 className="headline-md mb-md">Developer Workflows</h3>
+        <p className="body">Build workflows where agents can read topics, call services and publish commands directly from your dev environment.</p>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>📊</div>
+        <h3 className="headline-md mb-md">Monitoring & Analytics</h3>
+        <p className="body">Connect monitoring and analytics tools to ROS 2 data through a consistent interface.</p>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>🔧</div>
+        <h3 className="headline-md mb-md">Higher-Level Orchestration</h3>
+        <p className="body">Create orchestration logic on top of WiseOS and your robotic systems.</p>
+      </div>
+    </div>
+  </div>
+</Section>
+
 <Section>
   <div className="container">
+    <h2 className="display-md text-center mb-2xl">Core Features</h2>
+    
     <div className="grid grid--2">
       <div>
-        <h2 className="headline-lg mb-lg">Use It To</h2>
-        
         <div className="mb-xl">
-          <h3 className="headline-md mb-md">🗣️ Natural Language Commands</h3>
-          <p className="body-lg mb-md">
-            Turn natural-language instructions into ROS 2 actions (pub/sub, service calls). Simply tell your AI assistant what you want your robot to do, and MCP ROS2 handles the translation.
-          </p>
-          <a href="https://github.com/wise-vision/mcp_server_ros_2" className="btn btn--secondary btn--sm">GitHub</a>
+          <h3 className="headline-md mb-md">⚡ Simple, Fast Setup</h3>
+          <ul className="body-lg">
+            <li>Installable via <code>pip</code>, Docker, MCP Market, and dev-tool integrations</li>
+            <li>Uses <strong>stdio</strong> transport for minimal configuration overhead</li>
+            <li>Designed for <strong>rapid prototyping</strong> and incremental adoption</li>
+          </ul>
         </div>
 
         <div className="mb-xl">
-          <h3 className="headline-md mb-md">🔌 Universal AI Integration</h3>
-          <p className="body-lg mb-md">
-            Wire editors and shells to robots via the open MCP standard ("USB-C for AI apps"). Connect Claude Desktop, Copilot-style tools, or any MCP-compatible client to your robotics infrastructure.
-          </p>
-          <a href="https://www.anthropic.com/news/model-context-protocol" className="btn btn--secondary btn--sm">Anthropic MCP</a>
-        </div>
-
-        <div className="mb-xl">
-          <h3 className="headline-md mb-md">⚡ Advanced Workflows (Pro)</h3>
-          <p className="body-lg mb-md">
-            Run multi-step flows and parallel streams with our Pro version. Execute complex robotic procedures with higher-throughput workflows and advanced orchestration capabilities.
-          </p>
-          <a href="https://github.com/wise-vision/mcp_server_ros_2" className="btn btn--secondary btn--sm">GitHub</a>
+          <h3 className="headline-md mb-md">🔍 Auto-Discovery of ROS 2 Interfaces</h3>
+          <p className="body-lg mb-md">MCP ROS2 automatically discovers ROS 2:</p>
+          <ul className="body-lg">
+            <li>Topics</li>
+            <li>Services</li>
+            <li>(Optionally) Actions</li>
+          </ul>
+          <p className="body-lg mt-md">...and exposes them as MCP tools, including schema and field definitions. AI agents can dynamically ask what interfaces are available, subscribe/publish to topics, and call services with validated parameters.</p>
         </div>
       </div>
 
       <div>
-        <h2 className="headline-lg mb-lg">Why It Matters</h2>
-        
-        <div className="card mb-xl">
-          <h3 className="headline-md mb-md">Future-Proof AI Integration</h3>
-          <p className="body-lg mb-md">
-            MCP is becoming a cross-vendor way to connect agents to real tools—now including robotics platforms—so choosing MCP ROS2 keeps your robotics interface aligned with where the AI ecosystem is going.
-          </p>
-          <a href="https://www.claudemcp.com/" className="btn btn--secondary btn--sm">Antropic MCP</a>
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">🛠️ Semantic, Tool-Oriented Design</h3>
+          <p className="body-lg mb-md">Instead of low-level sockets or custom APIs, you interact via MCP tools:</p>
+          <ul className="body-lg">
+            <li><code>list_topics</code>, <code>subscribe_topic</code>, <code>publish_topic</code></li>
+            <li><code>list_services</code>, <code>call_service</code></li>
+            <li><code>query_data_black_box</code> (for telemetry via WiseOS / InfluxDB)</li>
+          </ul>
+          <p className="body-lg mt-md">This makes MCP ROS2 a natural fit for <strong>agentic workflows</strong> and integrated dev tools.</p>
         </div>
 
-        <div className="card">
-          <h3 className="headline-md mb-md">Core Features</h3>
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">🔗 Integration with WiseOS & Data Black Box</h3>
+          <p className="body-lg mb-md">When used together with WiseOS:</p>
           <ul className="body-lg">
-            <li><strong>Open-source core</strong> with community support</li>
-            <li><strong>Topic discovery</strong> and real-time subscription</li>
-            <li><strong>Service calls</strong> with parameter validation</li>
-            <li><strong>Historical data queries</strong> from Data Black Box</li>
-            <li><strong>Multi-topic publish/subscribe</strong> (Pro)</li>
-            <li><strong>Enterprise security</strong> and access controls (Pro)</li>
+            <li>MCP ROS2 can access historical and live telemetry from <strong>Data Black Box (InfluxDB)</strong></li>
+            <li>AI agents can correlate <strong>system state</strong> with <strong>commands and events</strong></li>
+            <li>Build powerful debugging and analysis flows</li>
+          </ul>
+          <p className="body-lg mt-md"><strong>Examples:</strong></p>
+          <ul className="body-lg">
+            <li>"Check last 100 messages on <code>/cmd_vel</code> and compare with battery voltage."</li>
+            <li>"Show errors correlated with network latency spikes."</li>
           </ul>
         </div>
       </div>
@@ -108,9 +141,64 @@ import Section from '@site/src/components/Section';
 </Section>
 
 <Section background="gradient">
+  <div className="container">
+    <h2 className="display-md text-center mb-lg">Safety & Governance</h2>
+    <p className="body-xl text-center mb-2xl">MCP ROS2 is designed to be safe for real systems. You remain in control of what AI agents can and cannot do.</p>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <h3 className="headline-md mb-md">🔐 Configurable Access</h3>
+        <ul className="body-lg">
+          <li>Configurable lists of allowed topics and services</li>
+          <li>Role-based control over which tools are exposed to which clients</li>
+          <li>Ability to restrict write access or sensitive operations</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">📋 Logging & Auditing</h3>
+        <ul className="body-lg">
+          <li>Logging of tool usage for auditing and post-mortem analysis</li>
+          <li>Track what agents did and when</li>
+          <li>Full transparency over AI interactions with your robots</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container">
+    <h2 className="display-md text-center mb-2xl">Use Cases</h2>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <h3 className="headline-md mb-md">🔍 AI-Assisted Debugging</h3>
+        <p className="body">Use an AI assistant to inspect topics, logs and patterns. Ask natural language questions about your robot's behavior.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🗣️ Natural-Language Control</h3>
+        <p className="body">Build voice/chat interfaces for lab robots and demos. Issue commands in plain English.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">💻 Developer Tooling</h3>
+        <p className="body">Integrate ROS 2 into IDEs, terminals and dev environments. Reduce context switching.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🛠️ Ops Tooling</h3>
+        <p className="body">Let SRE/ops teams inspect ROS 2 systems without writing custom code. Faster troubleshooting.</p>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section>
   <div className="container text-center">
     <h2 className="display-md mb-lg">Compatible Ecosystem</h2>
-    <p className="body-xl mb-2xl">Works with leading AI platforms and development tools</p>
+    <p className="body-xl mb-2xl">Works with popular AI platforms and development tools</p>
     
     <div className="grid grid--3">
       <div className="card">
@@ -121,239 +209,56 @@ import Section from '@site/src/components/Section';
       
       <div className="card">
         <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>💻</div>
-        <h3 className="headline-md">Development Tools</h3>
-        <p className="body">Terminal, VS Code, and editor integrations</p>
+        <h3 className="headline-md">Cursor & VS Code</h3>
+        <p className="body">IDE integrations for dev workflows</p>
       </div>
       
       <div className="card">
         <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>🔧</div>
-        <h3 className="headline-md">Custom Clients</h3>
-        <p className="body">Build your own MCP-compatible tools</p>
-      </div>
-    </div>
-  </div>
-</Section>
-
-<Section>
-  <div className="container">
-    <div className="grid grid--2">
-      <div>
-        <h2 className="display-md mb-lg">Intelligent Robotics Communication</h2>
-        <p className="body-xl mb-lg">
-          MCP ROS2 revolutionizes how AI models interact with robotic systems by providing a standardized, high-performance bridge that enables real-time data exchange and intelligent decision-making across your robotics infrastructure.
-        </p>
-        <div className="card" style={{background: 'var(--bg-tertiary)', marginBottom: 'var(--space-xl)'}}>
-          <h3 className="headline-md mb-md">🔗 Key Benefits</h3>
-          <ul className="body-lg">
-            <li>Real-time AI model integration with ROS 2</li>
-            <li>Standardized communication protocols</li>
-            <li>Low-latency data exchange (sub-millisecond)</li>
-            <li>Scalable across distributed robotics fleets</li>
-          </ul>
-        </div>
-      </div>
-      <div>
-        <div className="card" style={{background: 'linear-gradient(135deg, var(--primary-800), var(--primary-700))', padding: 'var(--space-2xl)', textAlign: 'center'}}>
-          <div style={{fontSize: '4rem', marginBottom: 'var(--space-lg)'}}>🔗</div>
-          <h3 className="headline-lg mb-lg">Available on MCP Market</h3>
-          <p className="body-lg mb-xl">Get MCP ROS2 Pro with advanced features and enterprise support.</p>
-          <a href="https://app.easy.tools/ec/wisevision" className="btn btn--primary">Get MCP ROS2 Pro</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</Section>
-
-<Section background="dark">
-  <div className="container">
-    <h2 className="display-md text-center mb-2xl">How MCP ROS2 Works</h2>
-    
-    <div className="grid grid--3">
-      <div className="card card--service">
-        <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center'}}>🧠</div>
-        <h3 className="headline-md mb-md">AI Model Integration</h3>
-        <p className="body mb-lg">Connect any AI model to your ROS 2 ecosystem with standardized interfaces and automatic data serialization.</p>
-        <ul className="body">
-          <li>TensorFlow, PyTorch, ONNX support</li>
-          <li>Automatic tensor conversion</li>
-          <li>Model versioning and hot-swapping</li>
-          <li>GPU acceleration support</li>
-        </ul>
-      </div>
-      
-      <div className="card card--service">
-        <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center'}}>⚡</div>
-        <h3 className="headline-md mb-md">Real-time Processing</h3>
-        <p className="body mb-lg">Ultra-low latency communication ensuring your robots can make intelligent decisions in real-time.</p>
-        <ul className="body">
-          <li>Sub-millisecond latency</li>
-          <li>Zero-copy data transfer</li>
-          <li>Parallel processing pipelines</li>
-          <li>Deterministic scheduling</li>
-        </ul>
-      </div>
-      
-      <div className="card card--service">
-        <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center'}}>🌐</div>
-        <h3 className="headline-md mb-md">Distributed Architecture</h3>
-        <p className="body mb-lg">Scale across multiple robots and edge devices with intelligent load balancing and fault tolerance.</p>
-        <ul className="body">
-          <li>Multi-robot coordination</li>
-          <li>Edge computing optimization</li>
-          <li>Automatic failover</li>
-          <li>Dynamic load balancing</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</Section>
-
-<Section>
-  <div className="container">
-    <h2 className="display-md text-center mb-2xl">Technical Architecture</h2>
-    
-    <div className="grid grid--2">
-      <div className="card">
-        <h3 className="headline-md mb-lg">Protocol Stack</h3>
-        <div className="code mb-lg">
-          AI Model ↔ MCP Bridge ↔ ROS 2 Network
-        </div>
-        <ul className="body">
-          <li><strong>Application Layer:</strong> AI model interfaces and APIs</li>
-          <li><strong>Protocol Layer:</strong> Model Context Protocol implementation</li>
-          <li><strong>Transport Layer:</strong> DDS/RTPS for ROS 2 communication</li>
-          <li><strong>Network Layer:</strong> UDP/TCP with quality of service</li>
-        </ul>
-      </div>
-      
-      <div className="card">
-        <h3 className="headline-md mb-lg">Data Flow</h3>
-        <div className="body mb-lg">
-          <strong>1. Sensor Data Collection</strong><br/>
-          Robot sensors gather environmental data through ROS 2 topics
-        </div>
-        <div className="body mb-lg">
-          <strong>2. Real-time Processing</strong><br/>
-          MCP ROS2 converts and routes data to appropriate AI models
-        </div>
-        <div className="body mb-lg">
-          <strong>3. Intelligent Decision</strong><br/>
-          AI models process data and generate control commands
-        </div>
-        <div className="body">
-          <strong>4. Robotic Action</strong><br/>
-          Commands are executed through ROS 2 action servers
-        </div>
-      </div>
-    </div>
-  </div>
-</Section>
-
-<Section background="dark">
-  <div className="container">
-    <h2 className="display-md text-center mb-2xl">Integration Examples</h2>
-    
-    <div className="grid grid--2">
-      <div className="card">
-        <h3 className="headline-md mb-md">Computer Vision Pipeline</h3>
-        <div className="code mb-md">
-          camera/image_raw → MCP Bridge → YOLO Model → object_detection/results
-        </div>
-        <p className="body mb-lg">Real-time object detection with automatic bounding box publishing to ROS 2 topics.</p>
-        <ul className="body">
-          <li>Image preprocessing and normalization</li>
-          <li>Model inference with GPU acceleration</li>
-          <li>Result formatting for ROS 2 messages</li>
-          <li>Visualization and debugging tools</li>
-        </ul>
-      </div>
-      
-      <div className="card">
-        <h3 className="headline-md mb-md">Natural Language Commands</h3>
-        <div className="code mb-md">
-          voice/audio → Speech-to-Text → NLP Model → robot/commands
-        </div>
-        <p className="body mb-lg">Voice-controlled robotics with natural language understanding and intent recognition.</p>
-        <ul className="body">
-          <li>Speech recognition and transcription</li>
-          <li>Intent classification and entity extraction</li>
-          <li>Command mapping to robot actions</li>
-          <li>Multi-language support</li>
-        </ul>
-      </div>
-      
-      <div className="card">
-        <h3 className="headline-md mb-md">Predictive Maintenance</h3>
-        <div className="code mb-md">
-          diagnostics/sensors → Anomaly Detection → maintenance/alerts
-        </div>
-        <p className="body mb-lg">AI-powered predictive maintenance with anomaly detection and failure prediction.</p>
-        <ul className="body">
-          <li>Sensor data aggregation and analysis</li>
-          <li>Machine learning-based anomaly detection</li>
-          <li>Maintenance scheduling optimization</li>
-          <li>Performance trend analysis</li>
-        </ul>
-      </div>
-      
-      <div className="card">
-        <h3 className="headline-md mb-md">Path Planning</h3>
-        <div className="code mb-md">
-          map/occupancy → A* + ML → navigation/path
-        </div>
-        <p className="body mb-lg">Intelligent path planning with machine learning-enhanced algorithms and dynamic obstacle avoidance.</p>
-        <ul className="body">
-          <li>Real-time map processing</li>
-          <li>Dynamic obstacle detection</li>
-          <li>Optimal path computation</li>
-          <li>Multi-robot coordination</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</Section>
-
-<Section>
-  <div className="container">
-    <h2 className="display-md text-center mb-2xl">Performance Metrics</h2>
-    
-    <div className="grid grid--4">
-      <div className="text-center">
-        <div className="display-lg text-accent mb-sm">&lt;1ms</div>
-        <div className="headline-md mb-md">Latency</div>
-        <div className="body">End-to-end processing time for real-time applications</div>
-      </div>
-      <div className="text-center">
-        <div className="display-lg text-accent mb-sm">10K+</div>
-        <div className="headline-md mb-md">Messages/sec</div>
-        <div className="body">High-throughput data processing capability</div>
-      </div>
-      <div className="text-center">
-        <div className="display-lg text-accent mb-sm">99.9%</div>
-        <div className="headline-md mb-md">Uptime</div>
-        <div className="body">Enterprise-grade reliability and fault tolerance</div>
-      </div>
-      <div className="text-center">
-        <div className="display-lg text-accent mb-sm">1000+</div>
-        <div className="headline-md mb-md">Robots</div>
-        <div className="body">Scalable across large robotic fleets</div>
+        <h3 className="headline-md">MCP-Compatible Clients</h3>
+        <p className="body">Any tool that supports Model Context Protocol</p>
       </div>
     </div>
   </div>
 </Section>
 
 <Section background="gradient">
+  <div className="container">
+    <h2 className="display-md text-center mb-2xl">Ecosystem & Availability</h2>
+    
+    <div className="grid grid--3">
+      <div className="card text-center">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>📦</div>
+        <h3 className="headline-md mb-md">GitHub</h3>
+        <p className="body">Source code under MPL-2.0</p>
+        <a href="https://github.com/wise-vision/ros2_mcp" className="btn btn--secondary btn--sm mt-md">View Repository</a>
+      </div>
+      
+      <div className="card text-center">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>🐳</div>
+        <h3 className="headline-md mb-md">Docker</h3>
+        <p className="body">Packaged server images</p>
+        <a href="https://github.com/wise-vision/ros2_mcp" className="btn btn--secondary btn--sm mt-md">Get Docker Image</a>
+      </div>
+      
+      <div className="card text-center">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>🛒</div>
+        <h3 className="headline-md mb-md">MCP Market</h3>
+        <p className="body">Easy install into MCP-compatible clients</p>
+        <a href="https://app.easy.tools/ec/wisevision" className="btn btn--secondary btn--sm mt-md">Install from MCP Market</a>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
   <div className="container text-center">
-    <h2 className="display-lg mb-lg">Start Building Intelligent Robots</h2>
-    <p className="body-xl mb-2xl">Transform your robotics with AI-powered decision making through MCP ROS2</p>
+    <h2 className="display-lg mb-lg">Give Your AI Agents and Tools a First-Class Interface to Robotics</h2>
+    <p className="body-xl mb-2xl">Get started with MCP ROS2 and bridge AI and ROS 2</p>
     
     <div style={{display: 'flex', gap: 'var(--space-lg)', justifyContent: 'center', flexWrap: 'wrap'}}>
-      <a href="https://app.easy.tools/ec/wisevision" className="btn btn--primary">Get MCP ROS2 Pro</a>
-      <a href="/demo" className="btn btn--secondary">Schedule Demo</a>
-    </div>
-    
-    <div className="mt-xl">
-      <p className="caption">Free community version available • Enterprise support • Custom integrations</p>
+      <a href="https://github.com/wise-vision/ros2_mcp" className="btn btn--primary">Explore MCP ROS2 on GitHub</a>
+      <a href="https://app.easy.tools/ec/wisevision" className="btn btn--secondary">Install from MCP Market</a>
     </div>
   </div>
 </Section>

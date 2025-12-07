@@ -1,7 +1,7 @@
 ---
-title: Digital Twins - Advanced Simulation and Modeling Platform
-description: Create precise digital replicas of your robotic systems with real-time synchronization, predictive analytics, and virtual testing environments. Accelerate development and optimize performance.
-keywords: [Digital Twins, robotics simulation, real-time synchronization, predictive analytics, virtual testing, robotic modeling]
+title: Digital Twins – Real-Time 3D Twins of Robotics & Infrastructure
+description: WiseVision Digital Twins provide high-fidelity virtual representations of your robots, assets and environments, built on O3DE, NVIDIA Isaac Sim and Genesis physics.
+keywords: [Digital Twins, robotics simulation, O3DE, NVIDIA Isaac Sim, Genesis, ROS 2, virtual testing, 3D environments]
 image: /img/digital-twins-social-card.jpg
 ---
 
@@ -9,13 +9,13 @@ import Hero from '@site/src/components/Hero';
 import Section from '@site/src/components/Section';
 
 <head>
-  <meta property="og:title" content="Digital Twins - Advanced Simulation and Modeling Platform" />
-  <meta property="og:description" content="Create precise digital replicas of your robotic systems with real-time synchronization, predictive analytics, and virtual testing environments." />
+  <meta property="og:title" content="Digital Twins – Real-Time 3D Twins of Robotics & Infrastructure" />
+  <meta property="og:description" content="High-fidelity virtual representations of your robots and environments, built on O3DE, NVIDIA Isaac Sim and Genesis." />
   <meta property="og:url" content="https://wisevision.tech/digital-twins" />
   <meta property="og:image" content="https://wisevision.tech/img/digital-twins-social-card.jpg" />
   
-  <meta name="twitter:title" content="Digital Twins - Robotics Simulation Platform" />
-  <meta name="twitter:description" content="Precise digital replicas with real-time sync, predictive analytics, and virtual testing." />
+  <meta name="twitter:title" content="Digital Twins – Real-Time 3D Twins of Robotics & Infrastructure" />
+  <meta name="twitter:description" content="High-fidelity virtual representations built on O3DE, NVIDIA Isaac Sim and Genesis." />
   <meta name="twitter:image" content="https://wisevision.tech/img/digital-twins-social-card.jpg" />
   
   <script type="application/ld+json">
@@ -23,10 +23,10 @@ import Section from '@site/src/components/Section';
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
       "name": "WiseVision Digital Twins",
-      "description": "Advanced simulation and modeling platform for creating precise digital replicas of robotic systems with real-time synchronization and predictive analytics.",
+      "description": "High-fidelity virtual representations of robots, assets and environments, tightly integrated with ROS 2 and WiseOS.",
       "url": "https://wisevision.tech/digital-twins",
       "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Linux, Windows, macOS",
+      "operatingSystem": "Linux, Windows",
       "offers": {
         "@type": "Offer",
         "description": "Digital twin simulation platform",
@@ -37,132 +37,43 @@ import Section from '@site/src/components/Section';
 </head>
 
 <Hero 
-  title="Digital Twins"
-  subtitle="Simulate, train, and validate before reality. We build ROS 2 simulations with O3DE (ROS 2 Gem + GPU LiDAR, cameras, controllers) and Genesis (a high-performance physics platform for embodied AI), so you can iterate in photoreal scenes, run policy evals, and take sim-to-real steps with confidence."
+  title="Digital Twins – Real-Time 3D Twins of Your Robotics & Infrastructure"
+  subtitle="WiseVision Digital Twins provide high-fidelity virtual representations of your robots, assets and environments, tightly integrated with ROS 2 and WiseOS. Visualize, simulate and validate operations before they happen in the real world."
   primaryCTA={{
-    text: "Start Free Trial",
-    href: "/demo"
+    text: "Request a Demo",
+    href: "/contact"
   }}
   secondaryCTA={{
     text: "View Examples",
-    href: "https://genesis-embodied-ai.github.io/"
+    href: "https://github.com/wise-vision"
   }}
 />
 
-<Section>
-  <div className="container">
-    <div className="grid grid--2">
-      <div>
-        <h2 className="headline-lg mb-lg">Highlights</h2>
-        
-        <div className="mb-xl">
-          <h3 className="headline-md mb-md">🎮 ROS 2-Native O3DE Simulations</h3>
-          <p className="body-lg mb-md">
-            No bridge required—sensors and controllers work out of the box. Add GPU LiDAR via the RGL Gem for ultra-realistic perception testing in photoreal environments.
-          </p>
-          <a href="https://www.o3de.org/" className="btn btn--secondary btn--sm">O3DE</a>
-        </div>
-
-        <div className="mb-xl">
-          <h3 className="headline-md mb-md">🚀 Proven at Scale</h3>
-          <p className="body-lg mb-md">
-            Battle-tested in community demos with multi-robot, perception-heavy scenes. From single robot validation to fleet-wide coordination scenarios.
-          </p>
-          <a href="https://github.com/wise-vision" className="btn btn--secondary btn--sm">GitHub</a>
-        </div>
-
-        <div className="mb-xl">
-          <h3 className="headline-md mb-md">⚡ Genesis Physics Engine</h3>
-          <p className="body-lg mb-md">
-            Fast physics experiments and policy training loops with Genesis—a high-performance physics platform optimized for embodied AI research and development.
-          </p>
-          <a href="https://genesis-embodied-ai.github.io/" className="btn btn--secondary btn--sm">Genesis</a>
-        </div>
-      </div>
-
-      <div>
-        <h2 className="headline-lg mb-lg">Simulation Capabilities</h2>
-        
-        <div className="card mb-xl">
-          <h3 className="headline-md mb-md">Photorealistic Environments</h3>
-          <p className="body-lg mb-md">
-            Create stunning visual simulations with O3DE's advanced rendering pipeline. Test perception algorithms in conditions that match real-world lighting, textures, and environmental factors.
-          </p>
-          <ul className="body-lg">
-            <li>GPU-accelerated rendering</li>
-            <li>Realistic lighting and shadows</li>
-            <li>Dynamic weather conditions</li>
-            <li>Material physics simulation</li>
-          </ul>
-        </div>
-
-        <div className="card">
-          <h3 className="headline-md mb-md">Advanced Sensor Simulation</h3>
-          <ul className="body-lg">
-            <li><strong>GPU LiDAR</strong> with ray tracing accuracy</li>
-            <li><strong>RGB-D cameras</strong> with realistic noise models</li>
-            <li><strong>IMU sensors</strong> with drift and bias simulation</li>
-            <li><strong>GPS/GNSS</strong> with multipath effects</li>
-            <li><strong>Custom sensors</strong> via plugin architecture</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</Section>
-
 <Section background="dark">
   <div className="container text-center">
-    <h2 className="display-md mb-lg">Simulation Platforms</h2>
-    <p className="body-xl mb-2xl">Powered by industry-leading simulation technologies</p>
+    <h2 className="display-md mb-lg">Built on the Best Tools for Each Scenario</h2>
+    <p className="body-xl mb-2xl">We use the right simulation engine for your specific needs</p>
     
-    <div className="grid grid--2">
+    <div className="grid grid--3">
       <div className="card">
         <div style={{ fontSize: '4rem', marginBottom: 'var(--space-lg)' }}>🎮</div>
-        <h3 className="headline-lg mb-md">O3DE Integration</h3>
-        <p className="body-lg mb-lg">
-          Open 3D Engine with native ROS 2 support, GPU-accelerated rendering, and professional-grade simulation capabilities for complex robotic scenarios.
-        </p>
-        <div style={{ display: 'flex', gap: 'var(--space-sm)', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <a href="https://www.o3de.org/" className="btn btn--secondary btn--sm">O3DE</a>
-          <a href="https://docs.o3de.org/docs/user-guide/gems/reference/robotics/" className="btn btn--secondary btn--sm">ROS 2 Gem</a>
-        </div>
+        <h3 className="headline-lg mb-md">O3DE</h3>
+        <p className="body-lg mb-lg">Open 3D Engine – open-source game engine with ROS 2 Gem, great for custom environments and GPU LiDAR.</p>
+        <a href="https://www.o3de.org/" className="btn btn--secondary btn--sm">Learn More</a>
       </div>
       
       <div className="card">
-        <div style={{ fontSize: '4rem', marginBottom: 'var(--space-lg)' }}>⚡</div>
-        <h3 className="headline-lg mb-md">Genesis Physics</h3>
-        <p className="body-lg mb-lg">
-          High-performance physics simulation optimized for embodied AI, with fast iteration cycles for policy training and validation workflows.
-        </p>
-        <div style={{ display: 'flex', gap: 'var(--space-sm)', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <a href="https://genesis-embodied-ai.github.io/" className="btn btn--secondary btn--sm">Genesis</a>
-          <a href="https://github.com/Genesis-Embodied-AI/Genesis" className="btn btn--secondary btn--sm">GitHub</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</Section>
-
-<Section>
-  <div className="container text-center">
-    <h2 className="display-md mb-lg">Sim-to-Real Success</h2>
-    <p className="body-xl mb-2xl">Bridge the gap between simulation and reality</p>
-    
-    <div className="grid grid--3">
-      <div className="card">
-        <h3 className="headline-md mb-md">Validate First</h3>
-        <p className="body-lg">Test algorithms and behaviors in simulation before expensive real-world deployment</p>
+        <div style={{ fontSize: '4rem', marginBottom: 'var(--space-lg)' }}>🚀</div>
+        <h3 className="headline-lg mb-md">NVIDIA Isaac Sim</h3>
+        <p className="body-lg mb-lg">Robotics-focused simulator with strong integration into NVIDIA's ecosystem.</p>
+        <a href="https://developer.nvidia.com/isaac-sim" className="btn btn--secondary btn--sm">Learn More</a>
       </div>
       
       <div className="card">
-        <h3 className="headline-md mb-md">Train Policies</h3>
-        <p className="body-lg">Use Genesis for rapid policy iteration and training with realistic physics</p>
-      </div>
-      
-      <div className="card">
-        <h3 className="headline-md mb-md">Deploy Confidence</h3>
-        <p className="body-lg">Transfer validated behaviors to real robots with proven sim-to-real techniques</p>
+        <div style={{ fontSize: '4rem', marginBottom: 'var(--space-lg)' }}>⚙️</div>
+        <h3 className="headline-lg mb-md">Genesis</h3>
+        <p className="body-lg mb-lg">Advanced physics stack for realistic dynamics and scalable simulations.</p>
+        <a href="https://genesis-embodied-ai.github.io/" className="btn btn--secondary btn--sm">Learn More</a>
       </div>
     </div>
   </div>
@@ -170,301 +81,149 @@ import Section from '@site/src/components/Section';
 
 <Section>
   <div className="container">
+    <h2 className="display-md text-center mb-2xl">What You Can Do with Digital Twins</h2>
+    
     <div className="grid grid--2">
       <div>
-        <h2 className="display-md mb-lg">Mirror Your Physical Systems</h2>
-        <p className="body-xl mb-lg">
-          Our Digital Twins platform creates high-fidelity virtual representations of your robotic systems, enabling real-time monitoring, predictive maintenance, and risk-free testing in virtual environments.
-        </p>
-        <div className="card" style={{background: 'var(--bg-tertiary)', marginBottom: 'var(--space-xl)'}}>
-          <h3 className="headline-md mb-md">🔄 Real-time Synchronization</h3>
-          <p className="body-lg mb-md">Bidirectional data flow between physical and digital systems with sub-100ms latency.</p>
-          <ul className="body">
-            <li>Live sensor data streaming</li>
-            <li>Real-time state synchronization</li>
-            <li>Continuous model updates</li>
-            <li>Physics-accurate simulation</li>
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">👁️ Real-Time Visualization</h3>
+          <p className="body-lg mb-md">See your robots and infrastructure as they operate:</p>
+          <ul className="body-lg">
+            <li>Live positions and trajectories of robots and drones</li>
+            <li>Status and telemetry overlays from WiseOS / ROS 2</li>
+            <li>Environmental context (terrain, buildings, obstacles, assets)</li>
           </ul>
+          <p className="body-lg mt-md">This gives operators and engineers a <strong>shared situational awareness</strong>.</p>
+        </div>
+
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">🧪 Scenario Simulation & Testing</h3>
+          <p className="body-lg mb-md">Experiment safely with:</p>
+          <ul className="body-lg">
+            <li>New missions and task plans</li>
+            <li>Route changes and traffic patterns</li>
+            <li>Edge cases and rare events</li>
+            <li>Failure and recovery scenarios</li>
+          </ul>
+          <p className="body-lg mt-md">Run multiple scenarios in parallel, compare outcomes and select the best configuration before deploying.</p>
         </div>
       </div>
+
       <div>
-        <div className="card" style={{background: 'linear-gradient(135deg, var(--neon-purple), var(--primary-600))', padding: 'var(--space-2xl)', textAlign: 'center', color: 'white'}}>
-          <div style={{fontSize: '4rem', marginBottom: 'var(--space-lg)'}}>👥</div>
-          <h3 className="headline-lg mb-lg">WiseSim</h3>
-          <p className="body-lg mb-xl">Professional modeling environment with advanced physics simulation and collaborative features.</p>
-          <a href="/demo" className="btn btn--primary">Try WiseSim</a>
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">📊 Risk & Performance Analysis</h3>
+          <p className="body-lg mb-md">Digital Twins help you uncover:</p>
+          <ul className="body-lg">
+            <li>Potential collisions and route conflicts</li>
+            <li>Bottlenecks in logistics and workflows</li>
+            <li>Safety issues in layouts or procedures</li>
+            <li>Sensitivity of operations to delays and failures</li>
+          </ul>
+          <p className="body-lg mt-md">This supports better <strong>design, planning and continuous improvement</strong>.</p>
+        </div>
+
+        <div className="mb-xl">
+          <h3 className="headline-md mb-md">🤖 AI & MCP ROS2 Validation</h3>
+          <p className="body-lg mb-md">Before allowing AI agents to operate on real robots, you can:</p>
+          <ol className="body-lg">
+            <li>Connect MCP ROS2 to the simulated environment</li>
+            <li>Let agents propose and execute actions in the twin</li>
+            <li>Observe behavior, metrics and potential risks</li>
+            <li>Iterate on prompts and policies</li>
+          </ol>
+          <p className="body-lg mt-md">This gives you a structured <strong>"sim-before-deploy" workflow</strong> for AI-driven operations.</p>
         </div>
       </div>
     </div>
   </div>
 </Section>
 
-<Section background="dark">
+<Section background="gradient">
   <div className="container">
-    <h2 className="display-md text-center mb-2xl">Platform Capabilities</h2>
-    
-    <div className="grid grid--3">
-      <div className="card card--service">
-        <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center'}}>🏗️</div>
-        <h3 className="headline-md mb-md">3D Modeling & Simulation</h3>
-        <p className="body mb-lg">Create detailed 3D models with accurate physics, materials, and environmental conditions.</p>
-        <ul className="body">
-          <li>CAD integration (SolidWorks, Fusion 360)</li>
-          <li>Advanced physics engines</li>
-          <li>Material property simulation</li>
-          <li>Environmental modeling</li>
-        </ul>
-      </div>
-      
-      <div className="card card--service">
-        <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center'}}>📊</div>
-        <h3 className="headline-md mb-md">Predictive Analytics</h3>
-        <p className="body mb-lg">AI-powered analytics for performance optimization, failure prediction, and maintenance scheduling.</p>
-        <ul className="body">
-          <li>Performance trend analysis</li>
-          <li>Failure mode prediction</li>
-          <li>Optimization recommendations</li>
-          <li>Maintenance scheduling</li>
-        </ul>
-      </div>
-      
-      <div className="card card--service">
-        <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center'}}>🧪</div>
-        <h3 className="headline-md mb-md">Virtual Testing</h3>
-        <p className="body mb-lg">Test scenarios, algorithms, and configurations in risk-free virtual environments before deployment.</p>
-        <ul className="body">
-          <li>Scenario-based testing</li>
-          <li>Edge case simulation</li>
-          <li>Performance validation</li>
-          <li>Safety testing protocols</li>
-        </ul>
-      </div>
-      
-      <div className="card card--service">
-        <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center'}}>🔍</div>
-        <h3 className="headline-md mb-md">Real-time Monitoring</h3>
-        <p className="body mb-lg">Comprehensive monitoring dashboards with live data visualization and alert systems.</p>
-        <ul className="body">
-          <li>Live performance metrics</li>
-          <li>Custom dashboard creation</li>
-          <li>Intelligent alerting</li>
-          <li>Historical data analysis</li>
-        </ul>
-      </div>
-      
-      <div className="card card--service">
-        <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center'}}>⚡</div>
-        <h3 className="headline-md mb-md">Process Optimization</h3>
-        <p className="body mb-lg">Optimize workflows, trajectories, and operations through simulation-driven insights.</p>
-        <ul className="body">
-          <li>Workflow optimization</li>
-          <li>Path planning enhancement</li>
-          <li>Energy efficiency analysis</li>
-          <li>Throughput optimization</li>
-        </ul>
-      </div>
-      
-      <div className="card card--service">
-        <div style={{fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center'}}>🤝</div>
-        <h3 className="headline-md mb-md">Collaborative Development</h3>
-        <p className="body mb-lg">Multi-user environments for distributed teams with version control and project management.</p>
-        <ul className="body">
-          <li>Multi-user collaboration</li>
-          <li>Version control system</li>
-          <li>Project management tools</li>
-          <li>Role-based access control</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</Section>
-
-<Section>
-  <div className="container">
-    <h2 className="display-md text-center mb-2xl">Industry Applications</h2>
-    
-    <div className="grid grid--2">
-      <div className="card">
-        <h3 className="headline-md mb-lg">🏭 Manufacturing</h3>
-        <p className="body mb-lg">Optimize production lines, reduce downtime, and improve quality control through digital twin simulation.</p>
-        <div className="grid grid--2 gap-md">
-          <div>
-            <strong>Benefits:</strong>
-            <ul className="body mt-sm">
-              <li>15% reduction in downtime</li>
-              <li>25% improvement in OEE</li>
-              <li>40% faster troubleshooting</li>
-              <li>30% reduction in defects</li>
-            </ul>
-          </div>
-          <div>
-            <strong>Use Cases:</strong>
-            <ul className="body mt-sm">
-              <li>Production line optimization</li>
-              <li>Quality control systems</li>
-              <li>Predictive maintenance</li>
-              <li>Worker safety simulation</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      
-      <div className="card">
-        <h3 className="headline-md mb-lg">🚗 Automotive</h3>
-        <p className="body mb-lg">Accelerate vehicle development, test autonomous systems, and optimize manufacturing processes.</p>
-        <div className="grid grid--2 gap-md">
-          <div>
-            <strong>Benefits:</strong>
-            <ul className="body mt-sm">
-              <li>60% faster prototyping</li>
-              <li>50% reduction in testing costs</li>
-              <li>90% simulation coverage</li>
-              <li>35% shorter development cycles</li>
-            </ul>
-          </div>
-          <div>
-            <strong>Use Cases:</strong>
-            <ul className="body mt-sm">
-              <li>Autonomous vehicle testing</li>
-              <li>Assembly line simulation</li>
-              <li>Crash test modeling</li>
-              <li>Supply chain optimization</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      
-      <div className="card">
-        <h3 className="headline-md mb-lg">🏥 Healthcare</h3>
-        <p className="body mb-lg">Improve surgical robotics, optimize hospital workflows, and enhance patient safety protocols.</p>
-        <div className="grid grid--2 gap-md">
-          <div>
-            <strong>Benefits:</strong>
-            <ul className="body mt-sm">
-              <li>45% improvement in precision</li>
-              <li>30% reduction in surgery time</li>
-              <li>80% better training outcomes</li>
-              <li>50% fewer complications</li>
-            </ul>
-          </div>
-          <div>
-            <strong>Use Cases:</strong>
-            <ul className="body mt-sm">
-              <li>Surgical robot training</li>
-              <li>Patient flow optimization</li>
-              <li>Medical device testing</li>
-              <li>Emergency response planning</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      
-      <div className="card">
-        <h3 className="headline-md mb-lg">🌾 Agriculture</h3>
-        <p className="body mb-lg">Optimize farming operations, improve crop yields, and reduce environmental impact through precision agriculture.</p>
-        <div className="grid grid--2 gap-md">
-          <div>
-            <strong>Benefits:</strong>
-            <ul className="body mt-sm">
-              <li>20% increase in crop yield</li>
-              <li>35% reduction in water usage</li>
-              <li>40% decrease in pesticide use</li>
-              <li>50% improvement in efficiency</li>
-            </ul>
-          </div>
-          <div>
-            <strong>Use Cases:</strong>
-            <ul className="body mt-sm">
-              <li>Autonomous tractor simulation</li>
-              <li>Crop monitoring systems</li>
-              <li>Irrigation optimization</li>
-              <li>Harvest planning</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</Section>
-
-<Section background="dark">
-  <div className="container">
-    <h2 className="display-md text-center mb-2xl">Technical Specifications</h2>
-    
-    <div className="grid grid--2">
-      <div className="card">
-        <h3 className="headline-md mb-lg">System Requirements</h3>
-        <div className="body mb-lg">
-          <strong>Minimum Configuration:</strong>
-          <ul className="mt-sm">
-            <li>CPU: 6-core Intel i5 or AMD Ryzen 5</li>
-            <li>RAM: 16GB DDR4</li>
-            <li>GPU: DirectX 11 compatible</li>
-            <li>Storage: 500GB SSD</li>
-            <li>Network: 100 Mbps</li>
-          </ul>
-        </div>
-        <div className="body">
-          <strong>Recommended Configuration:</strong>
-          <ul className="mt-sm">
-            <li>CPU: 12-core Intel i7 or AMD Ryzen 9</li>
-            <li>RAM: 64GB DDR4</li>
-            <li>GPU: RTX 4070 or better</li>
-            <li>Storage: 2TB NVMe SSD</li>
-            <li>Network: 1 Gbps</li>
-          </ul>
-        </div>
-      </div>
-      
-      <div className="card">
-        <h3 className="headline-md mb-lg">Platform Features</h3>
-        <div className="body mb-lg">
-          <strong>Simulation Engines:</strong>
-          <ul className="mt-sm">
-            <li>Bullet Physics for rigid body dynamics</li>
-            <li>PhysX for advanced particle systems</li>
-            <li>Custom fluid dynamics solver</li>
-            <li>Real-time ray tracing support</li>
-          </ul>
-        </div>
-        <div className="body">
-          <strong>Integration Support:</strong>
-          <ul className="mt-sm">
-            <li>ROS 2 native integration</li>
-            <li>REST and GraphQL APIs</li>
-            <li>WebSocket real-time connections</li>
-            <li>MQTT for IoT device connectivity</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</Section>
-
-<Section>
-  <div className="container">
-    <h2 className="display-md text-center mb-2xl">Performance Metrics</h2>
+    <h2 className="display-md text-center mb-lg">Data & Asset Integration</h2>
+    <p className="body-xl text-center mb-2xl">Digital Twins ingest and combine data from multiple sources</p>
     
     <div className="grid grid--4">
-      <div className="text-center">
-        <div className="display-lg text-accent mb-sm">&lt;100ms</div>
-        <div className="headline-md mb-md">Sync Latency</div>
-        <div className="body">Real-time synchronization between physical and digital systems</div>
+      <div className="card text-center">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>📐</div>
+        <h3 className="headline-sm">CAD & BIM</h3>
+        <p className="body">Import design models and building information</p>
       </div>
-      <div className="text-center">
-        <div className="display-lg text-accent mb-sm">1M+</div>
-        <div className="headline-md mb-md">Objects</div>
-        <div className="body">Simultaneous simulation capacity for complex environments</div>
+      
+      <div className="card text-center">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>🗺️</div>
+        <h3 className="headline-sm">GIS & Maps</h3>
+        <p className="body">Geographic data and map providers</p>
       </div>
-      <div className="text-center">
-        <div className="display-lg text-accent mb-sm">95%</div>
-        <div className="headline-md mb-md">Accuracy</div>
-        <div className="body">Physics simulation accuracy compared to real-world behavior</div>
+      
+      <div className="card text-center">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>🤖</div>
+        <h3 className="headline-sm">ROS 2 Data</h3>
+        <p className="body">Maps and sensor data from your robots</p>
       </div>
-      <div className="text-center">
-        <div className="display-lg text-accent mb-sm">24/7</div>
-        <div className="headline-md mb-md">Monitoring</div>
-        <div className="body">Continuous operation with enterprise-grade reliability</div>
+      
+      <div className="card text-center">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>📊</div>
+        <h3 className="headline-sm">InfluxDB</h3>
+        <p className="body">Historical telemetry from Data Black Box</p>
+      </div>
+    </div>
+    
+    <p className="body-xl text-center mt-xl">This allows you to build twins that are not only visually accurate, but <strong>data-rich and operationally meaningful</strong>.</p>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container">
+    <h2 className="display-md text-center mb-2xl">Business Benefits</h2>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <h3 className="headline-md mb-md">⚠️ Lower Deployment Risk</h3>
+        <p className="body-lg">Test changes in the twin first. Validate before committing to hardware deployments.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🚀 Faster Innovation</h3>
+        <p className="body-lg">Iterate on designs and AI logic virtually. Reduce development cycles.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🤝 Better Collaboration</h3>
+        <p className="body-lg">Shared 3D view across engineering, operations and leadership. Everyone sees the same picture.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🎓 Improved Training</h3>
+        <p className="body-lg">Realistic, low-risk training environment for operators and AI systems.</p>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section>
+  <div className="container">
+    <h2 className="display-md text-center mb-2xl">Example Scenarios</h2>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <h3 className="headline-md mb-md">☀️ PV Farm Operations</h3>
+        <p className="body-lg">A PV farm operator simulates new inspection routes for drone fleets before changing the live schedule.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🏭 Warehouse Optimization</h3>
+        <p className="body-lg">A warehouse tests new AMR routes and layouts to reduce congestion before rolling out changes.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">⚡ Utility Training</h3>
+        <p className="body-lg">A utility company trains teams on incident response using a twin of a substation.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🛡️ Defence Validation</h3>
+        <p className="body-lg">A defence customer evaluates autonomous patrol policies in a synthetic environment before deployment.</p>
       </div>
     </div>
   </div>
@@ -472,16 +231,12 @@ import Section from '@site/src/components/Section';
 
 <Section background="gradient">
   <div className="container text-center">
-    <h2 className="display-lg mb-lg">Transform Your Development Process</h2>
-    <p className="body-xl mb-2xl">Accelerate innovation with risk-free virtual testing and real-time digital twins</p>
+    <h2 className="display-lg mb-lg">See Your Future Operations Before You Commit to Them in Hardware</h2>
+    <p className="body-xl mb-2xl">Request a Digital Twin demo and explore what's possible</p>
     
     <div style={{display: 'flex', gap: 'var(--space-lg)', justifyContent: 'center', flexWrap: 'wrap'}}>
-      <a href="/demo" className="btn btn--primary">Start Free Trial</a>
-      <a href="mailto:michaldobrzanski@wisevision.tech" className="btn btn--secondary">Contact Sales</a>
-    </div>
-    
-    <div className="mt-xl">
-      <p className="caption">30-day free trial • No credit card required • Enterprise support available</p>
+      <a href="/contact" className="btn btn--primary">Request a Digital Twin Demo</a>
+      <a href="https://github.com/wise-vision" className="btn btn--secondary">View on GitHub</a>
     </div>
   </div>
 </Section>

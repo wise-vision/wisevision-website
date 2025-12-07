@@ -1,0 +1,184 @@
+---
+title: Case Study – Unified AMR Fleet for Distribution Warehouse
+description: How WiseOS, MCP ROS2 and Digital Twins unified multiple AMR vendors into one operational layer for a distribution warehouse.
+keywords: [AMR fleet, warehouse robotics, WiseOS, MCP ROS2, Digital Twins, manufacturing, logistics]
+---
+
+import Hero from '@site/src/components/Hero';
+import Section from '@site/src/components/Section';
+
+<Hero 
+  title="Case Study – Unified AMR Fleet for Distribution Warehouse"
+  subtitle="Manufacturing & Intralogistics"
+/>
+
+<Section>
+  <div className="container">
+    <div className="card" style={{background: 'var(--bg-secondary)', padding: 'var(--space-xl)', marginBottom: 'var(--space-2xl)'}}>
+      <h2 className="headline-lg mb-lg">Summary</h2>
+      <p className="body-lg">
+        A distribution warehouse operated <strong>multiple AMR fleets from different vendors</strong>, each with its own tools and monitoring.
+      </p>
+      <p className="body-lg mt-md">
+        WiseVision helped them create a <strong>unified operational layer</strong> that:
+      </p>
+      <ul className="body-lg">
+        <li>Connected AMRs and sensors under <strong>WiseOS</strong></li>
+        <li>Used <strong>MCP ROS2</strong> to provide a common control and debugging interface</li>
+        <li>Introduced a <strong>Digital Twin</strong> of the warehouse to test route changes and layouts</li>
+      </ul>
+    </div>
+
+    <div className="grid grid--2">
+      <div>
+        <h2 className="headline-lg mb-lg">Stack Used</h2>
+        <ul className="body-lg">
+          <li>WiseOS</li>
+          <li>MCP ROS2</li>
+          <li>Digital Twins (warehouse)</li>
+          <li>ROS 2</li>
+        </ul>
+      </div>
+      <div>
+        <h2 className="headline-lg mb-lg">Key Benefits</h2>
+        <ul className="body-lg">
+          <li>Single view of AMR fleet</li>
+          <li>Lower risk when changing routing logic</li>
+          <li>Less time switching between tools</li>
+          <li>Easier AI-based orchestration</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container">
+    <h2 className="display-md mb-2xl">Challenges</h2>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <p className="body-lg">Fragmented monitoring – each AMR vendor had its own UI and API</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">Difficult to coordinate routes across fleets and reduce congestion</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">Limited visibility into historical telemetry and bottlenecks</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">High risk when rolling out new routing policies directly on production floor</p>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section>
+  <div className="container">
+    <h2 className="display-md text-center mb-2xl">Solution</h2>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <h3 className="headline-md mb-md">1. WiseOS – Fleet Connectivity</h3>
+        <p className="body mb-md">WiseOS as the <strong>central ROS 2-based operating layer</strong>:</p>
+        <ul className="body">
+          <li>AMRs connected via ROS 2 bridges into a shared ROS 2 graph</li>
+          <li>Telemetry stored in Data Black Box (InfluxDB)</li>
+          <li>Fixed sensors integrated into same telemetry layer</li>
+          <li>One place to observe fleet health</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">2. MCP ROS2 – Shared Interface</h3>
+        <p className="body mb-md">MCP ROS2 exposed the ROS 2 environment as <strong>MCP tools</strong>:</p>
+        <ul className="body">
+          <li>List robots and their key metrics</li>
+          <li>Subscribe to navigation topics and logs</li>
+          <li>Trigger or simulate route changes</li>
+          <li>Prototype orchestration logic</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">3. Digital Twin – Warehouse Flows</h3>
+        <p className="body mb-md">A <strong>Digital Twin of the warehouse</strong>:</p>
+        <ul className="body">
+          <li>3D environment with racks and workstations</li>
+          <li>Simulated AMRs following route plans</li>
+          <li>Integration with WiseOS / MCP ROS2</li>
+          <li>What-if scenario testing</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="gradient">
+  <div className="container">
+    <h2 className="display-md mb-lg">Architecture Overview</h2>
+    
+    <div className="card" style={{background: 'var(--bg-primary)', padding: 'var(--space-xl)'}}>
+      <ol className="body-lg" style={{lineHeight: '2'}}>
+        <li><strong>Multiple AMR fleets</strong> → ROS 2 → WiseOS connectivity & telemetry</li>
+        <li><strong>WiseOS</strong> → InfluxDB Data Black Box → dashboards & analysis tools</li>
+        <li><strong>MCP ROS2</strong> → MCP clients (AI assistants, custom tools)</li>
+        <li><strong>Digital Twin</strong> → ROS 2 integration for simulation & validation</li>
+      </ol>
+    </div>
+  </div>
+</Section>
+
+<Section>
+  <div className="container">
+    <h2 className="display-md mb-lg">Outcomes</h2>
+    
+    <p className="body-xl mb-xl">Typical benefits for this pattern:</p>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Unified Visibility</h3>
+        <ul className="body-lg">
+          <li>A single view of the AMR fleet, regardless of vendor</li>
+          <li>One monitoring interface for operations teams</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Lower Risk</h3>
+        <ul className="body-lg">
+          <li>Test routing logic changes in twin first</li>
+          <li>Safer deployment of new policies</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Time Savings</h3>
+        <ul className="body-lg">
+          <li>Less time switching between proprietary tools</li>
+          <li>Faster troubleshooting and debugging</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Future-Ready</h3>
+        <ul className="body-lg">
+          <li>Easier path to AI-based orchestration using MCP ROS2</li>
+          <li>Foundation for advanced analytics</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container text-center">
+    <h2 className="display-lg mb-lg">Next Steps</h2>
+    <p className="body-xl mb-2xl">The same approach can be extended to additional warehouses, factory lines, or integrated with WMS/ERP for end-to-end visibility</p>
+    
+    <div style={{display: 'flex', gap: 'var(--space-lg)', justifyContent: 'center', flexWrap: 'wrap'}}>
+      <a href="/contact" className="btn btn--primary">Discuss Your Logistics Project</a>
+      <a href="/case-studies" className="btn btn--secondary">View All Case Studies</a>
+    </div>
+  </div>
+</Section>

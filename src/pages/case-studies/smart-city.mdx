@@ -1,0 +1,184 @@
+---
+title: Case Study – City Infrastructure Monitoring with LoRaWAN & Drones
+description: How WiseOS, MCP ROS2 and Digital Twins enabled city-wide infrastructure monitoring with LoRaWAN sensors and inspection drones.
+keywords: [smart city, infrastructure monitoring, LoRaWAN, WiseOS, MCP ROS2, Digital Twins, drones]
+---
+
+import Hero from '@site/src/components/Hero';
+import Section from '@site/src/components/Section';
+
+<Hero 
+  title="Case Study – City Infrastructure Monitoring with LoRaWAN & Drones"
+  subtitle="Smart Cities & Infrastructure"
+/>
+
+<Section>
+  <div className="container">
+    <div className="card" style={{background: 'var(--bg-secondary)', padding: 'var(--space-xl)', marginBottom: 'var(--space-2xl)'}}>
+      <h2 className="headline-lg mb-lg">Summary</h2>
+      <p className="body-lg">
+        A city operator deployed <strong>LoRaWAN sensors</strong> for structural and environmental monitoring across bridges, underpasses and public spaces.
+      </p>
+      <p className="body-lg mt-md">
+        WiseVision's stack was used to:
+      </p>
+      <ul className="body-lg">
+        <li>Ingest and manage LoRaWAN sensor data through <strong>WiseOS</strong></li>
+        <li>Trigger inspection drone missions via <strong>MCP ROS2</strong> based on sensor events</li>
+        <li>Maintain a <strong>Digital Twin</strong> of critical assets for planning and incident review</li>
+      </ul>
+    </div>
+
+    <div className="grid grid--2">
+      <div>
+        <h2 className="headline-lg mb-lg">Stack Used</h2>
+        <ul className="body-lg">
+          <li>WiseOS</li>
+          <li>MCP ROS2</li>
+          <li>Digital Twins</li>
+          <li>LoRaWAN</li>
+        </ul>
+      </div>
+      <div>
+        <h2 className="headline-lg mb-lg">Key Benefits</h2>
+        <ul className="body-lg">
+          <li>Central view of sensors + mobile assets</li>
+          <li>Event-driven targeted inspections</li>
+          <li>Incident replay in Digital Twin</li>
+          <li>Scalable to new districts</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container">
+    <h2 className="display-md mb-2xl">Challenges</h2>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <p className="body-lg">Many sensors across wide areas with heterogeneous connectivity</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">Limited ability to link sensor events to robotic inspections</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">No unified view of sensor data, mobile assets and geographic context</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">Difficult to test new operating procedures without affecting services</p>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section>
+  <div className="container">
+    <h2 className="display-md text-center mb-2xl">Solution</h2>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <h3 className="headline-md mb-md">1. WiseOS – LoRaWAN Integration</h3>
+        <p className="body mb-md">WiseOS connected:</p>
+        <ul className="body">
+          <li>LoRaWAN sensors via ChirpStack and the WiseOS LoRaWAN↔ROS 2 bridge</li>
+          <li>Inspection drones (ROS 2-based or bridged)</li>
+          <li>Edge gateways in specific districts</li>
+          <li>Sensor readings as ROS 2 topics recorded in Data Black Box</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">2. MCP ROS2 – Event-Driven Inspections</h3>
+        <p className="body mb-md">MCP ROS2 exposed high-level tools:</p>
+        <ul className="body">
+          <li>List sensors in zone</li>
+          <li>Schedule drone inspections</li>
+          <li>Get recent events for assets</li>
+          <li>Correlate drone imagery with sensor alerts</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">3. Digital Twin – Asset Context</h3>
+        <p className="body mb-md">A Digital Twin focusing on critical infrastructure:</p>
+        <ul className="body">
+          <li>3D models of bridges and underpasses</li>
+          <li>Synchronization with WiseOS telemetry</li>
+          <li>Playback of incidents with sensor events</li>
+          <li>Shared visual context for teams</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="gradient">
+  <div className="container">
+    <h2 className="display-md mb-lg">Architecture Overview</h2>
+    
+    <div className="card" style={{background: 'var(--bg-primary)', padding: 'var(--space-xl)'}}>
+      <ol className="body-lg" style={{lineHeight: '2'}}>
+        <li><strong>LoRaWAN sensors</strong> → network server → WiseOS bridge → ROS 2 topics</li>
+        <li><strong>Drones & mobile robots</strong> → ROS 2 → WiseOS & Data Black Box</li>
+        <li><strong>MCP ROS2</strong> → tools for event detection and mission triggering</li>
+        <li><strong>Digital Twin</strong> → asset visualization and incident replay</li>
+      </ol>
+    </div>
+  </div>
+</Section>
+
+<Section>
+  <div className="container">
+    <h2 className="display-md mb-lg">Outcomes</h2>
+    
+    <p className="body-xl mb-xl">City operators gained:</p>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Unified View</h3>
+        <ul className="body-lg">
+          <li>Central, ROS 2-based view of sensors + mobile assets</li>
+          <li>Single platform for monitoring and control</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Event-Driven Operations</h3>
+        <ul className="body-lg">
+          <li>Ability to link alerts directly to targeted inspections</li>
+          <li>Automated dispatch of drones based on sensor triggers</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Better Incident Understanding</h3>
+        <ul className="body-lg">
+          <li>Incident replay in Digital Twin</li>
+          <li>Correlation of sensor data with visual inspections</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Scalability</h3>
+        <ul className="body-lg">
+          <li>Same pattern applicable to additional assets and districts</li>
+          <li>Easy to add new sensors and platforms</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container text-center">
+    <h2 className="display-lg mb-lg">Next Steps</h2>
+    <p className="body-xl mb-2xl">Further extensions include integration with existing city dashboards, advanced analytics, and additional mobile platforms</p>
+    
+    <div style={{display: 'flex', gap: 'var(--space-lg)', justifyContent: 'center', flexWrap: 'wrap'}}>
+      <a href="/contact" className="btn btn--primary">Discuss Your Smart City Project</a>
+      <a href="/case-studies" className="btn btn--secondary">View All Case Studies</a>
+    </div>
+  </div>
+</Section>
