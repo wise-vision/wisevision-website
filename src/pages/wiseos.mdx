@@ -38,7 +38,7 @@ import Section from '@site/src/components/Section';
 
 <Hero 
   title="WiseOS"
-  subtitle="The robotics OS for real-world fleets. WiseOS is a curated set of ROS 2 packages that make robots and sensors feel like one platform: Zenoh-enabled ROS 2 transport, our InfluxDB-powered Data Black Box, LoRaWAN integration, automation hooks, and a lightweight dashboard."
+  subtitle="One Place for Robotics. WiseOS is the operational layer that unites all sensors and actuators into a single, unified domain. Built on ROS 2, it provides structure—from data standardization to connectivity, observability, and access policies—so teams see the whole system, not just individual devices."
   primaryCTA={{
     text: "See Demo",
     href: "/demo"
@@ -48,6 +48,118 @@ import Section from '@site/src/components/Section';
     href: "https://www.wisevision.tech/static/doc/"
   }}
 />
+
+<Section background="dark">
+  <div className="container">
+    <h2 className="display-md text-center mb-lg">How WiseOS Works</h2>
+    <p className="body-xl text-center mb-2xl">Imagine a factory or a large city with robots as drivers and sensors as senses</p>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>🏢</div>
+        <h3 className="headline-md mb-md">WiseOS: The Control Center</h3>
+        <p className="body">
+          Collects all messages from sensors (eyes, ears, nose) and robots in one language—ROS 2. This way, everyone knows what's happening. WiseOS connects everything into one domain, providing structure and observability across your entire robotics system.
+        </p>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>🎯</div>
+        <h3 className="headline-md mb-md">MCP: The Dispatcher</h3>
+        <p className="body">
+          Listens to those messages and tells robots what to do with simple commands ("pick this up", "move it there", "fly to location A"). Instead of controlling topics, you define intentions; MCP translates them into plans, schedules, and constraints.
+        </p>
+      </div>
+      
+      <div className="card">
+        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-lg)', textAlign: 'center' }}>🗺️</div>
+        <h3 className="headline-md mb-md">Digital Twin: The City Map</h3>
+        <p className="body">
+          A live screen showing what sensors feel and where robots move. You can safely "test" different scenarios before doing it for real. Import CAD, synchronize real-time, test without stopping production.
+        </p>
+      </div>
+    </div>
+    
+    <div className="text-center mt-2xl">
+      <p className="body-xl">
+        <strong>The Result:</strong> Sensors see and communicate, WiseOS connects everyone into one ROS 2 domain, MCP issues commands, and the digital twin shows it all live—making the entire "city" work fast, smart, and safely.
+      </p>
+    </div>
+  </div>
+</Section>
+
+<Section>
+  <div className="container">
+    <h2 className="display-md text-center mb-lg">Why Now</h2>
+    <p className="body-xl text-center mb-2xl">
+      Robots, sensors, and applications are growing faster than the ability to coordinate them. A layer is needed that understands operational context. WiseOS consolidates distributed component environments into one cohesive operating model.
+    </p>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <h3 className="headline-md mb-md">🌐 Common Domain (Ontology)</h3>
+        <p className="body">
+          We normalize events, states, and commands into one semantic framework. Regardless of vendor—same concepts, same contracts. This eliminates integration complexity and ensures consistency.
+        </p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">☁️ Frictionless Edge-Cloud</h3>
+        <p className="body">
+          Data streams and commands flow according to QoS policies; offline buffering, synchronization, and artifact versioning ensure continuous operation even in challenging network conditions.
+        </p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">👁️ Observability & Governance</h3>
+        <p className="body">
+          Telemetry, logs, traces, and change auditing. Roles and permissions at the domain object level, not just devices. Full visibility and control over your robotics infrastructure.
+        </p>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container">
+    <h2 className="display-md text-center mb-2xl">Platform Pillars</h2>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <h3 className="headline-md mb-lg">🤖 WiseOS</h3>
+        <h4 className="body-lg mb-md" style={{ fontWeight: 600 }}>Common Operating Layer & DDS</h4>
+        <p className="body mb-lg">
+          Integrates sensors, actuators, and applications into one monitored system. Provides resource catalog, data routing, security policies, and APIs to MES/ERP/CMMS.
+        </p>
+        <p className="body" style={{ fontStyle: 'italic' }}>
+          <strong>Result:</strong> Less ad-hoc integration, faster launches, data consistency.
+        </p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-lg">🎯 MCP</h3>
+        <h4 className="body-lg mb-md" style={{ fontWeight: 600 }}>Command & Control for Robotics</h4>
+        <p className="body mb-lg">
+          Orchestrates tasks between robots and production lines. Define intentions at operation level ("move pallet A to zone B", "reschedule tasks for night shift") instead of individual signals.
+        </p>
+        <p className="body" style={{ fontStyle: 'italic' }}>
+          <strong>Result:</strong> Predictable execution, easy fleet scaling, reduced operator complexity.
+        </p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-lg">🗺️ Digital Twin</h3>
+        <h4 className="body-lg mb-md" style={{ fontWeight: 600 }}>See Before It Acts</h4>
+        <p className="body mb-lg">
+          Common visualization of state and sandbox for "what-if" scenarios. CAD import, real-time synchronization, testing without stopping production.
+        </p>
+        <p className="body" style={{ fontStyle: 'italic' }}>
+          <strong>Result:</strong> Faster iterations, safe changes, fewer surprises on the floor.
+        </p>
+      </div>
+    </div>
+  </div>
+</Section>
 
 <Section>
   <div className="container">

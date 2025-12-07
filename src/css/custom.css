@@ -731,6 +731,9 @@ article .markdown {
     grid-template-columns: 1fr;
     gap: var(--space-md);
   }
+  .section--hero {
+    padding: 0 !important;
+  }
   .section--hero canvas {
     width: 100% !important;
     height: 100% !important;

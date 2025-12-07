@@ -61,6 +61,7 @@ export default function LiquidGlassHero({
   const [isReducedMotion, setIsReducedMotion] = useState(false);
   const [sweep, setSweep] = useState(false);
   const sweepTimeoutRef = useRef<number | null>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsBrowser(typeof window !== 'undefined');
@@ -86,19 +87,6 @@ export default function LiquidGlassHero({
     return () => r.removeEventListener?.('change', onChange);
   }, []);
 
-  // Periodic horizontal sweep to showcase crisp animation area on mobile
-  useEffect(() => {
-    if (!isBrowser || !withAnimation || !isMobile || isReducedMotion) return;
-    const INTERVAL = 8000; // every 8s
-    const ACTIVE = 3800; // sweep visible ~3.8s (longer exposure)
-    const id = window.setInterval(() => {
-      setSweep(true);
-      if (sweepTimeoutRef.current) window.clearTimeout(sweepTimeoutRef.current);
-      sweepTimeoutRef.current = window.setTimeout(() => setSweep(false), ACTIVE);
-    }, INTERVAL);
-    return () => window.clearInterval(id);
-  }, [isBrowser, withAnimation, isMobile, isReducedMotion]);
-
   useEffect(() => {
     if (!isBrowser || !withAnimation) return;
 
@@ -111,18 +99,29 @@ export default function LiquidGlassHero({
     // Enhanced responsive sizing
     let width = 0;
     let height = 0;
+    let initialHeight = 0; // Lock height on mobile to prevent browser chrome resize issues
+    
     const resizeCanvas = () => {
       const rect = canvas.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
+      
+      // On mobile, lock height to initial value to prevent address bar show/hide from resizing
+      const newWidth = rect.width;
+      const newHeight = isMobile && initialHeight > 0 ? initialHeight : rect.height;
+      
+      if (isMobile && initialHeight === 0) {
+        initialHeight = rect.height;
+      }
+      
       // Setting width/height resets the context state; set transform after
-      canvas.width = Math.max(1, Math.floor(rect.width * dpr));
-      canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+      canvas.width = Math.max(1, Math.floor(newWidth * dpr));
+      canvas.height = Math.max(1, Math.floor(newHeight * dpr));
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(dpr, dpr);
-      canvas.style.width = rect.width + 'px';
-      canvas.style.height = rect.height + 'px';
-      width = rect.width;
-      height = rect.height;
+      canvas.style.width = newWidth + 'px';
+      canvas.style.height = newHeight + 'px';
+      width = newWidth;
+      height = newHeight;
     };
 
     resizeCanvas();
@@ -762,12 +761,77 @@ export default function LiquidGlassHero({
     <section className="section section--hero" style={{ 
       position: 'relative',
       minHeight: isMobile ? 'auto' : '80vh',
-      display: 'flex',
-      alignItems: 'center',
+      display: isMobile ? 'block' : 'flex',
+      alignItems: isMobile ? 'flex-start' : 'center',
       overflow: 'hidden'
     }}>
-      {/* Liquid Glass Animation Background */}
-      {withAnimation && (
+      {/* Mobile: Animation block comes first */}
+      {withAnimation && isMobile && (
+        <div style={{
+          position: 'relative',
+          width: '100%',
+          // Use svh (small viewport height) for mobile - accounts for browser chrome
+          height: '85svh',
+          overflow: 'hidden',
+          flexShrink: 0
+        }}>
+          <canvas
+            ref={canvasRef}
+            style={{
+              width: '100%',
+              height: '100%',
+              display: 'block'
+            }}
+          />
+          {/* Animation labels */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            pointerEvents: 'none',
+            zIndex: 2
+          }}>
+            <div style={{
+              color: 'rgba(0, 212, 255, 0.9)',
+              fontSize: '0.95rem',
+              fontWeight: 'bold',
+              position: 'absolute',
+              top: '24%',
+              left: '6%',
+              textShadow: '0 2px 10px rgba(0,0,0,0.6)'
+            }}>
+              AI Agents
+            </div>
+            <div style={{
+              color: 'rgba(139, 92, 246, 0.9)',
+              fontSize: '1.05rem',
+              fontWeight: 'bold',
+              position: 'absolute',
+              top: '46%',
+              left: '6%',
+              textShadow: '0 2px 10px rgba(0,0,0,0.6)'
+            }}>
+              WiseOS
+            </div>
+            <div style={{
+              color: 'rgba(255, 140, 0, 0.9)',
+              fontSize: '0.95rem',
+              fontWeight: 'bold',
+              position: 'absolute',
+              top: '66%',
+              left: '6%',
+              textShadow: '0 2px 10px rgba(0,0,0,0.6)'
+            }}>
+              Robot Fleet
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop: Liquid Glass Animation Background */}
+      {withAnimation && !isMobile && (
         <div style={{
           position: 'absolute',
           top: 0,
@@ -798,8 +862,10 @@ export default function LiquidGlassHero({
         padding: isMobile ? 'var(--space-lg) var(--space-md)' : '0 var(--space-xl)'
       }}>
         <div className={withAnimation ? "liquid-glass-hero-grid" : "liquid-glass-hero-centered"}>
-          {/* Content Side - Left - More space for WiseVision idea */}
-          <div style={{
+          {/* Content Side - With Apple-style reveal on mobile */}
+          <div 
+            ref={contentRef}
+            style={{
             background: isMobile ? 'rgba(255, 255, 255, 0.02)' : 'rgba(255, 255, 255, 0.04)',
             backdropFilter: isMobile ? 'blur(12px)' : 'blur(25px)',
             border: isMobile ? '1px solid rgba(255, 255, 255, 0.18)' : '1px solid rgba(255, 255, 255, 0.12)',
@@ -809,9 +875,10 @@ export default function LiquidGlassHero({
             marginLeft: isMobile ? 0 : 'var(--space-lg)',
             width: isMobile ? '100%' : 'auto',
             position: 'relative',
-            transition: 'transform 1400ms cubic-bezier(0.22,0.61,0.36,1), background 450ms ease, backdrop-filter 450ms ease, border-color 450ms ease, box-shadow 450ms ease',
-            // Mobile: horizontal sweep to reveal crisp animation on the left
-            transform: isMobile && sweep ? 'translateX(90vw)' : 'translateX(0)'
+            // Static visible text on mobile
+            opacity: 1,
+            transform: 'none',
+            transition: 'background 450ms ease, backdrop-filter 450ms ease, border-color 450ms ease, box-shadow 450ms ease'
           }}
           // Tap to trigger sweep manually on mobile
           onClick={() => {
