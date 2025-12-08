@@ -131,7 +131,7 @@ const config = {
         },
         items: [
           {
-            label: 'Services',
+            label: 'Products',
             position: 'left',
             items: [
               {
@@ -175,7 +175,7 @@ const config = {
         style: 'dark',
         links: [
           {
-            title: 'Services',
+            title: 'Products',
             items: [
               {
                 label: 'WiseOS Platform',
