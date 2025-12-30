@@ -78,7 +78,7 @@ const config = {
         },
         "foundingDate": "2023",
         "industry": "Robotics and IoT Technology",
-        "keywords": ["WiseOS", "MCP ROS2", "Digital Twins", "ROS 2", "robotics", "IoT", "O3DE", "NVIDIA Isaac Sim", "Genesis"]
+        "keywords": ["WiseOS", "MCP ROS2", "Digital Twins", "ROS 2", "robotics", "IoT", "O3DE", "NVIDIA Isaac Sim", "Genesis", "agentic robotics", "robotics AI", "autonomous systems", "robot fleet management"]
       })
     }
   ],
@@ -109,7 +109,7 @@ const config = {
       // Replace with your project's social card
       image: 'img/wisevision-social-card.jpg',
       metadata: [
-        { name: 'keywords', content: 'WiseOS, MCP ROS2, Digital Twins, ROS 2, robotics, IoT, O3DE, NVIDIA Isaac Sim, Genesis, distributed robotics' },
+        { name: 'keywords', content: 'WiseOS, MCP ROS2, Digital Twins, ROS 2, robotics, IoT, O3DE, NVIDIA Isaac Sim, Genesis, distributed robotics, agentic robotics, robotics LLM, AI robotics platform, ROS 2 bridge, autonomous systems, robot operating system' },
         { name: 'description', content: 'WiseVision is a deep-tech company building an operating system for distributed robotics and IoT. Connect robots, drones, sensors and digital twins into one coherent operational layer.' },
         { property: 'og:type', content: 'website' },
         { property: 'og:site_name', content: 'WiseVision' },
@@ -157,6 +157,11 @@ const config = {
             label: 'Case Studies',
             position: 'left',
             to: '/case-studies',
+          },
+          {
+            label: 'About',
+            position: 'left',
+            to: '/about',
           },
           {
             label: 'Contact',

@@ -28,6 +28,15 @@ import WiseOSAnimation from '@site/src/components/WiseOSAnimation';
       "url": "https://wisevision.tech/wiseos",
       "applicationCategory": "RoboticsApplication",
       "operatingSystem": "Linux",
+      "featureList": [
+        "Zenoh-based ROS 2 connectivity for WAN and edge scenarios",
+        "InfluxDB-powered Data Black Box for continuous telemetry recording",
+        "Native LoRaWAN to ROS 2 bridge for wide-area sensor coverage",
+        "Custom Grafana-based visualization platform with ROS 2/Influx datasource",
+        "WiseVision Core for Matter and LoRaWAN integration",
+        "Fleet and device management for robots, drones, and sensors",
+        "Container-friendly deployment (Docker, on-prem, cloud)"
+      ],
       "offers": {
         "@type": "Offer",
         "description": "Operating system for robotics & IoT",
@@ -49,6 +58,51 @@ import WiseOSAnimation from '@site/src/components/WiseOSAnimation';
     href: "https://github.com/wise-vision"
   }}
 />
+
+<Section background="dark">
+  <div className="container">
+    <h2 className="display-md text-center mb-lg">See WiseOS in Action</h2>
+    <p className="body-xl text-center mb-2xl">Real-world demonstrations of WiseOS managing robots, IoT sensors, and digital twins in unified environments</p>
+    
+    <div className="grid grid--2">
+      <div>
+        <h3 className="headline-md mb-md">🤖 Multi-Robot Coordination</h3>
+        <video controls style={{ width: '100%', borderRadius: '8px', marginBottom: 'var(--space-lg)' }}>
+          <source src="/img/dashboard/2_robots_no_mouse.mov" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <p className="body">WiseOS orchestrating multiple robots in a shared workspace, demonstrating fleet management and collision avoidance.</p>
+      </div>
+
+      <div>
+        <h3 className="headline-md mb-md">🏙️ IoT City-Scale Monitoring</h3>
+        <video controls style={{ width: '100%', borderRadius: '8px', marginBottom: 'var(--space-lg)' }}>
+          <source src="/img/dashboard/iot_city_no_mouse.mov" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <p className="body">City-wide sensor network visualization showing real-time data aggregation from distributed IoT devices via LoRaWAN.</p>
+      </div>
+
+      <div>
+        <h3 className="headline-md mb-md">🧠 AI Agent Integration</h3>
+        <video controls style={{ width: '100%', borderRadius: '8px', marginBottom: 'var(--space-lg)' }}>
+          <source src="/img/dashboard/ai_agent_chat.mov" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <p className="body">Natural language control of robotics systems using MCP ROS2 Pro with parallel tool execution.</p>
+      </div>
+
+      <div>
+        <h3 className="headline-md mb-md">📊 Data Black Box Telemetry</h3>
+        <video controls style={{ width: '100%', borderRadius: '8px', marginBottom: 'var(--space-lg)' }}>
+          <source src="/img/dashboard/settings_data_black_box.mov" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <p className="body">InfluxDB-powered continuous telemetry recording with Grafana visualization and real-time querying.</p>
+      </div>
+    </div>
+  </div>
+</Section>
 
 <Section>
   <div className="container">
@@ -225,11 +279,11 @@ import WiseOSAnimation from '@site/src/components/WiseOSAnimation';
       <div className="card">
         <h3 className="headline-md mb-lg">Built On</h3>
         <ul className="body-lg">
-          <li><strong>ROS 2</strong> (Humble, Jazzy and newer)</li>
-          <li><strong>Eclipse Zenoh</strong> for distributed communication</li>
-          <li><strong>InfluxDB</strong> for time-series telemetry</li>
-          <li><strong>LoRaWAN / ChirpStack</strong> for long-range IoT</li>
-          <li>Container-friendly deployment (Docker, on-prem or cloud)</li>
+          <li><strong>Core</strong>: ROS 2 + Zenoh DDS + Zenoh Router (seamless connectivity across networks)</li>
+          <li><strong>Data</strong>: InfluxDB-based Data Black Box (concurrent read/write alternative to rosbag)</li>
+          <li><strong>Integration</strong>: WiseVision Core (Matter & LoRaWAN to ROS 2 converter)</li>
+          <li><strong>Visualization</strong>: Custom Grafana-based platform with native ROS 2/Influx datasource</li>
+          <li><strong>Container-friendly</strong>: Docker-ready for on-prem or cloud deployment</li>
         </ul>
       </div>
       

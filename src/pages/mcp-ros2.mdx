@@ -28,6 +28,15 @@ import MCPROS2Animation from '@site/src/components/MCPROS2Animation';
       "url": "https://wisevision.tech/mcp-ros2",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Linux, Windows, macOS",
+      "featureList": [
+        "Auto-discovery of ROS 2 topics, services, and actions",
+        "Natural language interface to robotics systems",
+        "Integration with Claude, Cursor, VS Code, and MCP-compatible clients",
+        "Query Data Black Box (InfluxDB) for telemetry analysis",
+        "Configurable access control and auditing",
+        "Parallel tool execution (Pro version)",
+        "Real-time guarantees for safety-critical operations (Pro version)"
+      ],
       "offers": {
         "@type": "Offer",
         "description": "Operational bridge between AI agents and ROS 2",
@@ -199,6 +208,37 @@ import MCPROS2Animation from '@site/src/components/MCPROS2Animation';
       <div className="card">
         <h3 className="headline-md mb-md">🛠️ Ops Tooling</h3>
         <p className="body">Let SRE/ops teams inspect ROS 2 systems without writing custom code. Faster troubleshooting.</p>
+      </div>
+    </div>
+  </div>
+
+</Section>
+
+<Section background="gradient">
+  <div className="container">
+    <h2 className="display-md text-center mb-lg">MCP ROS2 Pro</h2>
+    <p className="body-xl text-center mb-2xl">Enterprise-grade capabilities for complex autonomous systems, available exclusively in WiseOS.</p>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <h3 className="headline-md mb-md">⚡ Parallel Tool Execution</h3>
+        <p className="body">While the open-source version handles sequential requests, MCP ROS2 Pro allows agents to execute multiple ROS 2 tools <strong>in parallel</strong>. This drastically reduces latency for complex planning tasks.</p>
+        <p className="body-sm mt-md"><em>Example: Simultaneously check battery status, scan for obstacles, and query navigation goals in a single turn.</em></p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🛡️ Enterprise Security & Governance</h3>
+        <p className="body">Fine-grained role-based access control (RBAC), audit logging, and policy enforcement for multi-user environments.</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">⏱️ Real-Time Guarantees</h3>
+        <p className="body">Prioritized execution channels for critical commands, ensuring safety-critical operations are never blocked by low-priority queries.</p>
+      </div>
+
+      <div className="card">
+        <h3 className="headline-md mb-md">🧠 Advanced Agentic Integrations</h3>
+        <p className="body">Pre-built integrations with multi-agent frameworks (e.g., CrewAI, AutoGen) optimized for robotic fleet orchestration.</p>
       </div>
     </div>
   </div>
