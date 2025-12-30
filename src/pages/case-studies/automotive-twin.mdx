@@ -1,0 +1,211 @@
+---
+title: Case Study – Automotive Test Track Digital Twin & Fleet Validation
+description: How WiseOS, MCP ROS2 and Digital Twins enabled connected vehicle testing with sim-before-test validation in a high-fidelity digital twin.
+keywords: [automotive, connected vehicles, ADAS, test track, WiseOS, MCP ROS2, Digital Twins, scenario replay]
+---
+
+import Hero from '@site/src/components/Hero';
+import Section from '@site/src/components/Section';
+
+<Hero 
+  title="Case Study – Automotive Test Track Digital Twin & Fleet Validation"
+  subtitle="Automotive"
+/>
+
+<Section>
+  <div className="container">
+    <div className="card" style={{background: 'var(--bg-secondary)', padding: 'var(--space-xl)', marginBottom: 'var(--space-2xl)'}}>
+      <h2 className="headline-lg mb-lg">Summary</h2>
+      <p className="body-lg">
+        An automotive team needed a <strong>flexible, vendor-neutral infrastructure</strong> to connect test vehicles, trackside sensors and supporting robotics, and to validate policies before spending track time.
+      </p>
+      <p className="body-lg mt-md">
+        WiseVision provided:
+      </p>
+      <ul className="body-lg">
+        <li>WiseOS as a ROS 2-based <strong>operational layer</strong> for telemetry and orchestration</li>
+        <li>MCP ROS2 for integrating operator tooling and AI-assisted workflows</li>
+        <li>A high-fidelity <strong>Digital Twin</strong> environment for scenario replay and sim-before-test validation</li>
+      </ul>
+    </div>
+
+    <div className="grid grid--2">
+      <div>
+        <h2 className="headline-lg mb-lg">Stack Used</h2>
+        <ul className="body-lg">
+          <li>WiseOS</li>
+          <li>MCP ROS2</li>
+          <li>Digital Twins (O3DE / Isaac Sim / Genesis)</li>
+          <li>ROS 2</li>
+          <li>InfluxDB (Data Black Box)</li>
+        </ul>
+      </div>
+      <div>
+        <h2 className="headline-lg mb-lg">Key Benefits</h2>
+        <ul className="body-lg">
+          <li>Vendor-neutral test infrastructure</li>
+          <li>More productive track time via scenario replay</li>
+          <li>Safer automation via sim-before-test</li>
+          <li>Full auditability and operator control</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container">
+    <h2 className="display-md mb-2xl">Challenges</h2>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <p className="body-lg">Mixed vehicle platforms, sensor stacks and vendor tooling</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">Limited access to track time and the need to replay scenarios reliably</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">Need for auditability and control over what automation and AI agents can do</p>
+      </div>
+      <div className="card">
+        <p className="body-lg">Desire to validate policies and workflows safely before real tests</p>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section>
+  <div className="container">
+    <h2 className="display-md text-center mb-2xl">Solution</h2>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <h3 className="headline-md mb-md">1. WiseOS – Unified Test Track Fabric</h3>
+        <p className="body mb-md">WiseOS connected:</p>
+        <ul className="body">
+          <li>Trackside sensors (cameras, GNSS/RTK, weather, V2X, etc.) into ROS 2</li>
+          <li>Test vehicles and support platforms via ROS 2 nodes or bridges</li>
+          <li>Telemetry and events into Data Black Box (InfluxDB)</li>
+          <li>Status and timelines from all assets in one place</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">2. MCP ROS2 – Operator & AI Tools</h3>
+        <p className="body mb-md">MCP ROS2 exposed tools with role-based controls:</p>
+        <ul className="body">
+          <li>List vehicles, sensors and test assets</li>
+          <li>Start / stop test runs and collect artifacts</li>
+          <li>Query recent events and telemetry windows</li>
+          <li>Human-in-the-loop approvals for restricted actions</li>
+          <li>All actions logged for review</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">3. Digital Twin – Scenario Replay & Validation</h3>
+        <p className="body mb-md">A Digital Twin of the track and operating zones with O3DE / Isaac Sim / Genesis:</p>
+        <ul className="body">
+          <li>3D representation of roads, intersections and infrastructure</li>
+          <li>Simulated vehicles, robots and sensor coverage</li>
+          <li>Same interfaces as real operations</li>
+          <li>Scenario replay and policy testing before real tests</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="gradient">
+  <div className="container">
+    <h2 className="display-md mb-lg">Architecture Overview</h2>
+    
+    <div className="card" style={{background: 'var(--bg-primary)', padding: 'var(--space-xl)'}}>
+      <ol className="body-lg" style={{lineHeight: '2'}}>
+        <li><strong>Vehicles and sensors</strong> → ROS 2 → WiseOS connectivity & telemetry</li>
+        <li><strong>WiseOS</strong> → InfluxDB → event logs and analysis</li>
+        <li><strong>MCP ROS2</strong> → operator tools and AI-assisted workflows</li>
+        <li><strong>Digital Twin</strong> → scenario replay, testing and visual context</li>
+      </ol>
+    </div>
+  </div>
+</Section>
+
+<Section>
+  <div className="container">
+    <h2 className="display-md mb-lg">Digital Twin Use Cases</h2>
+    
+    <div className="grid grid--3">
+      <div className="card">
+        <h3 className="headline-md mb-md">🎓 Test & Operator Training</h3>
+        <p className="body">Train procedures and tooling workflows without consuming track time</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🧪 Scenario Replay</h3>
+        <p className="body">Replay logged events and validate changes against consistent baselines</p>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">🤖 ADAS / Autonomy Validation</h3>
+        <p className="body">Test policies safely before running expensive real-world tests</p>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="dark">
+  <div className="container">
+    <h2 className="display-md mb-lg">Outcomes</h2>
+    
+    <p className="body-xl mb-xl">This pattern typically provides:</p>
+    
+    <div className="grid grid--2">
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Vendor Independence</h3>
+        <ul className="body-lg">
+          <li>A neutral infrastructure layer independent of specific vendors</li>
+          <li>Freedom to iterate across vehicle and sensor stacks</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ More Productive Testing</h3>
+        <ul className="body-lg">
+          <li>Scenario replay to reduce repeated manual investigations</li>
+          <li>Clear traceability from event → decision → action</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Safer Automation</h3>
+        <ul className="body-lg">
+          <li>Sim-before-test workflows for policies and automation</li>
+          <li>Risk-free experimentation in the Digital Twin</li>
+        </ul>
+      </div>
+      
+      <div className="card">
+        <h3 className="headline-md mb-md">✅ Full Auditability</h3>
+        <ul className="body-lg">
+          <li>Complete logging of all actions and automation decisions</li>
+          <li>Role-based access controls</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section background="gradient">
+  <div className="container text-center">
+    <h2 className="display-lg mb-lg">Next Steps</h2>
+    <p className="body-xl mb-2xl">The same architecture can be extended to multiple tracks, larger fleets, or integrated with test management and reporting tools</p>
+    
+    <p className="body mb-2xl" style={{fontStyle: 'italic'}}>Note: Automotive programs are typically evaluated individually with appropriate safety controls and NDAs.</p>
+    
+    <div style={{display: 'flex', gap: 'var(--space-lg)', justifyContent: 'center', flexWrap: 'wrap'}}>
+      <a href="/contact" className="btn btn--primary">Contact for Automotive</a>
+      <a href="/case-studies" className="btn btn--secondary">View All Case Studies</a>
+    </div>
+  </div>
+</Section>
