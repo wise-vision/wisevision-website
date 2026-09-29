@@ -13,7 +13,6 @@ import { shouldRunWebGL, type CapabilityResult } from './capability';
 export type { BeatState } from './beats';
 export { beatState, BEATS } from './beats';
 export { shouldRunWebGL } from './capability';
-export { POSTERS, MOBILE_MEDIA, objectPosition, posterSrc, type HeroLayout } from './poster';
 
 export interface HeroOptions {
   /** 0..1 scroll progress through the hero's pinned range (Lenis on the site). */

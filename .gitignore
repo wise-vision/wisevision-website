@@ -23,3 +23,5 @@ yarn-error.log*
 /hero-lab/out/*.png
 /hero-lab/public/poster
 /hero-lab/out/perf/*.trace.json
+/test-results
+/playwright-report

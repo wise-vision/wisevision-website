@@ -1,0 +1,29 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 6a0f5c4..75875b1 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -44,6 +44,24 @@ jobs:
+             test -f "dist/$f" || { echo "missing dist/$f"; exit 1; }
+           done
+ 
++  hero-e2e:
++    name: hero e2e (WebGL off, Playwright)
++    runs-on: ubuntu-latest
++    timeout-minutes: 10
++    steps:
++      - uses: actions/checkout@v4
++        with:
++          lfs: false
++      - uses: actions/setup-node@v4
++        with:
++          node-version: 24
++          cache: npm
++      - run: npm ci
++      - run: npx playwright install --with-deps chromium
++      - run: npm run build
++      - name: poster is LCP, gate keeps it, zero console errors (desktop + mobile)
++        run: npx playwright test
++
+   claims-lint:
+     name: claims-lint
+     runs-on: ubuntu-latest
