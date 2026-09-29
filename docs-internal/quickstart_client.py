@@ -39,6 +39,7 @@ def show(label, result):
 async def main():
     argv = sys.argv[1:]
     readonly = "--readonly" in argv
+    only_lists = "--lists-only" in argv
     docker_args = argv[argv.index("--") + 1 :]
     params = StdioServerParameters(command="docker", args=docker_args)
     print("$ docker " + " ".join(docker_args))
@@ -50,8 +51,12 @@ async def main():
             tools = sorted(t.name for t in (await s.list_tools()).tools)
             print(f"list_tools: {len(tools)} tools")
             print("  " + ", ".join(tools))
+            prompts = sorted(p.name for p in (await s.list_prompts()).prompts)
+            print(f"list_prompts: {len(prompts)} prompts: {', '.join(prompts)}")
             present = sorted(MUTATING & set(tools))
             print(f"mutating tools present: {present or 'none'}")
+            if only_lists:
+                return
             show("ros2_topic_list", await s.call_tool("ros2_topic_list", {}))
             show(
                 "ros2_topic_subscribe /chatter",

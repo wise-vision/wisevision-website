@@ -1,0 +1,24 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 6a0f5c4..848cf2d 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -34,13 +34,17 @@ jobs:
+         run: npm test
+       - name: contrast gate (WCAG AA on every declared pair)
+         run: npm run contrast
+-      - name: build
++      - name: build (prebuild syncs the ROS2 MCP tool reference; fails if the pin is not the latest release)
+         run: npm run build
++        env:
++          GITHUB_TOKEN: ${{ github.token }}
++      - name: docs .md twins match their pages (and are linked from <head>)
++        run: node scripts/md-twin-parity.mjs dist
+       - name: dist grep gate (no people, no office@, no Cookiebot, no MIT)
+         run: bash scripts/dist-grep-gate.sh dist
+       - name: expected routes exist
+         run: |
+-          for f in index.html ros2-mcp/index.html wiseos/index.html defence/index.html contact/index.html privacy/index.html 404.html docs/index.html docs/ros2-mcp/quickstart/index.html llms.txt sitemap-index.xml robots.txt; do
++          for f in index.html ros2-mcp/index.html wiseos/index.html defence/index.html contact/index.html privacy/index.html 404.html docs/index.html docs/ros2-mcp/quickstart/index.html docs/ros2-mcp/quickstart.md docs/ros2-mcp/connect/index.html docs/ros2-mcp/security/index.html docs/ros2-mcp/tools/index.html docs/ros2-mcp/prompts/index.html docs/ros2-mcp/data-black-box/index.html docs/wiseos/index.html docs/faq/index.html _headers llms.txt sitemap-index.xml robots.txt; do
+             test -f "dist/$f" || { echo "missing dist/$f"; exit 1; }
+           done
+ 

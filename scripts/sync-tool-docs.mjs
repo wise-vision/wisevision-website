@@ -35,11 +35,15 @@ export function escapeMdHtml(md) {
         return line;
       }
       if (fence) return line;
+      // gen_tool_docs.py (ros2_mcp 2610) escapes `|` twice inside table cells, writing `\\|`: Markdown reads that as a
+      // literal backslash followed by a cell break, which splits the row. Repair it to a single escaped pipe.
+      const isRow = /^\s*\|/.test(line);
       return line
         .split(/(`+[^`]*`+)/)
         .map((part, i) => {
           if (i % 2 === 1) return part; // inline code span
-          return part.replace(/</g, (lt, off, s) => (ALLOWED_TAG.test(s.slice(off)) ? lt : '&lt;'));
+          const fixed = isRow ? part.replace(/\\\\\|/g, '\\|') : part;
+          return fixed.replace(/</g, (lt, off, s) => (ALLOWED_TAG.test(s.slice(off)) ? lt : '&lt;'));
         })
         .join('');
     })

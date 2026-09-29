@@ -69,6 +69,17 @@ describe('escapeMdHtml', () => {
   });
 });
 
+describe('escapeMdHtml: double-escaped pipes from the 2610 generator', () => {
+  it('turns a double-escaped \\\\| in a table row back into one escaped pipe, so the row keeps its cells', () => {
+    const row = "| `color_mode` | string | no | Coloring mode: 'intensity' \\\\| 'height' \\\\| 'rgb'. · default: `\"intensity\"` |";
+    expect(escapeMdHtml(row)).toBe("| `color_mode` | string | no | Coloring mode: 'intensity' \\| 'height' \\| 'rgb'. · default: `\"intensity\"` |");
+  });
+  it('leaves backslashes outside table rows and in code alone', () => {
+    expect(escapeMdHtml('a \\\\| b')).toBe('a \\\\| b');
+    expect(escapeMdHtml('```\n| x \\\\| y |\n```')).toBe('```\n| x \\\\| y |\n```');
+  });
+});
+
 describe('toStarlightPage', () => {
   it('adds provenance to the frontmatter and a visible pinned-release line', () => {
     const page = toStarlightPage(TOOLS_MD, { tag: '2610', sha: 'deadbeef' });
