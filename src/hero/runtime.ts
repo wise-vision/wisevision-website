@@ -6,6 +6,7 @@ import { WebGLRenderer, PerspectiveCamera, Vector3, Color } from 'three';
 import { buildScene, RIGS, applyRig, type Layout, type Composition, type Rig } from './scene';
 import { rasterize, type CompositionReport, type Rect, type Pt } from './layout-check';
 import { beatState } from './beats';
+import { MOBILE_MEDIA } from './poster';
 import { HEX } from './palette';
 import type { HeroOptions } from './index';
 
@@ -107,7 +108,7 @@ export function startHero(container: HTMLElement, opts: HeroOptions) {
     const r = container.getBoundingClientRect();
     w = Math.max(1, Math.round(r.width));
     h = Math.max(1, Math.round(r.height));
-    layout = opts.layout && opts.layout !== 'auto' ? opts.layout : w < 768 || h > w * 1.05 ? 'mobile' : 'desktop';
+    layout = opts.layout && opts.layout !== 'auto' ? opts.layout : matchMedia(MOBILE_MEDIA).matches ? 'mobile' : 'desktop';
     if (hero.layout !== layout) rebuild();
     const cap = opts.maxDpr ?? (layout === 'mobile' ? 1.25 : 1.5);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));

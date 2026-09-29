@@ -4,7 +4,7 @@ import { launch, collectErrors, waitReady, layoutReport, BASE } from './lib.mjs'
 import { checkComposition } from '../../src/hero/layout-check.ts';
 const [layout = 'mobile', json = '{}', out] = process.argv.slice(2);
 const { comp, rig } = JSON.parse(json);
-const vp = layout === 'mobile' ? { width: 390, height: 600 } : { width: 1440, height: 800 };
+const vp = layout === 'mobile' ? { width: 390, height: +(process.env.MH ?? 780) } : { width: 1440, height: 800 };
 const browser = await launch();
 const page = await browser.newPage({ viewport: vp, deviceScaleFactor: 1 });
 const errors = collectErrors(page);

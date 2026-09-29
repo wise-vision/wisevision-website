@@ -11,6 +11,8 @@
 html, body { margin: 0; background: var(--wv-base-0); color: var(--wv-text); font-family: Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
 .hero { position: relative; height: 100vh; height: 100svh; overflow: hidden; background: radial-gradient(120% 90% at 30% 42%, var(--wv-base-1) 0%, var(--wv-base-0) 70%); }
 .hero-poster, .hero-poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+/* cover crop anchored on the camera principal point (src/hero/poster.ts objectPosition) */
+.hero-poster img { object-position: 30% 41%; }
 .hero-copy { position: absolute; z-index: 3; left: 6.2vw; top: 21vh; width: min(41vw, 640px); }
 .hero-copy h1 { font-family: 'Space Grotesk', system-ui, sans-serif; font-weight: 700; font-size: clamp(44px, 4.45vw, 80px); line-height: 0.98; letter-spacing: -0.035em; margin: 0 0 22px; }
 .hero-copy p { font-size: clamp(17px, 1.3vw, 21px); line-height: 1.45; color: var(--wv-muted); margin: 0 0 30px; max-width: 30ch; }
@@ -20,7 +22,8 @@ html, body { margin: 0; background: var(--wv-base-0); color: var(--wv-text); fon
 .btn-ghost { color: var(--wv-text); border: 1px solid rgba(242,245,247,0.18); }
 .btn-ghost code { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--wv-accent-text); font-weight: 500; }
 .hero-scrim { position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(90deg, rgba(7,8,11,0.55) 0%, rgba(7,8,11,0.25) 34%, rgba(7,8,11,0) 52%); }
-@media (max-width: 767px) {
+@media (max-width: 767px), (max-aspect-ratio: 4/5) {
+  .hero-poster img { object-position: 50% 63.5%; }
   .hero-copy { left: 22px; right: 22px; top: 11vh; width: auto; }
   .hero-copy h1 { font-size: 40px; margin-bottom: 16px; }
   .hero-copy p { font-size: 17px; margin-bottom: 22px; }

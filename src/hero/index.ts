@@ -13,13 +13,14 @@ import { shouldRunWebGL, type CapabilityResult } from './capability';
 export type { BeatState } from './beats';
 export { beatState, BEATS } from './beats';
 export { shouldRunWebGL } from './capability';
+export { POSTERS, MOBILE_MEDIA, objectPosition, posterSrc, type HeroLayout } from './poster';
 
 export interface HeroOptions {
   /** 0..1 scroll progress through the hero's pinned range (Lenis on the site). */
   scrollProgress?: () => number;
   /** Force the poster (e.g. site-level reduced-motion toggle). */
   reducedMotion?: boolean;
-  /** 'auto' picks the mobile composition when the container is portrait or < 768 px wide. */
+  /** 'auto' picks the mobile composition when MOBILE_MEDIA matches (same query as the poster <picture>). */
   layout?: 'auto' | 'desktop' | 'mobile';
   /** A/B: one legible `base_link` mono label on the lidar triad. */
   label?: 'none' | 'base_link';

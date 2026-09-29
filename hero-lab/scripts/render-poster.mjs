@@ -1,10 +1,11 @@
 // Render the beat-0 frame of OUR scene as the LCP poster, plus the headline+CTA previews for the cold vision gate.
 //   node scripts/render-poster.mjs            (needs `npm run build && npm run preview` on :4317, or HERO_LAB_URL)
 // Outputs:
-//   out/hero-desktop{,-base_link}.{png,avif,webp}   2880×1600
-//   out/hero-mobile{,-base_link}.{png,avif,webp}    780×1200
+//   out/hero-desktop{,-unlabelled}.{png,avif,webp} 2880×1600 (AB=1 renders -unlabelled)
+//   out/hero-mobile{,-unlabelled}.{png,avif,webp}  780×1560
+//   ../public/hero/*  the site's LCP posters (base_link variant only)
 //   public/poster/*  (copies used by the harness/preview pages; site integration copies from out/)
-//   $SCRATCH/wvrevive/C/preview-{desktop,mobile}{,-base_link}.png  1440×900 / 390×844 with headline + CTA
+//   $SCRATCH/wvrevive/H/preview-{desktop,mobile}{,-base_link}.png  1440×900 / 390×844 with headline + CTA
 import { mkdir, copyFile, stat } from 'node:fs/promises';
 import sharp from 'sharp';
 import { launch, collectErrors, waitReady, layoutReport, BASE } from './lib.mjs';
@@ -13,12 +14,13 @@ import { checkComposition } from '../../src/hero/layout-check.ts';
 const OUT = new URL('../out/', import.meta.url).pathname;
 const PUB = new URL('../public/poster/', import.meta.url).pathname;
 const DIST = new URL('../dist/poster/', import.meta.url).pathname; // vite preview serves dist/
+const SITE = new URL('../../public/hero/', import.meta.url).pathname; // the Astro site's LCP posters (committed)
 const PREV = process.env.PREVIEW_DIR ?? '/home/adam/.hermes/cache/scratch/wvrevive/H/';
-await Promise.all([OUT, PUB, DIST, PREV].map((d) => mkdir(d, { recursive: true })));
+await Promise.all([OUT, PUB, DIST, SITE, PREV].map((d) => mkdir(d, { recursive: true })));
 
 const POSTERS = [
   { name: 'hero-desktop', layout: 'desktop', vw: 1440, vh: 800, dpr: 2 }, // 2880×1600
-  { name: 'hero-mobile', layout: 'mobile', vw: 390, vh: 600, dpr: 2 }, // 780×1200
+  { name: 'hero-mobile', layout: 'mobile', vw: 390, vh: 780, dpr: 2 }, // 780×1560: the site hero's real mobile aspect (390×844 minus the 64 px header)
 ].filter((p) => !process.env.ONLY || p.layout === process.env.ONLY);
 // base_link won the W2 A/B (parent cold read) and is the shipped default. AB=1 re-renders the unlabelled variant too.
 const VARIANTS = [
@@ -47,7 +49,7 @@ for (const v of VARIANTS) {
     await sharp(`${base}.png`).avif({ quality: 58, effort: Number(process.env.AVIF_EFFORT ?? 4), chromaSubsampling: '4:4:4' }).toFile(`${base}.avif`);
     await sharp(`${base}.png`).webp({ quality: 82, effort: 6 }).toFile(`${base}.webp`);
     for (const ext of ['avif', 'webp'])
-      for (const d of [PUB, DIST]) await copyFile(`${base}.${ext}`, `${d}${p.name}${v.suffix}.${ext}`);
+      for (const d of v.label === 'base_link' ? [PUB, DIST, SITE] : [PUB, DIST]) await copyFile(`${base}.${ext}`, `${d}${p.name}${v.suffix}.${ext}`);
     await copyFile(`${base}.png`, `${PREV}poster-${p.layout}${v.suffix}.png`);
     const meta = await sharp(`${base}.png`).metadata();
     report.push({

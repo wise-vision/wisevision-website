@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>hero-lab · wisevision.tech hero harness</title>
   <link rel="preload" as="image" href="/poster/hero-desktop.avif" media="(min-width: 768px)" type="image/avif" />
-  <link rel="preload" as="image" href="/poster/hero-mobile.avif" media="(max-width: 767px)" type="image/avif" />
+  <link rel="preload" as="image" href="/poster/hero-mobile.avif" media="(max-width: 767px), (max-aspect-ratio: 4/5)" type="image/avif" />
 </head>
 <body>
   <div id="track" style="height: 420vh; position: relative">
     <section class="hero" id="hero" style="position: sticky; top: 0">
       <picture class="hero-poster" data-hero-poster>
-        <source media="(max-width: 767px)" type="image/avif" srcset="/poster/hero-mobile.avif" />
-        <source media="(max-width: 767px)" type="image/webp" srcset="/poster/hero-mobile.webp" />
+        <source media="(max-width: 767px), (max-aspect-ratio: 4/5)" type="image/avif" srcset="/poster/hero-mobile.avif" />
+        <source media="(max-width: 767px), (max-aspect-ratio: 4/5)" type="image/webp" srcset="/poster/hero-mobile.webp" />
         <source type="image/avif" srcset="/poster/hero-desktop.avif" />
         <img src="/poster/hero-desktop.webp" alt="" fetchpriority="high" decoding="async" width="2880" height="1600" />
       </picture>

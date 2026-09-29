@@ -25,8 +25,10 @@ import { Segs, lineMaterial, createShared, type Shared } from './lines';
 import { leadRover, quadruped, drone, sensorMast } from './robots';
 import { C, hexToRgb, HEX } from './palette';
 import { UNIT_DISTANCES, type BeatState } from './beats';
+import { POSTERS } from './poster';
 
-export type Layout = 'desktop' | 'mobile';
+export type { HeroLayout as Layout } from './poster';
+import type { HeroLayout as Layout } from './poster';
 
 /**
  * Per-layout composition. Desktop is the approved A/B winner (unchanged). Mobile is composed separately:
@@ -55,16 +57,17 @@ export const COMPOSITIONS: Record<Layout, Composition> = {
     prismPos: new Vector3(3.4, 0, -15.5),
     label: [128, 58],
   },
-  // tuned with scripts/compose-search.mjs + compose.mjs (checkComposition clean): rover three-quarter bottom-left,
+  // tuned at the site's real mobile hero aspect (390×780) with scripts/compose-search.mjs + compose.mjs
+  // (checkComposition clean): rover three-quarter bottom-left,
   // quadruped (arc target) right, drone between mast and lidar so its tether lands on free floor, mast far left
   mobile: {
-    roverPos: new Vector3(-0.81, 0, -4.85),
-    roverYaw: -0.6,
-    bearings: [0.52, -0.2, -0.36],
-    heights: [0, 2.1, 0],
-    yaws: [2.91, 0.4, 0.2],
+    roverPos: new Vector3(-0.6, 0, -4.98),
+    roverYaw: -0.76,
+    bearings: [0.41, -0.26, -0.32],
+    heights: [0, 1.93, 0],
+    yaws: [2.78, 0.4, 0.2],
     prismPos: new Vector3(0.3, 0, -17),
-    label: [78, 67],
+    label: [98, 85],
   },
 };
 /** kept for back-compat with the harness/tests */
@@ -520,17 +523,22 @@ export interface Rig {
   vp: [number, number];
   /** optional look-at target (mobile); desktop looks straight down -Z so the VP is exactly the principal point */
   target?: Vector3;
+  /** aspect (w/h) the poster for this layout is rendered at; applyRig emulates object-fit: cover against it */
+  posterAspect: number;
 }
+
 
 export const RIGS: Record<Layout, Rig> = {
   // VP at x=30%, y=41% from top: under the headline's first line in the left column
-  desktop: { pos: new Vector3(0, 0.9, 0), dollyPos: new Vector3(0.9, 2.2, 6.5), fov: 30, vp: [-0.4, 0.18] },
+  desktop: { pos: new Vector3(0, 0.9, 0), dollyPos: new Vector3(0.9, 2.2, 6.5), fov: 30, vp: POSTERS.desktop.vp, posterAspect: POSTERS.desktop.width / POSTERS.desktop.height },
   // separate mobile composition: looks across the fleet from front-left, scene sits under the stacked type
-  mobile: { pos: new Vector3(0.1, 2.24, 1.92), dollyPos: new Vector3(0.1, 3.2, 8.5), fov: 45, vp: [0, -0.15], target: new Vector3(-0.25, 0.69, -6.97) },
+  mobile: { pos: new Vector3(0.3, 2.42, 1.24), dollyPos: new Vector3(0.3, 3.4, 8.5), fov: 53.57, vp: POSTERS.mobile.vp, target: new Vector3(-0.01, 0.53, -8.12), posterAspect: POSTERS.mobile.width / POSTERS.mobile.height },
 };
 
 export function applyRig(cam: PerspectiveCamera, rig: Rig, dolly: number, parallax: [number, number]) {
-  cam.fov = rig.fov;
+  // emulate object-fit: cover against the poster: wider than the poster → crop top/bottom instead of showing more
+  const k = cam.aspect > rig.posterAspect ? rig.posterAspect / cam.aspect : 1;
+  cam.fov = (2 * Math.atan(Math.tan((rig.fov * Math.PI) / 360) * k) * 180) / Math.PI;
   cam.position.copy(rig.pos).lerp(rig.dollyPos, dolly);
   cam.position.x += parallax[0] * 0.18;
   cam.position.y += parallax[1] * 0.07;
