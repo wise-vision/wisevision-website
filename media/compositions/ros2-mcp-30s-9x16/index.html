@@ -37,6 +37,10 @@ html, body { width: 1080px; height: 1920px; }
 .land .agentnode { left: 1380px; top: 250px; }
 .port .agentnode { left: 640px; top: 1080px; }
 .land #p1 .col.text { flex-basis: 820px; }
+.land #p5 .col.wide { flex: 0 0 1180px; }
+.port #p3 .sub { display: none; }
+.port #p3 { gap: 44px; }
+.port .msg { font-size: 30px !important; }
 .port #p1 { justify-content: flex-start; padding-top: 300px; }
 </style>
 </head>
@@ -127,12 +131,10 @@ html, body { width: 1080px; height: 1920px; }
   WV.el('circle', { id: 'sigdot', cx: PORT ? 700 : 1440, cy: PORT ? 1140 : 320, r: 8, fill: '#3CFFB4', opacity: 0 }, svg);
 
   var tl = gsap.timeline({ paused: true });
-  ['#p2', '#p3', '#p4', '#p5'].forEach(function (p) { tl.set(p, { opacity: 0 }, 0); });
+  gsap.set(['#p2', '#p3', '#p4', '#p5'], { opacity: 0 });
   tl.fromTo('#prog', { scaleX: 0 }, { scaleX: 1, duration: 30, ease: 'none' }, 0);
   tl.from('#brand', { opacity: 0, y: -16, duration: 0.6, ease: 'power2.out' }, 0.1);
-  tl.from('.rosgrid', { opacity: 0, duration: 1.2, ease: 'sine.inOut' }, 0);
-  tl.from('#rover', { opacity: 0, y: 30, duration: 0.9, ease: 'expo.out' }, 0.2);
-  tl.from('#quad', { opacity: 0, duration: 1.0, ease: 'sine.inOut' }, 0.5);
+  tl.from('#rover', { y: 18, duration: 1.2, ease: 'expo.out' }, 0.1);
   tl.fromTo(ringG, { scale: 0.15, opacity: 1 }, { scale: 1.25, opacity: 0, duration: 2.2, ease: 'power1.out', transformOrigin: '50% 50%', repeat: 12 }, 0.4);
   // S1 hook
   tl.from('#p1k', { opacity: 0, y: -20, duration: 0.5, ease: 'back.out(1.6)' }, 0.25);
@@ -178,7 +180,7 @@ html, body { width: 1080px; height: 1920px; }
   // S4 -> S5 close
   tl.to('#p4', { opacity: 0, filter: 'blur(10px)', duration: 0.45, ease: 'sine.inOut' }, 25.0);
   tl.set('#p4', { opacity: 0 }, 25.45);
-  tl.to('#bgscene', { opacity: PORT ? 0.3 : 0.5, duration: 0.8, ease: 'sine.inOut' }, 25.0);
+  tl.to('#bgscene', { opacity: PORT ? 0.22 : 0.4, duration: 0.8, ease: 'sine.inOut' }, 25.0);
   tl.to('#p5', { opacity: 1, duration: 0.45, ease: 'sine.inOut' }, 25.1);
   tl.from('#p5k', { opacity: 0, x: -30, duration: 0.5, ease: 'power2.out' }, 25.25);
   tl.from('#p5h', { opacity: 0, y: 50, duration: 0.7, ease: 'power3.out' }, 25.4);

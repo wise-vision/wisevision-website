@@ -102,5 +102,25 @@
     }
     return inner;
   }
-  window.WV = { el: el, grid: grid, triad: triad, rover: rover, quadruped: quadruped, drone: drone, mast: mast, scanRing: scanRing };
+  /* WiseOS node: the one solid-shaded prism in the scene. */
+  function prism(parent, id, x, y, s) {
+    var g = el('g', { id: id, transform: 'translate(' + x + ',' + y + ') scale(' + (s || 1) + ')' }, parent);
+    el('ellipse', { cx: 0, cy: 70, rx: 120, ry: 22, fill: 'rgba(60,255,180,.10)' }, g);
+    el('polygon', { points: '-70,-20 0,-50 70,-20 0,10', fill: '#3CFFB4' }, g);
+    el('polygon', { points: '-70,-20 0,10 0,80 -70,50', fill: '#1E7F5C' }, g);
+    el('polygon', { points: '70,-20 0,10 0,80 70,50', fill: '#2BB585' }, g);
+    return g;
+  }
+  /* Deterministic "EW static": short horizontal dashes on a seeded lattice. */
+  function noise(parent, id, W, H, n, color) {
+    var g = el('g', { id: id, stroke: color || '#F2F5F7', 'stroke-width': 2, 'stroke-linecap': 'round' }, parent);
+    var seed = 7;
+    function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    for (var i = 0; i < n; i++) {
+      var x = rnd() * W, y = rnd() * H, l = 6 + rnd() * 40;
+      el('line', { x1: x.toFixed(1), y1: y.toFixed(1), x2: (x + l).toFixed(1), y2: y.toFixed(1), opacity: (0.08 + rnd() * 0.3).toFixed(2) }, g);
+    }
+    return g;
+  }
+  window.WV = { el: el, grid: grid, triad: triad, rover: rover, quadruped: quadruped, drone: drone, mast: mast, scanRing: scanRing, prism: prism, noise: noise };
 })();
