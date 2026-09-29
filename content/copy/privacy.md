@@ -41,6 +41,8 @@ Forms are protected by Cloudflare Turnstile, which checks that a person, not a b
 
 ### Analytics
 
+The site itself sets no cookies. The documentation pages remember your light or dark theme and the sidebar position in your browser's own storage; that never leaves your device.
+
 We count visits with Cloudflare Web Analytics. It is cookieless: it does not set cookies, does not use local storage and does not fingerprint you. We see aggregate numbers such as page views and referrers, not individual visitors.
 
 ## section:rights
