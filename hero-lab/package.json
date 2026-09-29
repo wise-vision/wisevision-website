@@ -1,0 +1,31 @@
+{
+  "name": "wisevision-hero-lab",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Standalone harness for the wisevision.tech 3D hero (src/hero). Not part of the site build.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4317 --strictPort",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "poster": "node scripts/render-poster.mjs",
+    "perf": "node scripts/perf-trace.mjs"
+  },
+  "dependencies": {
+    "lenis": "1.3.26",
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/space-grotesk": "^5.3.0",
+    "@playwright/test": "1.63.0",
+    "@types/three": "^0.186.0",
+    "playwright": "1.63.0",
+    "sharp": "^0.35.5",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
+  }
+}
