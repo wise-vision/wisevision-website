@@ -224,7 +224,7 @@ export function inline(text: string, opts: InlineOptions = {}): string {
   s = out + rest;
 
   // "…steps: /docs/x/" → link the bare internal path
-  s = s.replace(/(:\s+)(\/[\w\-./#?=&]*)/g, (_, pre: string, p: string) => `${pre}${open(p)}${escapeHtml(p)}${tok('</a>')}`);
+  s = s.replace(/(:\s+)(\/[\w\-./#?=&]*)/g, (_, pre: string, p: string) => `${pre}${open(p)}${escapeHtml(href(p))}${tok('</a>')}`);
 
   s = escapeHtml(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   return s.replace(/\u0001(\d+)\u0001/g, (_, n: string) => tokens[Number(n)]);

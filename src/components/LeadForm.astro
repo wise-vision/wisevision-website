@@ -108,11 +108,11 @@ const f = (n: string) => `${id}-${n}`;
   textarea { resize: vertical; min-height: 7.5rem; }
   input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 1px; }
   [aria-invalid='true'] { border-color: var(--color-danger); }
-  .err { min-height: 1.3em; margin: 0; font-size: var(--size-xs); color: var(--color-danger); }
+  .err { min-height: 1.5em; line-height: 1.5; margin: 0; font-size: var(--size-xs); color: var(--color-danger); }
   .consent { grid-template-columns: auto 1fr; column-gap: var(--space-3); align-items: start; }
   .consent input { width: 1.15rem; height: 1.15rem; margin-top: 0.2rem; accent-color: var(--color-accent); }
   .consent label { color: var(--color-text-muted); }
-  .consent .err { grid-column: 2; }
+  .consent .err { grid-column: 2; min-height: 3em; } /* the consent message wraps to 2 lines on phones: reserve them */
   .turnstile { min-height: 65px; }
   .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
   .foot { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; margin-top: var(--space-4); }
@@ -168,18 +168,41 @@ const f = (n: string) => `${id}-${n}`;
       if (hit) select.value = hit.value;
     }
 
+    // Turnstile (~200 kB of third-party JS) is loaded only on intent: the first focus / pointer on the form,
+    // or once the user has scrolled and the form is in view. Never on first paint, so it costs nothing to
+    // visitors who don't use the form. Submit waits (≤12 s) for the token if the widget is still solving.
+    let mounted = false;
+    let resolveToken: (t: string) => void = () => {};
+    let token: Promise<string> = new Promise((r) => (resolveToken = r));
     const mount = () => {
+      if (mounted) return;
+      mounted = true;
       loadTurnstile()
         .then((ts) => {
-          widget = ts.render(slot, { sitekey: form.dataset.sitekey, theme: 'dark', size: 'flexible', 'response-field-name': 'cf-turnstile-response' });
+          widget = ts.render(slot, {
+            sitekey: form.dataset.sitekey,
+            theme: 'dark',
+            size: 'flexible',
+            'response-field-name': 'cf-turnstile-response',
+            callback: (t: string) => resolveToken(t),
+            'expired-callback': () => { token = new Promise((r) => (resolveToken = r)); },
+          });
         })
         .catch(() => { /* the server answers 403/503; the error message tells the user to retry or email */ });
     };
+    for (const ev of ['focusin', 'pointerenter', 'touchstart'] as const) form.addEventListener(ev, mount, { once: true, passive: true });
     if ('IntersectionObserver' in window) {
-      const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); mount(); } }, { rootMargin: '300px 0px' });
+      let scrolled = false;
+      let visible = false;
+      const io = new IntersectionObserver((es) => {
+        visible = es.some((e) => e.isIntersecting);
+        if (visible && scrolled) { io.disconnect(); mount(); }
+      });
       io.observe(form);
-    } else mount();
-    form.addEventListener('focusin', () => { if (!window.__wvTurnstile) mount(); }, { once: true });
+      window.addEventListener('scroll', () => { scrolled = true; if (visible) { io.disconnect(); mount(); } }, { once: true, passive: true });
+    }
+    const waitToken = () =>
+      Promise.race([token, new Promise<string>((r) => setTimeout(() => r(''), 12_000))]);
 
     const setErrors = (errs: Record<string, string>) => {
       form.querySelectorAll<HTMLElement>('[data-err]').forEach((p) => {
@@ -202,12 +225,17 @@ const f = (n: string) => `${id}-${n}`;
       if (!fd.get('consent')) local.consent = 'required';
       if (Object.keys(local).length) { setErrors(fieldErrors(local)); return; }
       setErrors({});
-      const payload = buildLeadPayload(fd);
-      const t = fd.get('topic');
-      if (typeof t === 'string' && t) payload.use_case = `Topic: ${t}\n\n${payload.use_case ?? ''}`.trim();
       btn.disabled = true;
       status.classList.remove('is-error');
       status.textContent = 'Sending…';
+      mount();
+      if (!fd.get('cf-turnstile-response')) {
+        const tok = await waitToken();
+        if (tok) fd.set('cf-turnstile-response', tok);
+      }
+      const payload = buildLeadPayload(fd);
+      const t = fd.get('topic');
+      if (typeof t === 'string' && t) payload.use_case = `Topic: ${t}\n\n${payload.use_case ?? ''}`.trim();
       const r = await submitLead(payload);
       btn.disabled = false;
       if (r.ok) {
@@ -219,7 +247,10 @@ const f = (n: string) => `${id}-${n}`;
       status.classList.add('is-error');
       status.textContent = r.status === 400 ? r.message : `${r.message} ${form.dataset.error ?? ''}`.trim();
       if (r.fields) setErrors(fieldErrors(r.fields));
-      if (widget && window.turnstile) window.turnstile.reset(widget);
+      if (widget && window.turnstile) {
+        token = new Promise((res) => (resolveToken = res));
+        window.turnstile.reset(widget);
+      }
     });
   }
 </script>

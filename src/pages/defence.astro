@@ -32,7 +32,7 @@ const cta = section(doc, 'cta');
   :global(.shift li), :global(.build li) { border-top: 1px solid var(--color-bg-line); padding-top: var(--space-4); }
   :global(.principle h2) { font-size: var(--size-display) !important; max-width: 12ch !important; }
   :global(.principle p) { font-size: var(--size-lg); }
-  .mail { font-family: var(--font-display); font-size: var(--size-2xl); }
+  .mail { font-family: var(--font-display); font-size: clamp(1.25rem, 0.9rem + 1.8vw, 2.25rem); overflow-wrap: anywhere; }
   :global(.sources p), :global(.sources li) { font-size: var(--size-sm); }
   @media (max-width: 900px) { :global(.shift ul), :global(.build ul) { grid-template-columns: 1fr; } }
 </style>

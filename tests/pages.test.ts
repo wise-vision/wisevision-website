@@ -22,3 +22,20 @@ describe('pages loader (import.meta.glob over content/copy)', () => {
     expect(DOCS_ROUTES).toContain(resolveHref('/docs/ros2-mcp/security/'));
   });
 });
+
+import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { mediaState } from '../src/lib/media';
+
+describe('mediaState (video slot degradation)', () => {
+  it('video > poster > none', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'media-'));
+    mkdirSync(path.join(root, 'public', 'media'), { recursive: true });
+    expect(mediaState('x', root)).toBe('none');
+    writeFileSync(path.join(root, 'public', 'media', 'x.poster.jpg'), '');
+    expect(mediaState('x', root)).toBe('poster');
+    writeFileSync(path.join(root, 'public', 'media', 'x.mp4'), '');
+    expect(mediaState('x', root)).toBe('video');
+  });
+});

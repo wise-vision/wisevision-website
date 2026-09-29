@@ -6,6 +6,7 @@ import Actions from '../components/copy/Actions.astro';
 import VideoSlot from '../components/VideoSlot.astro';
 import { loadCopy, section, headingOf, bodyOf, groupsOf, resolveHref } from '../lib/pages';
 import { inline } from '../lib/copy';
+import { mediaState } from '../lib/media';
 
 const doc = loadCopy('home');
 const hero = section(doc, 'hero');
@@ -19,6 +20,10 @@ const [lede, proof] = hero.blocks.filter((b) => b.type === 'paragraph');
 const chipQ = chip.blocks.find((b) => b.type === 'quote');
 const chipLink = chip.blocks.find((b) => b.type === 'paragraph');
 const html = (s: string) => inline(s, { resolve: resolveHref });
+// Fallback asides when a product video is not available: copy-backed content only (no invented claims).
+const rosLoad = loadCopy('ros2-mcp');
+const installCmd = rosLoad.sections.install?.blocks.find((b) => b.type === 'code' && b.lang === 'bash');
+const wiseCaps = groupsOf(section(loadCopy('wiseos'), 'capabilities')).map((g) => g.title);
 const products = [
   { s: mcp, id: 'ros2-mcp', video: 'ros2-mcp-30s-16x9', label: 'ROS2 MCP: an AI agent reading a live ROS 2 graph' },
   { s: wiseos, id: 'wiseos', video: 'wiseos-30s-16x9', label: 'WiseOS: one screen for the whole fleet' },
@@ -70,7 +75,24 @@ const products = [
           <Actions links={s.links} />
         </div>
         <div class="product-media">
-          <VideoSlot name={video} label={label} />
+          {mediaState(video) !== 'none' ? (
+            <VideoSlot name={video} label={label} />
+          ) : id === 'ros2-mcp' && installCmd && installCmd.type === 'code' ? (
+            <div class="aside term" data-reveal style="--reveal-i:2">
+              <div class="term-bar" aria-hidden="true"><span></span><span></span><span></span><em>terminal</em></div>
+              <pre tabindex="0"><code><span class="prompt" aria-hidden="true">$ </span>{installCmd.code}</code></pre>
+              <p class="term-note">stdio · no port to expose · Humble + Jazzy</p>
+            </div>
+          ) : id === 'wiseos' ? (
+            <ol class="aside caps" data-reveal style="--reveal-i:2" aria-label="WiseOS building blocks">
+              {wiseCaps.map((c, n) => <li><span aria-hidden="true">0{n + 1}</span>{c}</li>)}
+            </ol>
+          ) : (
+            <div class="aside stat" data-reveal style="--reveal-i:2">
+              <p class="stat-num">25,000+</p>
+              <p class="stat-label">ground-robot logistics and evacuation missions in one month, August 2026 <cite>Ministry of Defence of Ukraine</cite><span data-claim="def-ugv-missions" hidden></span></p>
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -86,7 +108,7 @@ const products = [
 </CopyPage>
 <style>
   .hero { position: relative; min-height: calc(100svh - var(--layout-header)); display: grid; align-items: end; overflow: hidden; }
-  .hero-slot { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+  .hero-slot { position: absolute; inset: 0; z-index: 0; pointer-events: none; contain: strict; }
   /* Static fallback until worker H's hero island mounts into #hero-slot (it may replace these children). */
   .hero-fallback { position: absolute; inset: 0; }
   .grid-lines {
@@ -120,10 +142,26 @@ const products = [
 
   .product { border-top: 1px solid var(--color-bg-line); }
   .product-grid { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(var(--space-8), 5vw, var(--space-16)); align-items: center; }
+  .flip .product-grid { grid-template-columns: 6fr 5fr; }
   .flip .product-copy { order: 2; }
   .product-title { font-size: var(--size-3xl); line-height: var(--leading-tight); max-width: 16ch; }
-  .product-grid:has(.product-media:empty) { grid-template-columns: minmax(0, 820px); }
-  .product-media:empty { display: none; }
+  .aside { margin: 0; border: 1px solid var(--color-bg-line); border-radius: var(--radius-lg); background: var(--color-bg-raised); }
+  .term { overflow: hidden; box-shadow: 0 40px 120px -40px color-mix(in srgb, var(--color-accent) 25%, transparent); }
+  .term-bar { display: flex; gap: 8px; align-items: center; padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-bg-line); }
+  .term-bar span { width: 10px; height: 10px; border-radius: 50%; background: var(--color-bg-line); }
+  .term-bar em { margin-left: auto; font-style: normal; font-family: var(--font-mono); font-size: 0.7rem; color: var(--color-text-subtle); letter-spacing: var(--tracking-caps); text-transform: uppercase; }
+  .term pre { margin: 0; padding: var(--space-8) var(--space-6); overflow-x: auto; font-size: clamp(0.95rem, 0.8rem + 0.6vw, 1.35rem); }
+  .term code { color: var(--color-text); }
+  .prompt { color: var(--color-accent); }
+  .term-note { margin: 0; padding: 0 var(--space-6) var(--space-6); font-family: var(--font-mono); font-size: var(--size-xs); color: var(--color-text-subtle); }
+  .caps { list-style: none; padding: var(--space-4) var(--space-8); }
+  .caps li { display: flex; align-items: baseline; gap: var(--space-6); padding-block: var(--space-4); border-bottom: 1px solid var(--color-bg-line); font-family: var(--font-display); font-weight: var(--weight-display); font-size: clamp(1.5rem, 1rem + 1.6vw, 2.5rem); letter-spacing: var(--tracking-display); }
+  .caps li:last-child { border-bottom: 0; }
+  .caps span { font-family: var(--font-mono); font-size: var(--size-xs); font-weight: 400; color: var(--color-accent-text); letter-spacing: var(--tracking-caps); }
+  .stat { padding: clamp(var(--space-8), 5vw, var(--space-16)); background: radial-gradient(ellipse at 0% 100%, color-mix(in srgb, var(--color-accent) 10%, transparent), transparent 60%), var(--color-bg-raised); }
+  .stat-num { margin: 0; font-family: var(--font-display); font-weight: var(--weight-display); font-size: clamp(4rem, 2rem + 7vw, 8.5rem); line-height: 1; letter-spacing: var(--tracking-display); color: var(--color-accent); }
+  .stat-label { margin: var(--space-4) 0 0; color: var(--color-text-muted); max-width: 36ch; }
+  .stat-label cite { display: block; margin-top: var(--space-2); font-style: normal; font-family: var(--font-mono); font-size: var(--size-xs); color: var(--color-text-subtle); }
 
   .docs-card {
     border: 1px solid var(--color-bg-line); border-radius: var(--radius-lg); padding: clamp(var(--space-8), 6vw, var(--space-24));
@@ -133,7 +171,7 @@ const products = [
 
   @media (max-width: 900px) {
     .beats ol { grid-template-columns: 1fr; }
-    .product-grid { grid-template-columns: 1fr; }
+    .product-grid, .flip .product-grid { grid-template-columns: 1fr; }
     .flip .product-copy { order: 0; }
   }
 </style>
