@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>hero-lab · poster + copy preview (WebGL-free)</title>
+</head>
+<body>
+  <section class="hero" id="hero">
+    <picture class="hero-poster" data-hero-poster>
+      <source media="(max-width: 767px)" type="image/webp" id="srcM" srcset="/poster/hero-mobile.webp" />
+      <img id="img" src="/poster/hero-desktop.webp" alt="" width="2880" height="1600" />
+    </picture>
+    <div class="hero-scrim"></div>
+    <div class="hero-copy">
+      <h1>The AI layer for ROS&nbsp;2 robots</h1>
+      <p>Agents that see, understand and operate your fleet.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#install">Try ROS2 MCP</a>
+        <a class="btn btn-ghost" href="#docs"><code>docker run mcp/ros2</code></a>
+      </div>
+    </div>
+  </section>
+  <script type="module">
+    import './src/hero-copy.css';
+    const q = new URLSearchParams(location.search);
+    const v = q.get('variant');
+    if (v) {
+      document.getElementById('img').src = '/poster/hero-desktop' + v + '.webp';
+      document.getElementById('srcM').srcset = '/poster/hero-mobile' + v + '.webp';
+    }
+  </script>
+</body>
+</html>

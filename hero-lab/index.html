@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>hero-lab · wisevision.tech hero harness</title>
+  <link rel="preload" as="image" href="/poster/hero-desktop.avif" media="(min-width: 768px)" type="image/avif" />
+  <link rel="preload" as="image" href="/poster/hero-mobile.avif" media="(max-width: 767px)" type="image/avif" />
+</head>
+<body>
+  <div id="track" style="height: 420vh; position: relative">
+    <section class="hero" id="hero" style="position: sticky; top: 0">
+      <picture class="hero-poster" data-hero-poster>
+        <source media="(max-width: 767px)" type="image/avif" srcset="/poster/hero-mobile.avif" />
+        <source media="(max-width: 767px)" type="image/webp" srcset="/poster/hero-mobile.webp" />
+        <source type="image/avif" srcset="/poster/hero-desktop.avif" />
+        <img src="/poster/hero-desktop.webp" alt="" fetchpriority="high" decoding="async" width="2880" height="1600" />
+      </picture>
+    <div class="hero-scrim"></div>
+    <div class="hero-copy">
+      <h1>The AI layer for ROS&nbsp;2 robots</h1>
+      <p>Agents that see, understand and operate your fleet.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#install">Try ROS2 MCP</a>
+        <a class="btn btn-ghost" href="#docs"><code>docker run mcp/ros2</code></a>
+      </div>
+    </div>
+    </section>
+  </div>
+  <section id="next" style="min-height: 100vh; padding: 12vh 6vw; background: var(--wv-base-0)">
+    <h2 style="font-family: 'Space Grotesk'; font-size: 40px; margin: 0">Next section</h2>
+  </section>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
