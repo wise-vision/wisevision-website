@@ -1,0 +1,27 @@
+{
+  "$comment": "Config for scripts/claims-lint.mjs. Banned terms fail anywhere in copy or built HTML. Capability sentences must carry a {#c:<id>} anchor registered in CLAIMS.md.",
+  "claimsFile": "CLAIMS.md",
+  "copyDir": "content/copy",
+  "distDir": "dist",
+  "statuses": ["shipped", "shipped-on-merge", "early-access", "roadmap"],
+  "bannedTerms": [
+    { "id": "MIT", "pattern": "\\bMIT\\b", "flags": "" },
+    { "id": "RBAC", "pattern": "\\bRBAC\\b", "flags": "i" },
+    { "id": "enterprise-grade", "pattern": "\\benterprise[- ]grade\\b", "flags": "i" },
+    { "id": "SOC 2", "pattern": "\\bSOC[- ]?2\\b", "flags": "i" },
+    { "id": "certified", "pattern": "\\bcertified\\b", "flags": "i" },
+    { "id": "military-grade", "pattern": "\\bmilitary[- ]grade\\b", "flags": "i" },
+    { "id": "michaldobrzanski", "pattern": "michaldobrzanski", "flags": "i" },
+    { "id": "pawelmacuda", "pattern": "pawelmacuda", "flags": "i" },
+    { "id": "Dobrzański", "pattern": "Dobrza[nń]ski", "flags": "i" },
+    { "id": "Macuda", "pattern": "\\bMacuda\\b", "flags": "i" },
+    { "id": "office@wisevision", "pattern": "office@wisevision", "flags": "i" }
+  ],
+  "countPattern": "\\b\\d[\\d,.]*\\s*[kKmM]?\\+?\\s*(?:GitHub\\s+|Docker\\s+|Docker Hub\\s+)?(?:stars?|clones?|pulls?|downloads?)\\b",
+  "capabilityVerbs": [
+    "supports", "enables", "lets you", "provides", "integrates", "controls", "monitors",
+    "detects", "streams", "records", "publishes", "subscribes", "runs", "works with"
+  ],
+  "capabilityExemptDist": ["docs/"],
+  "$capabilityExemptDist": "Starlight /docs pages are generated from ros2_mcp code (W5/W6 drift gate). Banned terms still apply there; only the anchor rule is skipped."
+}
