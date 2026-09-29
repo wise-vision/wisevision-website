@@ -1,35 +1,139 @@
 ---
-import Base from '../layouts/Base.astro';
-import { CTA, SITE } from '../lib/site.mjs';
+// Home: hero → 3 beats → ROS2 MCP → WiseOS → Defence → docs CTA. All text comes from content/copy/home.md.
+import CopyPage from '../layouts/CopyPage.astro';
+import Blocks from '../components/copy/Blocks.astro';
+import Actions from '../components/copy/Actions.astro';
+import VideoSlot from '../components/VideoSlot.astro';
+import { loadCopy, section, headingOf, bodyOf, groupsOf, resolveHref } from '../lib/pages';
+import { inline } from '../lib/copy';
+
+const doc = loadCopy('home');
+const hero = section(doc, 'hero');
+const chip = section(doc, 'hero-chip', true);
+const beats = groupsOf(section(doc, 'beats'));
+const mcp = section(doc, 'ros2-mcp');
+const wiseos = section(doc, 'wiseos');
+const defence = section(doc, 'defence');
+const docsCta = section(doc, 'docs-cta');
+const [lede, proof] = hero.blocks.filter((b) => b.type === 'paragraph');
+const chipQ = chip.blocks.find((b) => b.type === 'quote');
+const chipLink = chip.blocks.find((b) => b.type === 'paragraph');
+const html = (s: string) => inline(s, { resolve: resolveHref });
+const products = [
+  { s: mcp, id: 'ros2-mcp', video: 'ros2-mcp-30s-16x9', label: 'ROS2 MCP: an AI agent reading a live ROS 2 graph' },
+  { s: wiseos, id: 'wiseos', video: 'wiseos-30s-16x9', label: 'WiseOS: one screen for the whole fleet' },
+  { s: defence, id: 'defence', video: 'defence-30s-16x9', label: 'Defence and dual-use robotics' },
+];
 ---
-<Base description={SITE.description}>
-  <section class="hero">
-    <div id="hero-slot" class="hero-slot" aria-hidden="true"></div>
-    <div class="container hero-copy">
-      <p class="eyebrow" data-reveal>ROS2 MCP · WiseOS</p>
-      <h1 class="display" data-reveal style="--reveal-i:1">The AI layer for ROS&nbsp;2 robots.</h1>
-      <p class="lede" data-reveal style="--reveal-i:2">Agents that see, understand and operate your fleet.</p>
-      <div class="actions" data-reveal style="--reveal-i:3">
-        <a class="btn btn-primary" href={CTA.href}>{CTA.label}</a>
-        <a class="btn btn-ghost" href="/docs/">Read the docs</a>
+<CopyPage slug="home">
+  <section class="hero" aria-labelledby="hero-title">
+    <div id="hero-slot" class="hero-slot" aria-hidden="true">
+      <div class="hero-fallback">
+        <div class="grid-lines"></div>
+        <div class="glow"></div>
       </div>
     </div>
+    <div class="container hero-copy">
+      {hero.fields.eyebrow && <p class="eyebrow" data-reveal>{hero.fields.eyebrow}</p>}
+      <h1 id="hero-title" class="display" data-reveal style="--reveal-i:1" set:html={html(headingOf(hero, 1))} />
+      {lede && lede.type === 'paragraph' && <p class="hero-lede" data-reveal style="--reveal-i:2" set:html={html(lede.text)} />}
+      <Actions links={hero.links} />
+      {proof && proof.type === 'paragraph' && <p class="proof-line" data-reveal style="--reveal-i:4" set:html={html(proof.text)} />}
+      {chipQ && chipQ.type === 'quote' && (
+        <a class="chip" href={resolveHref('/docs/')} data-reveal style="--reveal-i:4">
+          <span class="chip-q">“{chipQ.text}”</span>
+          {chipLink && chipLink.type === 'paragraph' && <span class="chip-a">{chipLink.text.replace(/\s*→.*$/, '')} <span aria-hidden="true">→</span></span>}
+        </a>
+      )}
+    </div>
   </section>
-  <section class="section container">
-    <ul class="proof" data-reveal>
-      <li>Listed in Docker's official MCP catalog</li>
-      <li>Open source, MPL-2.0</li>
-      <li>ROS 2 Humble + Jazzy</li>
-      <li>Works with Claude, Cursor and Codex</li>
-    </ul>
+
+  <section class="section container beats" aria-label="What your agent can do">
+    <ol>
+      {beats.map((b, i) => (
+        <li data-reveal style={`--reveal-i:${i}`}>
+          <span class="num" aria-hidden="true">0{i + 1}</span>
+          <h2 class="beat-title">{b.title}</h2>
+          <Blocks blocks={b.blocks} reveal={false} />
+        </li>
+      ))}
+    </ol>
   </section>
-</Base>
+
+  {products.map(({ s, id, video, label }, i) => (
+    <section class:list={['section', 'product', i % 2 ? 'flip' : '']} aria-labelledby={`p-${id}`}>
+      <div class="container product-grid">
+        <div class="product-copy">
+          {s.fields.eyebrow && <p class="eyebrow" data-reveal>{s.fields.eyebrow}</p>}
+          <h2 id={`p-${id}`} class="product-title" data-reveal style="--reveal-i:1" set:html={html(headingOf(s, 3))} />
+          <Blocks blocks={bodyOf(s, 3)} />
+          <Actions links={s.links} />
+        </div>
+        <div class="product-media">
+          <VideoSlot name={video} label={label} />
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <section class="section container" aria-labelledby="docs-cta">
+    <div class="docs-card" data-reveal>
+      <h2 id="docs-cta" set:html={html(headingOf(docsCta, 3))} />
+      <Blocks blocks={bodyOf(docsCta, 3)} reveal={false} />
+      <Actions links={docsCta.links} reveal={false} />
+    </div>
+  </section>
+</CopyPage>
 <style>
   .hero { position: relative; min-height: calc(100svh - var(--layout-header)); display: grid; align-items: end; overflow: hidden; }
-  .hero-slot { position: absolute; inset: 0; z-index: 0; }
-  .hero-copy { position: relative; z-index: 1; padding-block: var(--space-24); }
-  .display { font-size: var(--size-display); line-height: var(--leading-tight); max-width: 14ch; }
-  .actions { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: var(--space-8); }
-  .proof { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-  .proof li { border-top: 1px solid var(--color-bg-line); padding-top: var(--space-4); color: var(--color-text-muted); font-size: var(--size-sm); }
+  .hero-slot { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+  /* Static fallback until worker H's hero island mounts into #hero-slot (it may replace these children). */
+  .hero-fallback { position: absolute; inset: 0; }
+  .grid-lines {
+    position: absolute; inset: -1px;
+    background-image: linear-gradient(var(--color-bg-line) 1px, transparent 1px), linear-gradient(90deg, var(--color-bg-line) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(ellipse 80% 70% at 70% 30%, #000 20%, transparent 75%);
+    opacity: 0.55;
+  }
+  .glow {
+    position: absolute; width: 70vmax; height: 70vmax; right: -25vmax; top: -30vmax; border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 16%, transparent) 0%, transparent 62%);
+  }
+  .hero-copy { position: relative; z-index: 1; padding-block: var(--space-24) var(--space-16); }
+  .display { font-size: var(--size-display); line-height: var(--leading-tight); max-width: 13ch; }
+  .hero-lede { max-width: 30ch; font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem); line-height: 1.35; color: var(--color-text); }
+  .proof-line { margin-top: var(--space-12); font-family: var(--font-mono); font-size: var(--size-xs); letter-spacing: 0.04em; color: var(--color-text-muted); max-width: none; }
+  .chip {
+    display: inline-flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); align-items: center; margin-top: var(--space-2);
+    padding: var(--space-3) var(--space-4); border-radius: var(--radius-pill); text-decoration: none;
+    border: 1px solid var(--color-bg-line); background: color-mix(in srgb, var(--color-bg-surface) 80%, transparent);
+  }
+  .chip-q { color: var(--color-text); font-family: var(--font-mono); font-size: var(--size-sm); }
+  .chip-a { color: var(--color-accent-text); font-size: var(--size-sm); }
+  .chip:hover { border-color: var(--color-accent); }
+
+  .beats ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-8); }
+  .beats li { border-top: 1px solid var(--color-bg-line); padding-top: var(--space-6); }
+  .num { display: block; font-family: var(--font-mono); font-size: var(--size-xs); color: var(--color-accent-text); letter-spacing: var(--tracking-caps); margin-bottom: var(--space-4); }
+  .beat-title { font-size: var(--size-2xl); }
+
+  .product { border-top: 1px solid var(--color-bg-line); }
+  .product-grid { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(var(--space-8), 5vw, var(--space-16)); align-items: center; }
+  .flip .product-copy { order: 2; }
+  .product-title { font-size: var(--size-3xl); line-height: var(--leading-tight); max-width: 16ch; }
+  .product-grid:has(.product-media:empty) { grid-template-columns: minmax(0, 820px); }
+  .product-media:empty { display: none; }
+
+  .docs-card {
+    border: 1px solid var(--color-bg-line); border-radius: var(--radius-lg); padding: clamp(var(--space-8), 6vw, var(--space-24));
+    background: radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--color-accent) 10%, transparent), transparent 60%), var(--color-bg-raised);
+  }
+  .docs-card h2 { font-size: var(--size-3xl); max-width: 18ch; }
+
+  @media (max-width: 900px) {
+    .beats ol { grid-template-columns: 1fr; }
+    .product-grid { grid-template-columns: 1fr; }
+    .flip .product-copy { order: 0; }
+  }
 </style>

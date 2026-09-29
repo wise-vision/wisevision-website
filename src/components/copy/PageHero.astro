@@ -1,0 +1,37 @@
+---
+// Inner-page hero from a copy section: eyebrow, H1, body paragraphs, CTA links.
+import Blocks from './Blocks.astro';
+import Actions from './Actions.astro';
+import type { Section } from '../../lib/copy';
+import { inline } from '../../lib/copy';
+import { headingOf, bodyOf, resolveHref } from '../../lib/pages';
+
+interface Props { s: Section }
+const { s } = Astro.props;
+---
+<section class="page-hero">
+  <div class="bg" aria-hidden="true"></div>
+  <div class="container inner">
+    {s.fields.eyebrow && <p class="eyebrow" data-reveal>{s.fields.eyebrow}</p>}
+    <h1 data-reveal style="--reveal-i:1" set:html={inline(headingOf(s, 1), { resolve: resolveHref })} />
+    <Blocks blocks={bodyOf(s, 1)} class="hero-body" />
+    <Actions links={s.links.filter((l) => l.key !== 'mail')} />
+    <slot />
+  </div>
+</section>
+<style>
+  .page-hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--color-bg-line); }
+  .bg {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 80% at 90% 0%, color-mix(in srgb, var(--color-accent) 11%, transparent), transparent 70%),
+      linear-gradient(var(--color-bg-line) 1px, transparent 1px) 0 0 / 72px 72px,
+      linear-gradient(90deg, var(--color-bg-line) 1px, transparent 1px) 0 0 / 72px 72px;
+    mask-image: linear-gradient(180deg, #000 0%, transparent 95%);
+    opacity: 0.6;
+  }
+  .inner { position: relative; padding-block: clamp(var(--space-16), 12vw, var(--space-32)) var(--space-16); }
+  h1 { font-size: var(--size-display); max-width: 14ch; }
+  .inner :global(.hero-body p) { font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem); line-height: 1.5; max-width: 52ch; }
+  .inner :global(.hero-body p:first-child) { color: var(--color-text); }
+</style>

@@ -229,3 +229,39 @@ export function inline(text: string, opts: InlineOptions = {}): string {
   s = escapeHtml(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   return s.replace(/\u0001(\d+)\u0001/g, (_, n: string) => tokens[Number(n)]);
 }
+
+// ---------------------------------------------------------------- helpers for pages
+
+/** Plain text for <title>, meta and OG cards: no anchors, no markdown, no arrows. */
+export function plainText(s: string): string {
+  return stripClaims(s).replace(/\*\*(.+?)\*\*/g, '$1').replace(/`([^`]+)`/g, '$1').replace(/\s*→\s*\S+/g, '').trim();
+}
+
+/** src/content/docs/docs/a/b.mdx → /docs/a/b/ ; …/index.mdx → the folder route. */
+export function docsRoutesFromFiles(files: string[]): string[] {
+  return files.map((f) => {
+    const rel = f.replace(/^.*\/src\/content\/docs\//, '').replace(/\.(md|mdx)$/, '');
+    const route = '/' + rel.replace(/(^|\/)index$/, '');
+    return route.endsWith('/') ? route : route + '/';
+  });
+}
+
+/**
+ * Copy links to docs pages that another worker has not built yet would 404.
+ * Rewrite /docs/* hrefs to the nearest built ancestor; leave everything else alone.
+ */
+export function docsResolver(routes: string[]): (href: string) => string {
+  const set = new Set(routes);
+  return (href) => {
+    if (!href.startsWith('/docs/')) return href;
+    const path = href.replace(/[?#].*$/, '');
+    if (set.has(path)) return href;
+    const parts = path.split('/').filter(Boolean);
+    while (parts.length) {
+      parts.pop();
+      const p = '/' + parts.join('/') + (parts.length ? '/' : '');
+      if (set.has(p)) return p;
+    }
+    return '/docs/';
+  };
+}

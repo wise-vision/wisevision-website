@@ -1,10 +1,42 @@
 ---
-import Base from '../layouts/Base.astro';
-import PageShell from '../components/PageShell.astro';
-import { SITE } from '../lib/site.mjs';
+// /privacy/ : the full notice. Copy: content/copy/privacy.md (must match PR #2's lead handler + migration).
+import CopyPage from '../layouts/CopyPage.astro';
+import PageHero from '../components/copy/PageHero.astro';
+import Blocks from '../components/copy/Blocks.astro';
+import { loadCopy, section, headingOf, bodyOf } from '../lib/pages';
+
+const doc = loadCopy('privacy');
+const ids = doc.order.filter((id) => id !== 'hero');
+const updated = doc.order.map((id) => doc.sections[id].fields.updated).find(Boolean);
 ---
-<Base title="Privacy" description="Privacy policy for wisevision.tech.">
-  <PageShell eyebrow="Legal" title="Privacy" lede="The full privacy policy is being written.">
-    <p class="muted">This site sets no advertising or tracking cookies. If you email us, we use your message only to reply. Questions: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
-  </PageShell>
-</Base>
+<CopyPage slug="privacy">
+  <PageHero s={section(doc, 'hero')}>
+    {updated && <p class="updated" data-reveal>Last updated <time datetime={updated}>{updated}</time></p>}
+  </PageHero>
+  <div class="section container notice">
+    <nav aria-label="On this page" class="toc">
+      <ul>
+        {ids.map((id) => headingOf(doc.sections[id], 3) && <li><a href={`#${id}`}>{headingOf(doc.sections[id], 3)}</a></li>)}
+      </ul>
+    </nav>
+    <div class="body">
+      {ids.map((id) => (
+        <section id={id} aria-labelledby={`${id}-h`}>
+          <h2 id={`${id}-h`}>{headingOf(doc.sections[id], 3)}</h2>
+          <Blocks blocks={bodyOf(doc.sections[id], 3)} reveal={false} />
+        </section>
+      ))}
+    </div>
+  </div>
+</CopyPage>
+<style>
+  .notice { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: var(--space-16); align-items: start; }
+  .toc { position: sticky; top: calc(var(--layout-header) + var(--space-8)); }
+  .toc ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+  .toc a { color: var(--color-text-muted); text-decoration: none; font-size: var(--size-sm); }
+  .toc a:hover { color: var(--color-text); }
+  .body section { scroll-margin-top: calc(var(--layout-header) + var(--space-4)); padding-bottom: var(--space-8); }
+  .body h2 { font-size: var(--size-xl); }
+  .updated { font-family: var(--font-mono); font-size: var(--size-xs); color: var(--color-text-subtle); }
+  @media (max-width: 800px) { .notice { grid-template-columns: 1fr; } .toc { position: static; } }
+</style>

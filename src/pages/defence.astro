@@ -1,9 +1,38 @@
 ---
-import Base from '../layouts/Base.astro';
-import PageShell from '../components/PageShell.astro';
+// /defence/ : hero → what changed (cited) → what we build → principle → CTA → sources. Copy: content/copy/defence.md.
+import CopyPage from '../layouts/CopyPage.astro';
+import PageHero from '../components/copy/PageHero.astro';
+import CopySection from '../components/copy/CopySection.astro';
+import VideoSlot from '../components/VideoSlot.astro';
+import { loadCopy, section } from '../lib/pages';
+import { SITE } from '../lib/site.mjs';
+
+const doc = loadCopy('defence');
+const cta = section(doc, 'cta');
 ---
-<Base title="Defence & dual-use" description="WiseVision and dual-use robotics, with a human in the loop.">
-  <PageShell eyebrow="Defence & dual-use" title="Defence & dual-use" lede="Our position on defence and dual-use robotics: a human stays in the loop. Full page coming soon.">
-    <a class="btn btn-ghost" href="/contact/">Talk to us</a>
-  </PageShell>
-</Base>
+<CopyPage slug="defence">
+  <PageHero s={section(doc, 'hero')} />
+
+  <div class="container media-wrap">
+    <VideoSlot name="defence-30s-16x9" label="Robots doing the most dangerous work, with a human in command" />
+  </div>
+
+  <CopySection s={section(doc, 'shift')} class="shift" />
+  <CopySection s={section(doc, 'build')} class="build" />
+  <CopySection s={section(doc, 'principle')} class="principle" narrow />
+  <CopySection s={cta} linkKeys={['cta']}>
+    <p class="mail" data-reveal><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+  </CopySection>
+  <CopySection s={section(doc, 'sources')} class="sources" narrow />
+</CopyPage>
+<style>
+  .media-wrap { padding-top: var(--space-16); }
+  .media-wrap:empty { display: none; }
+  :global(.shift ul), :global(.build ul) { list-style: none; padding: 0 !important; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: none !important; gap: var(--space-8) var(--space-12) !important; }
+  :global(.shift li), :global(.build li) { border-top: 1px solid var(--color-bg-line); padding-top: var(--space-4); }
+  :global(.principle h2) { font-size: var(--size-display) !important; max-width: 12ch !important; }
+  :global(.principle p) { font-size: var(--size-lg); }
+  .mail { font-family: var(--font-display); font-size: var(--size-2xl); }
+  :global(.sources p), :global(.sources li) { font-size: var(--size-sm); }
+  @media (max-width: 900px) { :global(.shift ul), :global(.build ul) { grid-template-columns: 1fr; } }
+</style>

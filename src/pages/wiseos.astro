@@ -1,9 +1,56 @@
 ---
-import Base from '../layouts/Base.astro';
-import PageShell from '../components/PageShell.astro';
+// /wiseos/ : hero → capabilities → open parts → early-access form. Copy: content/copy/wiseos.md.
+import CopyPage from '../layouts/CopyPage.astro';
+import PageHero from '../components/copy/PageHero.astro';
+import CopySection from '../components/copy/CopySection.astro';
+import Blocks from '../components/copy/Blocks.astro';
+import LeadForm from '../components/LeadForm.astro';
+import VideoSlot from '../components/VideoSlot.astro';
+import { loadCopy, section, groupsOf } from '../lib/pages';
+
+const doc = loadCopy('wiseos');
+const caps = groupsOf(section(doc, 'capabilities'));
+const ea = section(doc, 'early-access');
 ---
-<Base title="WiseOS" description="WiseOS by WiseVision is in early access.">
-  <PageShell eyebrow="Early access" title="WiseOS" lede="WiseOS is in early access. Full page coming soon.">
-    <a class="btn btn-ghost" href="/contact/">Request early access</a>
-  </PageShell>
-</Base>
+<CopyPage slug="wiseos">
+  <PageHero s={section(doc, 'hero')} />
+
+  <div class="container media-wrap">
+    <VideoSlot name="wiseos-30s-16x9" label="WiseOS: one screen for the whole fleet" />
+  </div>
+
+  <section class="section container caps" aria-label="What WiseOS does">
+    <ol>
+      {caps.map((c, i) => (
+        <li data-reveal style={`--reveal-i:${i % 3}`}>
+          <span class="num" aria-hidden="true">0{i + 1}</span>
+          <h2>{c.title}</h2>
+          <Blocks blocks={c.blocks} reveal={false} />
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <CopySection s={section(doc, 'stack')} />
+
+  <CopySection s={ea} id="early-access" narrow>
+    <div data-reveal>
+      <LeadForm
+        kind="early-access"
+        id="ea-form"
+        consentLabel={ea.fields.consent_label}
+        submitLabel="Request early access"
+        useCaseLabel="Your fleet: units, ROS 2 distro, what you want to ask it"
+      />
+    </div>
+  </CopySection>
+</CopyPage>
+<style>
+  .media-wrap { padding-top: var(--space-16); }
+  .media-wrap:empty { display: none; }
+  .caps ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-12) var(--space-8); }
+  .caps li { border-top: 1px solid var(--color-bg-line); padding-top: var(--space-6); }
+  .caps h2 { font-size: var(--size-xl); }
+  .num { display: block; font-family: var(--font-mono); font-size: var(--size-xs); color: var(--color-accent-text); letter-spacing: var(--tracking-caps); margin-bottom: var(--space-4); }
+  @media (max-width: 900px) { .caps ol { grid-template-columns: 1fr; } }
+</style>

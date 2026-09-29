@@ -1,0 +1,13 @@
+---
+// Base layout wired to a copy file's frontmatter: <title>, description, OG title + generated OG image, canonical.
+import Base from './Base.astro';
+import { loadCopy } from '../lib/pages';
+import { pageSeo } from '../lib/seo';
+
+interface Props { slug: string; jsonLd?: object[]; noindex?: boolean }
+const { slug, jsonLd = [], noindex = false } = Astro.props;
+const seo = pageSeo(slug, loadCopy(slug));
+---
+<Base title={seo.title} exactTitle={seo.title.includes("WiseVision")} description={seo.description} ogTitle={seo.ogTitle} ogImage={seo.ogImage} jsonLd={jsonLd} noindex={noindex}>
+  <slot />
+</Base>
