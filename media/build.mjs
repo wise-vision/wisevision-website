@@ -41,6 +41,10 @@ for (const file of readdirSync(SRC).filter((f) => f.endsWith('.html'))) {
       if (existsSync(p) || (() => { try { return lstatSync(p).isSymbolicLink(); } catch { return false; } })()) unlinkSync(p);
       symlinkSync(join('..', '..', l), p);
     }
+    // media/tokens.css @imports site-tokens.css: the site's generated tokens (src/styles/tokens.css).
+    const st = join(dir, 'site-tokens.css');
+    try { unlinkSync(st); } catch {}
+    symlinkSync(join('..', '..', '..', 'src', 'styles', 'tokens.css'), st);
     console.log(`built ${name}-${v.suffix}`);
   }
 }

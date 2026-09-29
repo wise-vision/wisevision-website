@@ -96,6 +96,61 @@ export function checkText(html, allowed) {
   return violations;
 }
 
+// ---- video guard -------------------------------------------------------------------------------------
+// A <video> clip that is missing, is an LFS pointer, or ends before its data-duration renders as the black
+// .footage background (the wave-1 "black REAL FOOTAGE panel"). Fail the gate instead of shipping that.
+export const MIN_VIDEO_BYTES = 10 * 1024;
+
+/** Duration in seconds from the ISO-BMFF moov/mvhd box (zero-dep; enough for ffmpeg/faststart MP4s). */
+export function mp4Duration(file) {
+  const buf = readFileSync(file);
+  const find = (start, end, type) => {
+    for (let o = start; o + 8 <= end;) {
+      let size = buf.readUInt32BE(o);
+      const t = buf.toString('latin1', o + 4, o + 8);
+      let hdr = 8;
+      if (size === 1) { size = Number(buf.readBigUInt64BE(o + 8)); hdr = 16; } else if (size === 0) size = end - o;
+      if (size < hdr) return null;
+      if (t === type) return { o, size, hdr };
+      o += size;
+    }
+    return null;
+  };
+  const moov = find(0, buf.length, 'moov');
+  if (!moov) return null;
+  const mvhd = find(moov.o + moov.hdr, moov.o + moov.size, 'mvhd');
+  if (!mvhd) return null;
+  const b = mvhd.o + mvhd.hdr;
+  const v1 = buf[b] === 1;
+  const timescale = buf.readUInt32BE(b + (v1 ? 20 : 12));
+  const duration = v1 ? Number(buf.readBigUInt64BE(b + 24)) : buf.readUInt32BE(b + 16);
+  return timescale ? duration / timescale : null;
+}
+
+/** Check every <video src> in a composition relative to its project dir. */
+export function checkVideos(html, dir) {
+  const violations = [];
+  for (const m of html.matchAll(/<video\b[^>]*>/gi)) {
+    const tag = m[0];
+    const src = (tag.match(/\bsrc="([^"]+)"/) || [])[1];
+    if (!src) continue;
+    const want = parseFloat((tag.match(/\bdata-duration="([\d.]+)"/) || [])[1] || '0');
+    const start = parseFloat((tag.match(/\bdata-start="([\d.]+)"/) || [])[1] || '0');
+    const sceneEnd = (tag.match(/\bdata-wv-scene-end="([\d.]+)"/) || [])[1];
+    // The scene's on-screen window (end of its exit crossfade) is declared on the tag: the clip must cover it.
+    if (sceneEnd == null) violations.push({ rule: 'video-scene-end-missing', match: src, line: tag, why: 'declare data-wv-scene-end (when the scene leaves the screen)' });
+    else if (start + want + 0.01 < parseFloat(sceneEnd)) violations.push({ rule: 'video-ends-before-scene', match: `${src} ends ${start + want}s < scene end ${sceneEnd}s`, line: tag, why: 'the panel goes black for the rest of the scene' });
+    const p = join(dir, src);
+    if (!existsSync(p)) { violations.push({ rule: 'video-missing', match: src, line: tag, why: 'run media/proof/make-proof.sh' }); continue; }
+    const bytes = statSync(p).size;
+    if (bytes <= MIN_VIDEO_BYTES) { violations.push({ rule: 'video-too-small', match: `${src} (${bytes} B)`, line: tag, why: 'LFS pointer or empty clip renders black' }); continue; }
+    const got = mp4Duration(p);
+    if (got == null) violations.push({ rule: 'video-unreadable', match: src, line: tag, why: 'no moov/mvhd box' });
+    else if (want && got + 0.02 < want) violations.push({ rule: 'video-too-short', match: `${src} ${got.toFixed(2)}s < data-duration ${want}s`, line: tag, why: 'the panel goes black when the clip ends' });
+  }
+  return violations;
+}
+
 function walk(dir) {
   if (!existsSync(dir)) return [];
   return readdirSync(dir).flatMap((n) => {
@@ -108,8 +163,13 @@ function walk(dir) {
 export function scanCompositions(root = join(MEDIA, 'compositions')) {
   const allowed = loadAllowedCommands();
   const files = walk(root);
-  const violations = files.flatMap((f) =>
-    checkText(readFileSync(f, 'utf8'), allowed).map((v) => ({ file: relative(MEDIA, f), ...v })));
+  const violations = files.flatMap((f) => {
+    const html = readFileSync(f, 'utf8');
+    // Proof clips are gitignored build inputs, so a fresh checkout has none: set WV_CHECK_VIDEOS=0 to run
+    // only the text rules there. render-all.sh always runs the full check (videos must exist to render).
+    const vids = (process.env.WV_CHECK_VIDEOS !== '0') ? checkVideos(html, dirname(f)) : [];
+    return [...checkText(html, allowed), ...vids].map((v) => ({ file: relative(MEDIA, f), ...v }));
+  });
   return { files, violations };
 }
 

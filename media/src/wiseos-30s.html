@@ -11,14 +11,14 @@
 <style>
 html, body { width: __W__px; height: __H__px; }
 .bus { display: flex; flex-direction: column; gap: 22px; }
-.node { display: flex; align-items: center; gap: 20px; padding: 22px 26px; border-radius: 16px; border: 1px solid var(--wv-line); background: rgba(11,14,20,.86); }
+.node { display: flex; align-items: center; gap: 20px; padding: 22px 26px; border-radius: 16px; border: 1px solid var(--wv-line); background: #0B0E14; }
 .node .ic { display: block; width: 18px; height: 18px; border-radius: 50%; background: var(--wv-accent); }
 .node .nm { font-family: var(--wv-font-display); font-weight: 700; font-size: 38px; }
 .node .ds { font-size: 26px; color: var(--wv-text-muted); margin-left: auto; font-family: var(--wv-font-mono); }
-.node.os { border-color: rgba(60,255,180,.5); background: rgba(60,255,180,.08); }
+.node.os { border-color: rgba(60,255,180,.5); background: linear-gradient(rgba(60,255,180,.08), rgba(60,255,180,.08)), #0B0E14; }
 .flow { font-family: var(--wv-font-mono); font-size: 28px; color: var(--wv-accent-text); padding: 6px 0 6px 34px; line-height: 1; }
 .land #p2 .bus { flex: 1 1 auto; }
-.rec { padding: 26px 30px; display: flex; flex-direction: column; gap: 18px; }
+.recbox { padding: 26px 30px; display: flex; flex-direction: column; gap: 18px; }
 .row { display: grid; grid-template-columns: 300px 1fr; align-items: center; gap: 22px; }
 .port .row { grid-template-columns: 250px 1fr; }
 .row .t { font-family: var(--wv-font-mono); font-size: 25px; color: #D3DCE3; }
@@ -31,8 +31,10 @@ html, body { width: __W__px; height: __H__px; }
 .playhead { position: absolute; top: 0; bottom: 0; width: 3px; background: var(--wv-text); left: 0; }
 .land #p3 .card { flex: 1 1 auto; position: relative; }
 .port #p3 .card { position: relative; }
-.land #p4 .footage { flex: 0 0 1000px; height: 520px; }
-.port #p4 .footage { width: 920px; height: 480px; align-self: center; }
+.land #p4 .footage { flex: 0 0 900px; height: 600px; }
+.land #p4 .col.text { flex-basis: 640px; }
+.land #p4 { gap: 80px; }
+.port #p4 .footage { width: 920px; height: 613px; align-self: center; }
 .steps { display: flex; gap: 14px; flex-wrap: wrap; }
 .step { display: block; font-family: var(--wv-font-mono); font-size: 24px; padding: 10px 16px; border-radius: 8px; border: 1px solid var(--wv-line); color: var(--wv-text-muted); }
 .step.on { border-color: rgba(60,255,180,.5); color: var(--wv-accent-text); }
@@ -64,7 +66,7 @@ html, body { width: __W__px; height: __H__px; }
     <div class="bus" id="p2b">
       <div class="node"><span class="ic"></span><span class="nm">ROS 2 robots</span><span class="ds">topics</span></div>
       <div class="node"><span class="ic"></span><span class="nm">LoRaWAN sensors</span><span class="ds">bridge</span></div>
-      <div class="flow">↓ zenoh</div>
+      <div class="flow">↓ Zenoh</div>
       <div class="node os"><span class="ic"></span><span class="nm">WiseOS</span><span class="ds">one bus</span></div>
     </div>
   </div>
@@ -77,7 +79,7 @@ html, body { width: __W__px; height: __H__px; }
     </div>
     <div class="card" id="p3c">
       <div class="bar"><i></i><i></i><i></i>&nbsp;data black box · illustration</div>
-      <div class="rec">
+      <div class="recbox">
         <div class="row"><div class="t">/battery_state</div><div class="lane"><span></span></div></div>
         <div class="row"><div class="t">/gps/fix</div><div class="lane"><span></span></div></div>
         <div class="row"><div class="t">/scan</div><div class="lane"><span></span></div></div>
@@ -95,7 +97,7 @@ html, body { width: __W__px; height: __H__px; }
       <div class="steps" id="p4st"><span class="step on">question</span><span class="step on">tool approval</span><span class="step on">answer</span></div>
     </div>
     <div class="footage" id="p4f">
-      <video id="p4v" class="vid" src="proof/wiseos-agent-chat.mp4" data-start="18" data-duration="5" data-track-index="2" muted playsinline style="inset:0;width:100%;height:100%"></video>
+      <video id="p4v" class="vid" src="proof/wiseos-agent-chat.mp4" data-start="18" data-duration="6.5" data-wv-scene-end="24.45" data-track-index="2" muted playsinline style="inset:0;width:100%;height:100%"></video>
     </div>
   </div>
 
@@ -104,7 +106,7 @@ html, body { width: __W__px; height: __H__px; }
       <div class="kicker" id="p5k">WiseOS · early access</div>
       <div class="h1" id="p5h">Your fleet, <em>explained</em>.</div>
       <div class="chips" id="p5g">
-        <span class="chip">zenoh connectivity</span><span class="chip">Data Black Box</span><span class="chip">dashboard</span><span class="chip">AI agent</span><span class="chip">LoRaWAN bridge</span>
+        <span class="chip">Zenoh connectivity</span><span class="chip">Data Black Box</span><span class="chip">dashboard</span><span class="chip">AI agent</span><span class="chip">LoRaWAN bridge</span>
       </div>
       <div class="cta" id="p5c">Request early access · wisevision.tech</div>
     </div>
@@ -133,7 +135,7 @@ html, body { width: __W__px; height: __H__px; }
   tl.fromTo('#prog', { scaleX: 0 }, { scaleX: 1, duration: 30, ease: 'none' }, 0);
   tl.from('#brand', { opacity: 0, y: -16, duration: 0.6, ease: 'power2.out' }, 0.1);
   tl.from('#badge', { opacity: 0, scale: 0.8, duration: 0.5, ease: 'back.out(1.8)' }, 0.3);
-  tl.from('#u0, #u1, #u2, #u3', { y: 16, duration: 1.0, ease: 'expo.out', stagger: 0.12 }, 0.1);
+  tl.from('#u0, #u1, #u2, #u3', { y: '+=16', duration: 1.0, ease: 'expo.out', stagger: 0.12 }, 0.1);
   tl.from('#os', { opacity: 0, scale: 0.6, duration: 0.7, ease: 'back.out(1.6)', transformOrigin: '50% 50%' }, 1.4);
   tl.to('.lk', { strokeDashoffset: 0, duration: 1.2, ease: 'power2.inOut', stagger: 0.2 }, 1.8);
   tl.from('#p1k', { opacity: 0, y: -20, duration: 0.5, ease: 'back.out(1.6)' }, 0.25);
@@ -143,6 +145,7 @@ html, body { width: __W__px; height: __H__px; }
   tl.to('#p1', { opacity: 0, filter: 'blur(10px)', duration: 0.45, ease: 'sine.inOut' }, 6.0);
   tl.set('#p1', { opacity: 0 }, 6.45);
   tl.to('#bgscene', { opacity: 0.18, duration: 0.6, ease: 'sine.inOut' }, 6.0);
+  tl.to('#os, #links', { opacity: 0, duration: 0.45, ease: 'sine.inOut' }, 6.0);
   tl.to('#p2', { opacity: 1, duration: 0.45, ease: 'sine.inOut' }, 6.1);
   tl.from('#p2k', { opacity: 0, x: -30, duration: 0.5, ease: 'power2.out' }, 6.25);
   tl.from('#p2h', { opacity: 0, y: 50, duration: 0.7, ease: 'power3.out' }, 6.4);
@@ -171,6 +174,7 @@ html, body { width: __W__px; height: __H__px; }
   tl.to('#p4', { opacity: 0, filter: 'blur(10px)', duration: 0.45, ease: 'sine.inOut' }, 24.0);
   tl.set('#p4', { opacity: 0 }, 24.45);
   tl.to('#bgscene', { opacity: PORT ? 0.25 : 0.4, duration: 0.8, ease: 'sine.inOut' }, 24.0);
+  tl.to('#os, #links', { opacity: 1, duration: 0.6, ease: 'power2.out' }, 24.2);
   tl.to('#p5', { opacity: 1, duration: 0.45, ease: 'sine.inOut' }, 24.1);
   tl.from('#p5k', { opacity: 0, x: -30, duration: 0.5, ease: 'power2.out' }, 24.25);
   tl.from('#p5h', { opacity: 0, y: 50, duration: 0.7, ease: 'power3.out' }, 24.4);
