@@ -12,10 +12,11 @@ if [[ ! -f "$G/ai_agent_chat.mp4" || $(stat -c %s "$G/ai_agent_chat.mp4") -lt 10
   G=/home/adam/repos/wisevision-website/static/gifs   # LFS pointer files in the worktree: use the smudged clone
 fi
 # The output file is the LAST argument; codec flags must come before it (trailing ffmpeg options are ignored,
-# which is how wave 1 shipped a yuv444p clip with an AAC track).
+# which is how wave 1 shipped a yuv444p clip with an AAC track). A keyframe every 30 frames keeps the
+# HyperFrames seeker frame-accurate (sparse keyframes = frozen or black frames in the render).
 enc() {
   local out="${!#}"
-  ffmpeg -v error -y "${@:1:$#-1}" -an -c:v libx264 -profile:v high -preset slow -crf 20 -pix_fmt yuv420p -movflags +faststart "$out"
+  ffmpeg -v error -y "${@:1:$#-1}" -an -c:v libx264 -profile:v high -preset slow -crf 20 -g 30 -keyint_min 30 -sc_threshold 0 -pix_fmt yuv420p -movflags +faststart "$out"
 }
 # ROS2 MCP: Claude calls ros2_topic_publish, then checks /position (gif t=7.5..14 s).
 # Crop to the chat column (480x360 of the 640x480 gif), 2x upscale so the text reads at >= 20 px in the render,

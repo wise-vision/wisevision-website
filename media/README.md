@@ -18,13 +18,14 @@ media/
   build.mjs                  ← expands src/ into compositions/<name>-16x9 and -9x16 (HyperFrames projects)
   compositions/<name>-<ar>/  ← generated, committed (index.html, hyperframes.json, meta.json, symlinks)
   shared/base.css, wv.js     ← layout + deterministic SVG helpers (grid, rover, quadruped, drone, mast, scan ring)
-  tokens.css                 ← TEMPORARY copy of the locked tokens; replace with @import of src/styles/tokens.css
+  tokens.css                 ← @imports site-tokens.css (build.mjs symlinks it to src/styles/tokens.css) + video aliases
   fonts/                     ← self-hosted Space Grotesk / Inter / JetBrains Mono (OFL, licences alongside)
   vendor/gsap.min.js         ← GSAP 3.14.2 pinned locally (no render-time network)
-  proof/make-proof.sh        ← cuts the 5 s "Real footage" clips from static/gifs/*.mp4 (LFS). Outputs gitignored.
+  proof/make-proof.sh        ← cuts the 6.5 s "Real footage" clips (cropped, H.264 yuv420p) from static/gifs/* (LFS). Gitignored.
   claims-check.mjs           ← claims gate (banned words + fabricated commands), node:test in test/
   allowed-commands.json      ← snapshot of ros2_mcp README/installation/Dockerfile lines (fallback when repo absent)
   render-all.sh              ← lint → render → H.264 faststart → poster JPG → copy to the parent's scratch
+  publish-release.sh         ← uploads renders/*.mp4|jpg to the GitHub Release media-v1 (CI downloads into public/media)
   renders/                   ← gitignored. MP4s never enter git.
 ```
 
@@ -38,6 +39,8 @@ node media/build.mjs                       # after editing media/src/*.html
 node media/claims-check.mjs                # 0 violations required
 node --test media/test/claims-check.test.mjs                    # claims-check unit tests
 systemd-run --user --scope -p MemoryMax=12G bash media/render-all.sh
+bash media/frame-grabs.sh                  # per-scene PNGs for the vision grade
+bash media/publish-release.sh              # upload renders to the media-v1 release (served at /media/<name>.mp4)
 ```
 
 Per-composition lint: `cd media/compositions/<name> && npx hyperframes lint .` (0 errors, 0 warnings on all 8).
@@ -50,6 +53,9 @@ Per-composition lint: `cd media/compositions/<name> && npx hyperframes lint .` (
   must exist **verbatim** in `ros2_mcp` `README.md`, `installation/README.md` or `Dockerfile`.
 - Tool names shown on screen are the real registrations in `ros2_mcp/server/server.py` (`ros2_topic_list`,
   `ros2_topic_subscribe`, `ros2_topic_publish`).
+- Every `<video src>` must exist, be > 10 KB (not an LFS pointer), be at least `data-duration` long, and cover its scene
+  (`data-start + data-duration >= data-wv-scene-end`). A clip that ends early leaves a black panel on screen.
+  On a checkout without the gitignored proof clips run the text rules only: `WV_CHECK_VIDEOS=0 node media/claims-check.mjs`.
 - The grep is a floor, not a ceiling: the per-scene frame grabs still need a human/vision read.
 
 ## Content provenance
@@ -60,8 +66,8 @@ Per-composition lint: `cd media/compositions/<name> && npx hyperframes lint .` (
 | `"command": "docker"`, `"args": ["run", "-i", "--rm", "wisevision/ros2_mcp:<humble/jazzy>"]` | `ros2_mcp/installation/README.md` (Claude Desktop config), shown with the `jazzy` tag |
 | `ros2_topic_list`, `ros2_topic_subscribe` (`topic_name`, `duration`) | `ros2_mcp/server/server.py` registrations + README tool table |
 | "/scan delivered 50 messages in 5 s, about 10 Hz" | an **illustrative** answer: the shape of `ros2_topic_subscribe` output (`messages`, `count`, `duration`) for a 10 Hz LaserScan. Not a recorded transcript. |
-| Real footage (ROS2 MCP) | `static/gifs/mcp-ros2-server.gif` t=7–12 s: Claude calling `ros2_topic_publish` / echo on a live graph |
-| Real footage (WiseOS) | `static/gifs/ai_agent_chat.mp4` t=10–15 s: WiseOS AI Agent, question → tool approval → topic list |
-| Real footage (Defence) | `static/gifs/ComandToStartandTakeoff.mp4` t=8–13 s: plain-language drone mission, "flying to target number one" |
-| WiseOS capabilities (zenoh, Data Black Box/InfluxDB, dashboard, AI agent, LoRaWAN bridge) | `wise-vision/WiseOS` (private) — labelled Early access |
+| Real footage (ROS2 MCP) | `static/gifs/mcp-ros2-server.gif` t=7.5–14 s, chat column cropped 2×: Claude publishes to `/move`, then checks `/position` (`ros2_topic_publish`, `ros2_topic_echo_wait`) |
+| Real footage (WiseOS) | `static/gifs/ai_agent_chat.mp4` t=10.3–16.8 s, chat column cropped 1.5×: WiseOS AI Agent, question → tool approval → `ros2_topic_list` result |
+| Real footage (Defence) | `static/gifs/ComandToStartandTakeoff.mp4` t=0–6.5 s: "USER: EXECUTE MISSION FLY TO POINT X AND BACK" → take-off. Stops before the recording's "target" caption. |
+| WiseOS capabilities (Zenoh, Data Black Box/InfluxDB, dashboard, AI agent, LoRaWAN bridge) | `wise-vision/WiseOS` (private) — labelled Early access |
 | Defence pillars (autonomy under jamming, C2, simulation, resilient comms), human-in-the-loop | plan §3 W3 / preamble locked facts |
