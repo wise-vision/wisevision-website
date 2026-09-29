@@ -28,15 +28,47 @@ import { UNIT_DISTANCES, type BeatState } from './beats';
 
 export type Layout = 'desktop' | 'mobile';
 
-/** Lead rover pose (world). Camera looks down -Z; the grid's Z family converges at the principal point. */
-export const ROVER_POS = new Vector3(1.48, 0, -4.8);
-export const ROVER_YAW = 0.62; // three-quarter: nose toward camera-left
-/** Unit bearings from the rover's lidar (rad, 0 = -Z, + toward +X). Ranges come from UNIT_DISTANCES. */
-// composed so that at the desktop rig: quadruped ≈ (86%, 60%), drone ≈ (78%, 18%), sensor mast ≈ (51%, 23–53%)
-const UNIT_BEARINGS = [0.587, 0.448, 0.1];
-const UNIT_HEIGHTS = [0, 2.2, 0];
+/**
+ * Per-layout composition. Desktop is the approved A/B winner (unchanged). Mobile is composed separately:
+ * the rover is turned so its six-wheel profile faces the camera (unambiguous "rover", not an arm), and the
+ * fleet is spread so the quadruped, drone and mast each own a clear patch of the portrait frame.
+ * Bearings are measured from the rover's lidar (rad, 0 = -Z, + toward +X); ranges are UNIT_DISTANCES.
+ */
+export interface Composition {
+  roverPos: Vector3;
+  roverYaw: number;
+  bearings: number[];
+  heights: number[];
+  yaws: number[];
+  prismPos: Vector3;
+  /** base_link label position relative to the projected base_link origin, CSS px (text baseline-left) */
+  label: [number, number];
+}
+export const COMPOSITIONS: Record<Layout, Composition> = {
+  // composed so that at the desktop rig: quadruped ≈ (86%, 60%), drone ≈ (78%, 18%), sensor mast ≈ (51%, 23–53%)
+  desktop: {
+    roverPos: new Vector3(1.48, 0, -4.8),
+    roverYaw: 0.62,
+    bearings: [0.587, 0.448, 0.1],
+    heights: [0, 2.2, 0],
+    yaws: [2.3, 0.5, 0.3],
+    prismPos: new Vector3(3.4, 0, -15.5),
+    label: [128, 58],
+  },
+  mobile: {
+    roverPos: new Vector3(-0.35, 0, -5.4),
+    roverYaw: -0.32,
+    bearings: [0.43, -0.2, 0.1],
+    heights: [0, 1.9, 0],
+    yaws: [2.6, 0.4, 0.2],
+    prismPos: new Vector3(0.3, 0, -17),
+    label: [96, 40],
+  },
+};
+/** kept for back-compat with the harness/tests */
+export const ROVER_POS = COMPOSITIONS.desktop.roverPos;
+export const ROVER_YAW = COMPOSITIONS.desktop.roverYaw;
 const UNIT_BAND = [0.9, 0.66, 0.4]; // near, mid, far floor 40%
-const UNIT_YAW = [2.3, 0.5, 0.3];
 
 const Q = (x: number, y: number, z: number) => new Quaternion().setFromEuler(new Euler(x, y, z));
 const pose = (p: Vector3, yaw: number) => new Matrix4().compose(p, Q(0, yaw, 0), new Vector3(1, 1, 1));
@@ -115,14 +147,21 @@ function rng(seed: number) {
 export interface HeroScene {
   scene: Scene;
   shared: Shared;
+  layout: Layout;
+  comp: Composition;
   lidarWorld: Vector3;
+  /** base_link: chassis centre on the ground plane (REP-105) */
+  baseLinkWorld: Vector3;
   pointCount: number;
   setVanishingPoint(x: number, y: number): void;
   apply(s: BeatState): void;
   dispose(): void;
 }
 
-export function buildScene(): HeroScene {
+export function buildScene(layout: Layout = 'desktop'): HeroScene {
+  const comp = COMPOSITIONS[layout];
+  const ROVER_POS = comp.roverPos, ROVER_YAW = comp.roverYaw;
+  const UNIT_BEARINGS = comp.bearings, UNIT_HEIGHTS = comp.heights, UNIT_YAW = comp.yaws;
   const scene = new Scene();
   const shared = createShared();
   const disposables: { dispose(): void }[] = [];
@@ -242,6 +281,24 @@ export function buildScene(): HeroScene {
   add(new Mesh(roverGeo, roverMir), 2);
   add(new Mesh(fleetGeo, fleetMir), 2);
 
+  // ---------- aux: rover footprint (RViz footprint polygon) + drone altitude tether (ground anchor) ----------
+  const aux = new Segs();
+  {
+    const fq = Q(0, ROVER_YAW, 0);
+    const hx = 0.78, hz = 0.52;
+    const corners = [[hx, hz], [hx, -hz], [-hx, -hz], [-hx, hz]].map(([x, z]) => new Vector3(x, 0.006, z).applyQuaternion(fq).add(ROVER_POS));
+    for (let i = 0; i < 4; i++) aux.seg(corners[i], corners[(i + 1) % 4], C.grid, 0.55);
+    const d = unitAnchors[1];
+    const g = d.clone().setY(0.006);
+    const n = 9;
+    for (let k = 0; k < n; k++) {
+      const a0 = (k / n) * (d.y - 0.16), a1 = ((k + 0.5) / n) * (d.y - 0.16);
+      aux.seg(g.clone().setY(0.006 + a0), g.clone().setY(0.006 + a1), C.grid, 0.5 * UNIT_BAND[1]);
+    }
+    aux.circle(g, 0.32, 'y', 28, C.grid, 0.6 * UNIT_BAND[1]);
+  }
+  add(new Mesh(aux.build(), lineMaterial(shared, { width: 1, fog: [30, 60] })), 2);
+
   // ---------- TF triads (unlabelled; clamped to >= 16 px) ----------
   const triad = (s: Segs, o: Vector3, len: number, yaw: number) => {
     const q = Q(0, yaw, 0);
@@ -250,14 +307,17 @@ export function buildScene(): HeroScene {
     s.seg(o, o.clone().add(new Vector3(0, 0, len).applyQuaternion(q)), C.tfZ, 1);
   };
   const leadTriad = new Segs();
+  // laser frame at the sensor head, base_link at the chassis centre on the ground plane (never at a wheel)
   triad(leadTriad, lidarWorld.clone().add(new Vector3(0, 0.1, 0)), 0.34, ROVER_YAW);
-  triad(leadTriad, ROVER_POS.clone().add(new Vector3(0, 0.02, 0)), 0.3, ROVER_YAW);
+  const baseLinkWorld = ROVER_POS.clone().add(new Vector3(0, 0.02, 0));
+  triad(leadTriad, baseLinkWorld, 0.3, ROVER_YAW);
   add(new Mesh(leadTriad.build(), lineMaterial(shared, { width: 2, minPx: 16, fog: [40, 80], depthTest: false })), 6);
 
   const unitTriadMats: ShaderMaterial[] = [];
   unitAnchors.forEach((a, i) => {
     const s = new Segs();
-    const base = i === 1 ? a : unitBases[i].clone().add(new Vector3(0, 0.02, 0));
+    // each unit's frame sits at its body / sensor head (the signal endpoint), never at a foot
+    const base = a.clone();
     triad(s, base, 0.3, UNIT_YAW[i]);
     const mat = lineMaterial(shared, { width: 1.8, minPx: 16, fog: [40, 80], depthTest: false, opacity: 0 });
     mat.uniforms.uGrow.value = 0;
@@ -288,7 +348,7 @@ export function buildScene(): HeroScene {
   });
 
   // ---------- WiseOS node: the only solid-shaded prism ----------
-  const prismPos = new Vector3(3.4, 0, -15.5);
+  const prismPos = comp.prismPos.clone();
   const prismGeo = new CylinderGeometry(0.9, 0.9, 1.9, 6, 1);
   prismGeo.translate(0, 0.95, 0);
   const prismMat = new ShaderMaterial({
@@ -424,7 +484,10 @@ export function buildScene(): HeroScene {
     setVanishingPoint(x: number, y: number) {
       bgUniforms.uVp.value = [x, y];
     },
+    layout,
+    comp,
     lidarWorld,
+    baseLinkWorld,
     pointCount,
     apply,
     dispose() {

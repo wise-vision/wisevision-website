@@ -21,7 +21,7 @@ function progress(): number {
 const handle = mountHero(hero, {
   scrollProgress: progress,
   layout: (q.get('layout') as 'desktop' | 'mobile' | null) ?? 'auto',
-  label: q.get('label') === 'base_link' ? 'base_link' : 'none',
+  label: q.get('label') === 'none' ? 'none' : 'base_link',
   maxDpr: q.has('dpr') ? Number(q.get('dpr')) : undefined,
   parallax: q.get('parallax') !== '0',
   onReady: (i) => ((window as any).__heroReady = i),

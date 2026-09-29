@@ -37,27 +37,37 @@ export function startHero(container: HTMLElement, opts: HeroOptions) {
   if (posterEl?.nextSibling) container.insertBefore(canvas, posterEl.nextSibling);
   else container.prepend(canvas);
 
-  const hero = buildScene();
+  let hero = buildScene('desktop');
   const cam = new PerspectiveCamera(30, 1, 0.05, 200);
 
-  let label: HTMLElement | null = null;
+  // base_link callout: mono label parked in empty floor space, joined to the base_link origin by a leader line
+  let label: SVGSVGElement | null = null;
+  let leader: SVGPolylineElement | null = null;
+  let labelText: SVGTextElement | null = null;
   if (opts.label === 'base_link') {
-    label = document.createElement('span');
-    label.textContent = 'base_link';
+    const NS = 'http://www.w3.org/2000/svg';
+    label = document.createElementNS(NS, 'svg');
     label.setAttribute('aria-hidden', 'true');
-    label.className = 'wv-hero-label';
+    label.setAttribute('class', 'wv-hero-label');
     Object.assign(label.style, {
       position: 'absolute',
-      left: '0',
-      top: '0',
-      font: '500 11px/1 "JetBrains Mono", ui-monospace, monospace',
-      letterSpacing: '0.02em',
-      color: 'rgba(242,245,247,0.72)',
+      inset: '0',
+      width: '100%',
+      height: '100%',
       pointerEvents: 'none',
       opacity: '0',
       transition: 'opacity 700ms cubic-bezier(.16,1,.3,1)',
-      whiteSpace: 'nowrap',
+      overflow: 'visible',
     } satisfies Partial<CSSStyleDeclaration>);
+    leader = document.createElementNS(NS, 'polyline');
+    leader.setAttribute('fill', 'none');
+    leader.setAttribute('stroke', 'rgba(242,245,247,0.42)');
+    leader.setAttribute('stroke-width', '1');
+    labelText = document.createElementNS(NS, 'text');
+    labelText.textContent = 'base_link';
+    labelText.setAttribute('fill', 'rgba(242,245,247,0.78)');
+    labelText.setAttribute('style', 'font: 500 11px "JetBrains Mono", ui-monospace, monospace; letter-spacing: .02em');
+    label.append(leader, labelText);
     canvas.after(label);
   }
 
@@ -84,6 +94,12 @@ export function startHero(container: HTMLElement, opts: HeroOptions) {
     w = Math.max(1, Math.round(r.width));
     h = Math.max(1, Math.round(r.height));
     layout = opts.layout && opts.layout !== 'auto' ? opts.layout : w < 768 || h > w * 1.05 ? 'mobile' : 'desktop';
+    if (hero.layout !== layout) {
+      const shared = hero.shared;
+      hero.dispose();
+      hero = buildScene(layout);
+      hero.shared.uCollapseY.value = shared.uCollapseY.value;
+    }
     const cap = opts.maxDpr ?? (layout === 'mobile' ? 1.25 : 1.5);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));
     renderer.setSize(w, h, false);
@@ -108,11 +124,18 @@ export function startHero(container: HTMLElement, opts: HeroOptions) {
     const rig = RIGS[layout];
     hero.setVanishingPoint(layout === 'desktop' ? 0.5 + rig.vp[0] * 0.5 : 0.55, layout === 'desktop' ? 0.5 - rig.vp[1] * 0.5 : 0.62);
     renderer.render(hero.scene, cam);
-    if (label) {
-      tmp.copy(hero.lidarWorld).add(new Vector3(0.05, 0.47, 0)).project(cam);
-      const x = (tmp.x * 0.5 + 0.5) * w, y = (-tmp.y * 0.5 + 0.5) * h;
-      label.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
-      label.style.opacity = String(0.9 * (1 - s.dolly));
+    if (label && leader && labelText) {
+      tmp.copy(hero.baseLinkWorld).project(cam);
+      const ox = (tmp.x * 0.5 + 0.5) * w, oy = (-tmp.y * 0.5 + 0.5) * h;
+      const [dx, dy] = hero.comp.label;
+      const lx = ox + dx, ly = oy + dy;
+      // leader: starts just clear of the triad origin, elbows into a short horizontal shelf under the text
+      const len = Math.hypot(dx - 18, dy) || 1;
+      const sx = ox + ((dx - 18) / len) * 10, sy = oy + (dy / len) * 10;
+      leader.setAttribute('points', `${sx.toFixed(1)},${sy.toFixed(1)} ${(lx - 18).toFixed(1)},${(ly + 4).toFixed(1)} ${(lx + 66).toFixed(1)},${(ly + 4).toFixed(1)}`);
+      labelText.setAttribute('x', lx.toFixed(1));
+      labelText.setAttribute('y', (ly - 1).toFixed(1));
+      label.style.opacity = String(0.95 * (1 - s.dolly * 1.6 > 0 ? 1 - s.dolly * 1.6 : 0));
     }
     if (!ready) {
       ready = true;

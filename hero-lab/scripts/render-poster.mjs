@@ -12,16 +12,17 @@ import { launch, collectErrors, waitReady, BASE } from './lib.mjs';
 const OUT = new URL('../out/', import.meta.url).pathname;
 const PUB = new URL('../public/poster/', import.meta.url).pathname;
 const DIST = new URL('../dist/poster/', import.meta.url).pathname; // vite preview serves dist/
-const PREV = process.env.PREVIEW_DIR ?? '/home/adam/.hermes/cache/scratch/wvrevive/C/';
+const PREV = process.env.PREVIEW_DIR ?? '/home/adam/.hermes/cache/scratch/wvrevive/H/';
 await Promise.all([OUT, PUB, DIST, PREV].map((d) => mkdir(d, { recursive: true })));
 
 const POSTERS = [
   { name: 'hero-desktop', layout: 'desktop', vw: 1440, vh: 800, dpr: 2 }, // 2880×1600
   { name: 'hero-mobile', layout: 'mobile', vw: 390, vh: 600, dpr: 2 }, // 780×1200
-];
+].filter((p) => !process.env.ONLY || p.layout === process.env.ONLY);
+// base_link won the W2 A/B (parent cold read) and is the shipped default. AB=1 re-renders the unlabelled variant too.
 const VARIANTS = [
-  { suffix: '', label: 'none' },
-  { suffix: '-base_link', label: 'base_link' },
+  ...(process.env.AB === '1' ? [{ suffix: '-unlabelled', label: 'none' }] : []),
+  { suffix: '', label: 'base_link' },
 ];
 
 const browser = await launch();
@@ -43,6 +44,7 @@ for (const v of VARIANTS) {
     await sharp(`${base}.png`).webp({ quality: 82, effort: 6 }).toFile(`${base}.webp`);
     for (const ext of ['avif', 'webp'])
       for (const d of [PUB, DIST]) await copyFile(`${base}.${ext}`, `${d}${p.name}${v.suffix}.${ext}`);
+    await copyFile(`${base}.png`, `${PREV}poster-${p.layout}${v.suffix}.png`);
     const meta = await sharp(`${base}.png`).metadata();
     report.push({
       poster: `${p.name}${v.suffix}`,
