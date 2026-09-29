@@ -1,0 +1,4 @@
+# Markdown twins of the docs pages (/docs/<path>.md) for AI agents and tools.
+/*.md
+  Content-Type: text/markdown; charset=utf-8
+  X-Robots-Tag: noindex

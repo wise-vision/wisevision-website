@@ -18,9 +18,26 @@ export default defineConfig({
       favicon: '/favicon.svg',
       customCss: ['./src/styles/tokens.css', './src/styles/starlight.css'],
       social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/wise-vision' }],
+      routeMiddleware: './src/lib/route-md-twin.ts',
+      components: {
+        ThemeProvider: './src/components/starlight/ThemeProvider.astro',
+        ThemeSelect: './src/components/starlight/ThemeSelect.astro',
+      },
       sidebar: [
         { label: 'Overview', link: '/docs/' },
-        { label: 'ROS2 MCP', items: [{ label: 'Quickstart', link: '/docs/ros2-mcp/quickstart/' }] },
+        {
+          label: 'ROS2 MCP',
+          items: [
+            { label: 'Quickstart (Docker, 5 min)', link: '/docs/ros2-mcp/quickstart/' },
+            { label: 'Connect your agent', link: '/docs/ros2-mcp/connect/' },
+            { label: 'Security model', link: '/docs/ros2-mcp/security/' },
+            { label: 'Tool reference', link: '/docs/ros2-mcp/tools/' },
+            { label: 'Prompts', link: '/docs/ros2-mcp/prompts/' },
+            { label: 'Data Black Box', link: '/docs/ros2-mcp/data-black-box/' },
+          ],
+        },
+        { label: 'WiseOS (early access)', link: '/docs/wiseos/' },
+        { label: 'FAQ', link: '/docs/faq/' },
       ],
       plugins: [
         starlightLlmsTxt({
