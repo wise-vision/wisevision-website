@@ -76,7 +76,10 @@ jobs:
           cache: npm
           cache-dependency-path: |
             functions-dev/package-lock.json
+            package-lock.json
             workers/lead-mailer/package-lock.json
+      # Root deps: vite resolves the nearest tsconfig for files outside functions-dev/ (the root one, which extends astro's).
+      - run: npm ci
       - run: npm ci
         working-directory: functions-dev
       # The mailer's own deps (mimetext) resolve from workers/lead-mailer/, which the tests import.
