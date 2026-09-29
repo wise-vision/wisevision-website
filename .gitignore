@@ -7,3 +7,4 @@ coverage/
 .env
 .env.*
 npm-debug.log*
+.dev.vars

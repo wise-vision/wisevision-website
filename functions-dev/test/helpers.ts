@@ -1,6 +1,6 @@
 import type { EmailMessage } from "cloudflare:email";
 import { env as workerEnv } from "cloudflare:workers";
-import type { LeadEnv, LeadDeps } from "../_lib/lead";
+import type { LeadEnv, LeadDeps } from "../../functions/_lib/lead";
 
 export const PASS_SECRET = "1x0000000000000000000000000000000AA"; // Cloudflare test secret: always passes
 export const FAIL_SECRET = "2x0000000000000000000000000000000AA"; // Cloudflare test secret: always fails

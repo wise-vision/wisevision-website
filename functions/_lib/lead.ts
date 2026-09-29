@@ -18,6 +18,8 @@ export interface LeadEnv {
   IP_SALT: string;
   LEAD_TO: string;
   LEAD_FROM?: string;
+  /** Optional secret. When set, a request whose `X-WV-E2E` header equals it skips Turnstile (live E2E tests). */
+  E2E_KEY?: string;
 }
 
 export interface LeadDeps {
@@ -132,7 +134,11 @@ function truthy(v: unknown): boolean {
   return false;
 }
 
-export function validate(raw: Record<string, unknown>): { ok: true; lead: Lead } | { ok: false; fields: Fields } {
+export function validate(
+  raw: Record<string, unknown>,
+  opts: { requireToken?: boolean } = {},
+): { ok: true; lead: Lead } | { ok: false; fields: Fields } {
+  const requireToken = opts.requireToken ?? true;
   const fields: Fields = {};
 
   const hp = raw.website;
@@ -167,11 +173,29 @@ export function validate(raw: Record<string, unknown>): { ok: true; lead: Lead }
   if (!truthy(raw.consent)) fields.consent = "required";
 
   const token = raw["cf-turnstile-response"];
-  if (typeof token !== "string" || token === "" || token.length > LIMITS.token) fields.turnstile = "required";
+  if (requireToken && (typeof token !== "string" || token === "" || token.length > LIMITS.token)) fields.turnstile = "required";
 
   if (Object.keys(fields).length > 0) return { ok: false, fields };
-  return { ok: true, lead: { form: form as LeadFormKind, email, org, role, use_case, token: token as string } };
+  return { ok: true, lead: { form: form as LeadFormKind, email, org, role, use_case, token: typeof token === "string" ? token : "" } };
 }
+
+// ---------- E2E bypass ----------
+
+/** Constant-time string equality: compares SHA-256 digests, so neither length nor content leaks via timing. */
+export async function safeEqual(a: string, b: string): Promise<boolean> {
+  const enc = new TextEncoder();
+  const [da, db] = await Promise.all([
+    crypto.subtle.digest("SHA-256", enc.encode(a)),
+    crypto.subtle.digest("SHA-256", enc.encode(b)),
+  ]);
+  const x = new Uint8Array(da);
+  const y = new Uint8Array(db);
+  let diff = 0;
+  for (let i = 0; i < x.length; i++) diff |= x[i] ^ y[i];
+  return diff === 0;
+}
+
+export const E2E_PREFIX = "[e2e]";
 
 // ---------- Turnstile ----------
 
@@ -280,6 +304,14 @@ export async function handleLead(req: Request, env: LeadEnv, deps: LeadDeps): Pr
     .bind(new Date(now.getTime() - ATTEMPT_RETENTION_MS).toISOString())
     .run();
 
+  // E2E bypass: only active when the E2E_KEY secret is set. A present-but-wrong header is refused outright.
+  let e2e = false;
+  const e2eHeader = req.headers.get("x-wv-e2e");
+  if (env.E2E_KEY && e2eHeader !== null) {
+    if (!(await safeEqual(e2eHeader, env.E2E_KEY))) return fail(403, "e2e_forbidden");
+    e2e = true;
+  }
+
   let raw: Record<string, unknown>;
   try {
     raw = await readBody(req);
@@ -288,13 +320,18 @@ export async function handleLead(req: Request, env: LeadEnv, deps: LeadDeps): Pr
     throw e;
   }
 
-  const v = validate(raw);
+  const v = validate(raw, { requireToken: !e2e });
   if (!v.ok) return fail(400, "validation_failed", { fields: v.fields });
   const lead = v.lead;
 
-  const verdict = await verifyTurnstile(lead.token, env.TURNSTILE_SECRET, ip, deps.fetch);
-  if (verdict === "unavailable") return fail(503, "turnstile_unavailable");
-  if (verdict === "fail") return fail(403, "turnstile_failed");
+  if (e2e) {
+    lead.use_case = lead.use_case ? `${E2E_PREFIX} ${lead.use_case}` : E2E_PREFIX;
+    console.log("lead_e2e_bypass", { form: lead.form });
+  } else {
+    const verdict = await verifyTurnstile(lead.token, env.TURNSTILE_SECRET, ip, deps.fetch);
+    if (verdict === "unavailable") return fail(503, "turnstile_unavailable");
+    if (verdict === "fail") return fail(403, "turnstile_failed");
+  }
 
   const dupSince = new Date(now.getTime() - DUP_WINDOW_MS).toISOString();
   const dup = await db

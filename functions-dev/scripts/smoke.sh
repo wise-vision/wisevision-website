@@ -2,31 +2,34 @@
 # Local end-to-end smoke for POST /api/lead under `wrangler pages dev` + local D1 (no Cloudflare account used,
 # except the public Turnstile siteverify endpoint, called with Cloudflare's always-pass TEST secret).
 #
-# Runs against a clean stage (scripts/stage.sh): see that file for why.
+# Runs straight from the repo root: functions/ holds only deployable code, so no staging step is needed.
+# Local D1 state goes to a throwaway --persist-to dir, so the smoke never touches your dev state.
 set -euo pipefail
-HERE="$(cd "$(dirname "$0")/.." && pwd)"          # functions/
+HERE="$(cd "$(dirname "$0")/.." && pwd)"          # functions-dev/
 REPO="$(cd "$HERE/.." && pwd)"
-STAGE="${STAGE:-${TMPDIR:-/tmp}/wv-lead-smoke}"
+STATE="${STATE:-${TMPDIR:-/tmp}/wv-lead-smoke}"
 PORT="${PORT:-8788}"
 WRANGLER="$HERE/node_modules/.bin/wrangler"
+[ -x "$WRANGLER" ] || (cd "$HERE" && npm ci)
+rm -rf "$STATE" && mkdir -p "$STATE"
+cp -r "$HERE/test-fixtures/dist" "$STATE/dist"
+[ -e "$REPO/.dev.vars" ] && { echo "refusing to overwrite $REPO/.dev.vars"; exit 1; }
+printf 'TURNSTILE_SECRET=%s\nIP_SALT=local-smoke-salt\n' "1x0000000000000000000000000000000AA" > "$REPO/.dev.vars"
+PID=""
+cleanup() { [ -n "$PID" ] && kill "$PID" 2>/dev/null || true; rm -f "$REPO/.dev.vars"; }
+trap cleanup EXIT
+cd "$REPO"
+P=(--persist-to "$STATE/state")
 
-"$HERE/scripts/stage.sh" "$STAGE" "$HERE/test-fixtures/dist"
-cat > "$STAGE/.dev.vars" <<VARS
-TURNSTILE_SECRET=1x0000000000000000000000000000000AA
-IP_SALT=local-smoke-salt
-VARS
-cd "$STAGE"
-
-d1() { "$WRANGLER" d1 execute wv-leads --local --command "$1" 2>&1 | grep -v '^$'; }
+d1() { "$WRANGLER" d1 execute wv-leads --local "${P[@]}" --command "$1" 2>&1 | grep -v '^$'; }
 
 echo "== apply migrations (local)"
-"$WRANGLER" d1 migrations apply wv-leads --local 2>&1 | tail -n 8
+"$WRANGLER" d1 migrations apply wv-leads --local "${P[@]}" 2>&1 | tail -n 8
 echo "== count before"
 d1 "select count(*) as n from leads"
 
-"$WRANGLER" pages dev dist --port "$PORT" --ip 127.0.0.1 > "$STAGE/pages-dev.log" 2>&1 &
+"$WRANGLER" pages dev "$STATE/dist" "${P[@]}" --port "$PORT" --ip 127.0.0.1 > "$STATE/pages-dev.log" 2>&1 &
 PID=$!
-trap 'kill $PID 2>/dev/null || true' EXIT
 for _ in $(seq 1 60); do curl -sf "http://127.0.0.1:$PORT/" >/dev/null && break; sleep 1; done
 
 URL="http://127.0.0.1:$PORT/api/lead"
@@ -46,16 +49,16 @@ echo "== POST cross-origin (expect 403)"
 curl -sS -X POST "$URL" -H 'content-type: application/json' -H 'origin: https://evil.example' --data '{}'
 echo
 sleep 1
-EML_SRC="$(find "$STAGE/.wrangler/tmp" -name '*.eml' 2>/dev/null | head -n 1)"
-[ -n "$EML_SRC" ] && cp "$EML_SRC" "$STAGE/last-lead.eml"
-kill $PID 2>/dev/null || true; wait $PID 2>/dev/null || true; trap - EXIT
+EML_SRC="$(find "$STATE" "$REPO/.wrangler/tmp" -name '*.eml' 2>/dev/null | head -n 1)"
+[ -n "$EML_SRC" ] && cp "$EML_SRC" "$STATE/last-lead.eml"
+kill $PID 2>/dev/null || true; wait $PID 2>/dev/null || true; PID=""
 echo "== count after"
 d1 "select count(*) as n from leads"
 echo "== last row"
 d1 "select id, ts, form, email, org, consent, length(ip_hash) as ip_hash_len from leads order by id desc limit 1"
 echo "== send_email / mail lines from pages dev log"
-grep -iE "email|mail|lead_" "$STAGE/pages-dev.log" | head -n 20 || true
-EML="$STAGE/last-lead.eml"
+grep -iE "email|mail|lead_" "$STATE/pages-dev.log" | head -n 20 || true
+EML="$STATE/last-lead.eml"
 if [ -f "$EML" ]; then
   echo "== captured .eml headers (local send_email)"
   tr -d '\r' < "$EML" | grep -E '^(From|To|Reply-To|Subject|Content-Type|Content-Transfer-Encoding):'

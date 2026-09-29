@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import * as leadRoute from "../api/lead";
-import * as mw from "../api/_middleware";
+import * as leadRoute from "../../functions/api/lead";
+import * as mw from "../../functions/api/_middleware";
 import { ORIGIN, jsonRequest, leadCount, makeEnv, resetDb, validLead } from "./helpers";
 
 beforeEach(resetDb);

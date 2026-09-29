@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { handleLead } from "../_lib/lead";
+import { handleLead } from "../../functions/_lib/lead";
 import {
   FAIL_SECRET, ORIGIN, db, decodeMail, deps, fakeMail, fakeSiteverify, jsonRequest, leadCount, makeEnv, resetDb, validLead,
 } from "./helpers";
