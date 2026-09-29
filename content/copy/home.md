@@ -51,7 +51,7 @@ eyebrow: Open source · MPL-2.0
 
 An MCP server for ROS 2. It speaks stdio, ships as a Docker image and connects Claude, Cursor, Codex or any other MCP client to your robot. {#c:mcp-stdio} {#c:mcp-docker-image} {#c:mcp-clients}
 
-Free for commercial use. No licence key, no paid tier. {#c:mcp-license} {#c:mcp-free}
+Free for commercial use under the MIT licence. No licence key, no paid tier. {#c:mcp-license} {#c:mcp-free}
 
 - cta: Try ROS2 MCP → /ros2-mcp/
 - link: Source on GitHub → https://github.com/wise-vision/ros2_mcp
