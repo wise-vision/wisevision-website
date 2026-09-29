@@ -2,14 +2,13 @@
 // Muted, looped, inline product video that only plays while in view and never under reduced motion.
 // Media files are NOT in git (GitHub Release media-v1 → public/media/ in CI). Existence is checked at BUILD time:
 //   mp4 + poster → <video poster>; poster only → <img>; nothing → render nothing (no broken UI, no layout shift).
-import { existsSync } from 'node:fs';
-import path from 'node:path';
+import { mediaFile, mediaState } from '../lib/media';
 
 interface Props { name: string; label: string; class?: string }
 const { name, label, class: cls } = Astro.props;
-const pub = (f: string) => existsSync(path.join(process.cwd(), 'public', 'media', f));
-const hasVideo = pub(`${name}.mp4`);
-const hasPoster = pub(`${name}.poster.jpg`);
+const state = mediaState(name);
+const hasVideo = state === 'video';
+const hasPoster = mediaFile(`${name}.poster.jpg`);
 const src = `/media/${name}.mp4`;
 const poster = `/media/${name}.poster.jpg`;
 ---

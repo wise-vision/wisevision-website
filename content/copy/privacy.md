@@ -25,7 +25,7 @@ WiseVision is the controller of the personal data collected on wisevision.tech. 
 
 What we store: your email address, and if you give them, your organisation, your role and what you wrote about your use case. We also store the time you sent it, which form you used, the browser user agent, and a one-way hash of your IP address, so we can stop spam and duplicate submissions. We never store your raw IP address.
 
-Why: to answer you, and to follow up on the request you made. The legal basis is your consent, given with the checkbox on the form, which you can withdraw at any time.
+Why: to answer you, and to follow up on the request you made. The legal basis is your consent, given with the checkbox on the form, which you can withdraw at any time. Once you have written to us, replying to you and keeping the thread for follow-up is also our legitimate interest.
 
 Where: in a database we run on Cloudflare (D1), and as an email to our own inbox. We do not use a third-party form or CRM service.
 
@@ -44,6 +44,12 @@ Forms are protected by Cloudflare Turnstile, which checks that a person, not a b
 The site itself sets no cookies. The documentation pages remember your light or dark theme and the sidebar position in your browser's own storage; that never leaves your device.
 
 We count visits with Cloudflare Web Analytics. It is cookieless: it does not set cookies, does not use local storage and does not fingerprint you. We see aggregate numbers such as page views and referrers, not individual visitors.
+
+## section:processors
+
+### Who processes it for us
+
+One processor: Cloudflare, Inc. It hosts this website (Cloudflare Pages), stores form submissions (Cloudflare D1), does the spam check (Cloudflare Turnstile), counts visits (Cloudflare Web Analytics) and forwards form emails to our inbox (Cloudflare Email Routing). We do not sell or share your data with anyone else.
 
 ## section:rights
 
