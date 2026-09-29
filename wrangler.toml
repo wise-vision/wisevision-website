@@ -1,0 +1,27 @@
+# Cloudflare Pages project config for wisevision.tech (wvrevive W7).
+# Local: see functions/README.md. Nothing here is a secret.
+name = "wisevision-website"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-08-15"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# Public Turnstile site key. The value below is Cloudflare's documented TEST key
+# ("always passes"); replace it with the real site key once the widget exists.
+TURNSTILE_SITE_KEY = "1x00000000000000000000AA"
+LEAD_TO = "adam.krawczyk0698@gmail.com"
+LEAD_FROM = "leads@wisevision.tech"
+# Secrets (NEVER put values here): set with `wrangler pages secret put <NAME>`.
+#   TURNSTILE_SECRET  - Turnstile secret key
+#   IP_SALT           - random string, used to hash client IPs (daily-rotated with the UTC date)
+
+[[d1_databases]]
+binding = "LEADS"
+database_name = "wv-leads"
+# Placeholder until `wrangler d1 create wv-leads` runs on the live account (see functions/README.md).
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+[[send_email]]
+name = "LEAD_MAIL"
+destination_address = "adam.krawczyk0698@gmail.com"
