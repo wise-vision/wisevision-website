@@ -13,7 +13,10 @@ export interface CapabilityEnv {
   createCanvas?: () => { getContext: (kind: string, attrs?: unknown) => unknown };
 }
 
-export type CapabilityReason = 'ok' | 'no-environment' | 'reduced-motion' | 'save-data' | 'low-end' | 'no-webgl2';
+export type CapabilityReason = 'ok' | 'no-environment' | 'reduced-motion' | 'save-data' | 'low-end' | 'no-webgl2' | 'software-gl';
+
+/** CPU rasterisers: the scene would cost seconds of main thread there, so the poster is the better experience. */
+const SOFTWARE_GL = /swiftshader|llvmpipe|softpipe|basic render driver|software rasterizer/i;
 
 export interface CapabilityResult {
   ok: boolean;
@@ -47,6 +50,13 @@ export function shouldRunWebGL(env: CapabilityEnv = browserEnv(), opts: { reduce
   try {
     const gl = env.createCanvas().getContext('webgl2', { failIfMajorPerformanceCaveat: true });
     if (!gl) return { ok: false, reason: 'no-webgl2' };
+    const g = gl as { getExtension?: (n: string) => { UNMASKED_RENDERER_WEBGL?: number } | null; getParameter?: (p: number) => unknown; RENDERER?: number };
+    const dbg = g.getExtension?.('WEBGL_debug_renderer_info');
+    const name = String((dbg?.UNMASKED_RENDERER_WEBGL !== undefined ? g.getParameter?.(dbg.UNMASKED_RENDERER_WEBGL) : g.RENDERER !== undefined ? g.getParameter?.(g.RENDERER) : '') ?? '');
+    if (SOFTWARE_GL.test(name)) {
+      (gl as { getExtension?: (n: string) => { loseContext?: () => void } | null }).getExtension?.('WEBGL_lose_context')?.loseContext?.();
+      return { ok: false, reason: 'software-gl' };
+    }
     // release the probe context promptly where supported
     (gl as { getExtension?: (n: string) => { loseContext?: () => void } | null }).getExtension?.('WEBGL_lose_context')?.loseContext?.();
   } catch {

@@ -3,14 +3,14 @@
  * Loaded lazily by index.ts only after the capability gate passes.
  */
 import { WebGLRenderer, PerspectiveCamera, Vector3, Color } from 'three';
-import { buildScene, RIGS, applyRig, type Layout, type Composition, type Rig } from './scene';
+import { buildScene, buildSceneAsync, RIGS, applyRig, type Layout, type Composition, type Rig } from './scene';
 import { rasterize, type CompositionReport, type Rect, type Pt } from './layout-check';
 import { beatState } from './beats';
 import { MOBILE_MEDIA } from './poster';
 import { HEX } from './palette';
 import type { HeroOptions } from './index';
 
-export function startHero(container: HTMLElement, opts: HeroOptions) {
+export async function startHero(container: HTMLElement, opts: HeroOptions, isDead: () => boolean = () => false) {
   const canvas = document.createElement('canvas');
   canvas.setAttribute('aria-hidden', 'true');
   canvas.className = 'wv-hero-canvas';
@@ -43,7 +43,17 @@ export function startHero(container: HTMLElement, opts: HeroOptions) {
   let compOverride: Partial<Composition> | undefined;
   let rigOverride: Partial<Rig> | undefined;
   const rigFor = (l: Layout): Rig => ({ ...RIGS[l], ...rigOverride });
-  let hero = buildScene('desktop');
+  const pickLayout = (): Layout => (opts.layout && opts.layout !== 'auto' ? opts.layout : matchMedia(MOBILE_MEDIA).matches ? 'mobile' : 'desktop');
+  // build once, for the right composition (never desktop-then-mobile)
+  // build in yielding steps, then compile shaders off the critical path (KHR_parallel_shader_compile)
+  performance.mark('hero:build:start');
+  let hero = await buildSceneAsync(pickLayout());
+  performance.measure('hero:build', 'hero:build:start');
+  if (isDead()) {
+    hero.dispose();
+    renderer.dispose();
+    return { destroy() {}, invalidate() {} };
+  }
   const cam = new PerspectiveCamera(30, 1, 0.05, 200);
 
   // base_link callout: mono label parked in empty floor space, joined to the base_link origin by a leader line
@@ -77,7 +87,7 @@ export function startHero(container: HTMLElement, opts: HeroOptions) {
     canvas.after(label);
   }
 
-  let layout: Layout = 'desktop';
+  let layout: Layout = hero.layout;
   let w = 0, h = 0;
   const fine = typeof matchMedia === 'function' && matchMedia('(hover: hover) and (pointer: fine)').matches;
   const parallaxOn = opts.parallax !== false && fine;
@@ -108,7 +118,7 @@ export function startHero(container: HTMLElement, opts: HeroOptions) {
     const r = container.getBoundingClientRect();
     w = Math.max(1, Math.round(r.width));
     h = Math.max(1, Math.round(r.height));
-    layout = opts.layout && opts.layout !== 'auto' ? opts.layout : matchMedia(MOBILE_MEDIA).matches ? 'mobile' : 'desktop';
+    layout = pickLayout();
     if (hero.layout !== layout) rebuild();
     const cap = opts.maxDpr ?? (layout === 'mobile' ? 1.25 : 1.5);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));
@@ -133,7 +143,9 @@ export function startHero(container: HTMLElement, opts: HeroOptions) {
     const rig = rigFor(layout);
     applyRig(cam, rig, s.dolly, parallaxOn ? cur : [0, 0]);
     hero.setVanishingPoint(layout === 'desktop' ? 0.5 + rig.vp[0] * 0.5 : 0.55, layout === 'desktop' ? 0.5 - rig.vp[1] * 0.5 : 0.62);
+    if (!ready) performance.mark('hero:frame0:start');
     renderer.render(hero.scene, cam);
+    if (!ready) performance.measure('hero:frame0', 'hero:frame0:start');
     if (label && leader && labelText) {
       tmp.copy(hero.baseLinkWorld).project(cam);
       const ox = (tmp.x * 0.5 + 0.5) * w, oy = (-tmp.y * 0.5 + 0.5) * h;
@@ -191,6 +203,21 @@ export function startHero(container: HTMLElement, opts: HeroOptions) {
     canvas.style.opacity = '0'; // poster shows through
   };
   canvas.addEventListener('webglcontextlost', onLost);
+  // compile every program before the first frame; with KHR_parallel_shader_compile this polls instead of blocking
+  performance.mark('hero:compile:start');
+  try {
+    await renderer.compileAsync(hero.scene, cam);
+  } catch {
+    /* fall back to compile-on-first-render */
+  }
+  performance.measure('hero:compile', 'hero:compile:start');
+  if (isDead()) {
+    hero.dispose();
+    renderer.dispose();
+    canvas.remove();
+    label?.remove();
+    return { destroy() {}, invalidate() {} };
+  }
   resize();
 
   // test/poster hook: exposes the same scene at an explicit progress

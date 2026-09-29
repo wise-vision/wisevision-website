@@ -54,7 +54,10 @@ export function mountHero(container: HTMLElement, opts: HeroOptions = {}): HeroH
   import('./runtime')
     .then((m) => {
       if (dead) return;
-      inner = m.startHero(container, opts);
+      return m.startHero(container, opts, () => dead).then((h) => {
+        if (dead) h.destroy();
+        else inner = h;
+      });
     })
     .catch(() => {
       // chunk failed to load or WebGL init threw: keep the poster, never surface an error

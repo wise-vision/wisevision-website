@@ -167,7 +167,32 @@ export interface HeroScene {
   dispose(): void;
 }
 
+/** Synchronous build (lab tuning, tests). */
 export function buildScene(layout: Layout = 'desktop', override?: Partial<Composition>): HeroScene {
+  const g = buildSceneSteps(layout, override);
+  for (;;) {
+    const r = g.next();
+    if (r.done) return r.value;
+  }
+}
+
+/** Yield to the main thread (scheduler.yield where available). */
+export const yieldToMain = (): Promise<void> => {
+  const sch = (globalThis as { scheduler?: { yield?: () => Promise<void> } }).scheduler;
+  return sch?.yield ? sch.yield() : new Promise((r) => setTimeout(r, 0));
+};
+
+/** Production build: same steps, but the main thread is handed back between them (no long task > ~50 ms per step on mid-range phones). */
+export async function buildSceneAsync(layout: Layout = 'desktop', override?: Partial<Composition>): Promise<HeroScene> {
+  const g = buildSceneSteps(layout, override);
+  for (;;) {
+    const r = g.next();
+    if (r.done) return r.value;
+    await yieldToMain();
+  }
+}
+
+function* buildSceneSteps(layout: Layout, override?: Partial<Composition>): Generator<void, HeroScene> {
   const comp: Composition = { ...COMPOSITIONS[layout], ...override };
   const ROVER_POS = comp.roverPos, ROVER_YAW = comp.roverYaw;
   const UNIT_BEARINGS = comp.bearings, UNIT_HEIGHTS = comp.heights, UNIT_YAW = comp.yaws;
@@ -216,6 +241,7 @@ export function buildScene(layout: Layout = 'desktop', override?: Partial<Compos
   pool.position.set(ROVER_POS.x + 0.8, 0.002, ROVER_POS.z - 1.6);
   add(pool, 0);
 
+  yield; // step boundary: buildSceneAsync hands the main thread back here
   // ---------- ROS grid (1 m cells, 5 m majors), near band 2x opacity ----------
   const grid = new Segs();
   const ext = 36, zNear = 3, zFar = -70;
@@ -245,12 +271,13 @@ export function buildScene(layout: Layout = 'desktop', override?: Partial<Compos
   shadow.position.copy(ROVER_POS).setY(0.004);
   add(shadow, 1);
 
+  yield; // step boundary: buildSceneAsync hands the main thread back here
   // ---------- robots ----------
   const rover = new Segs();
   rover.collectOccluders = true;
   const roverM = pose(ROVER_POS, ROVER_YAW);
   const roverMark = rover.mark();
-  const { lidar } = leadRover(rover, roverM, C.wire, 1);
+  const { lidar } = yield* leadRover(rover, roverM, C.wire, 1);
   const lidarWorld = lidar.clone().applyMatrix4(roverM);
   const lidarGround = lidarWorld.clone().setY(0);
 
@@ -259,7 +286,9 @@ export function buildScene(layout: Layout = 'desktop', override?: Partial<Compos
   const unitAnchors: Vector3[] = [];
   const unitBases: Vector3[] = [];
   const fleetPts: Vector3[][] = [];
-  UNIT_DISTANCES.forEach((d, i) => {
+  for (let i = 0; i < UNIT_DISTANCES.length; i++) {
+    yield;
+    const d = UNIT_DISTANCES[i];
     const b = UNIT_BEARINGS[i];
     const p = new Vector3(lidarGround.x + Math.sin(b) * d, UNIT_HEIGHTS[i], lidarGround.z - Math.cos(b) * d);
     const m = pose(p, UNIT_YAW[i]);
@@ -269,7 +298,7 @@ export function buildScene(layout: Layout = 'desktop', override?: Partial<Compos
     fleetPts.push(fleet.pointsSince(mk));
     unitAnchors.push(anchor);
     unitBases.push(p.clone());
-  });
+  }
 
   const roverPts = rover.pointsSince(roverMark);
   const roverGeo = rover.build();
@@ -295,6 +324,7 @@ export function buildScene(layout: Layout = 'desktop', override?: Partial<Compos
   add(new Mesh(roverGeo, roverMir), 2);
   add(new Mesh(fleetGeo, fleetMir), 2);
 
+  yield; // step boundary: buildSceneAsync hands the main thread back here
   // ---------- aux: rover footprint (RViz footprint polygon) + drone altitude tether (ground anchor) ----------
   const aux = new Segs();
   {
@@ -363,6 +393,7 @@ export function buildScene(layout: Layout = 'desktop', override?: Partial<Compos
     add(new Mesh(s.build(), mat), 7);
   });
 
+  yield; // step boundary: buildSceneAsync hands the main thread back here
   // ---------- WiseOS node: the only solid-shaded prism ----------
   const prismPos = comp.prismPos.clone();
   const prismGeo = new CylinderGeometry(0.9, 0.9, 1.9, 6, 1);
@@ -425,6 +456,7 @@ export function buildScene(layout: Layout = 'desktop', override?: Partial<Compos
   upMat.uniforms.uDraw.value = 0;
   add(new Mesh(up.build(), upMat), 7);
 
+  yield; // step boundary: buildSceneAsync hands the main thread back here
   // ---------- LaserScan ring (point sprites) + endpoints ----------
   const R = rng(7);
   const ringPos: number[] = [], ringCol: number[] = [], ringSize: number[] = [], ringJit: number[] = [];

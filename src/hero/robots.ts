@@ -23,8 +23,8 @@ export interface Anchor {
   tf: Vector3;
 }
 
-/** Six-wheel lead rover with lidar puck on a short mast. Returns lidar anchor (local). */
-export function leadRover(s: Segs, base: Matrix4, col: RGB, a = 1): { lidar: Vector3; footprint: [number, number] } {
+/** Six-wheel lead rover with lidar puck on a short mast. Returns lidar anchor (local). Yields between part groups (it is the heaviest build step). */
+export function* leadRover(s: Segs, base: Matrix4, col: RGB, a = 1): Generator<void, { lidar: Vector3; footprint: [number, number] }> {
   const part = (g: import('three').BufferGeometry, m: Matrix4, alpha = a, th = 25) => s.edges(g, base.clone().multiply(m), col, alpha, th);
   // chassis: lower tub + upper deck with chamfered nose
   part(new BoxGeometry(1.24, 0.22, 0.66), M(0, 0.36, 0));
@@ -33,11 +33,14 @@ export function leadRover(s: Segs, base: Matrix4, col: RGB, a = 1): { lidar: Vec
   // bogie rails
   for (const z of [-0.39, 0.39]) part(new BoxGeometry(1.1, 0.05, 0.05), M(0, 0.25, z));
   // six wheels (12-seg cylinders: rim circles + hub)
-  for (const x of [-0.46, 0, 0.46])
+  for (const x of [-0.46, 0, 0.46]) {
+    yield;
     for (const z of [-0.43, 0.43]) {
       part(new CylinderGeometry(0.17, 0.17, 0.12, 14, 1), M(x, 0.17, z, Math.PI / 2, 0, 0), a, 40);
       part(new CylinderGeometry(0.07, 0.07, 0.13, 8, 1), M(x, 0.17, z, Math.PI / 2, 0, 0), a * 0.6, 40);
     }
+  }
+  yield;
   // front sensor bar + camera pods
   part(new BoxGeometry(0.06, 0.07, 0.5), M(0.56, 0.5, 0));
   for (const z of [-0.18, 0.18]) part(new BoxGeometry(0.08, 0.06, 0.08), M(0.6, 0.5, z), a * 0.8);
