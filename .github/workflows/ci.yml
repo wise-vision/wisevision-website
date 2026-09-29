@@ -74,9 +74,14 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: functions-dev/package-lock.json
+          cache-dependency-path: |
+            functions-dev/package-lock.json
+            workers/lead-mailer/package-lock.json
       - run: npm ci
         working-directory: functions-dev
+      # The mailer's own deps (mimetext) resolve from workers/lead-mailer/, which the tests import.
+      - run: npm ci
+        working-directory: workers/lead-mailer
       - name: typecheck (functions/, workers/lead-mailer/, src/lib/lead-form.ts, tests)
         run: npm run typecheck
         working-directory: functions-dev
@@ -86,7 +91,7 @@ jobs:
       - name: Pages Functions compile from the repo root (no staging)
         run: functions-dev/node_modules/.bin/wrangler pages functions build --outdir "$RUNNER_TEMP/fn"
       - name: lead-mailer bundles (dry run)
-        run: npm ci && npx wrangler deploy --dry-run --outdir "$RUNNER_TEMP/mailer"
+        run: npx wrangler deploy --dry-run --outdir "$RUNNER_TEMP/mailer"
         working-directory: workers/lead-mailer
 
   claims-lint:

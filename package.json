@@ -15,7 +15,7 @@
     "preview": "astro preview",
     "check": "astro check",
     "test": "vitest run --coverage",
-    "test:functions": "npm --prefix functions-dev ci && npm --prefix functions-dev run coverage"
+    "test:functions": "npm --prefix workers/lead-mailer ci && npm --prefix functions-dev ci && npm --prefix functions-dev run coverage"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
