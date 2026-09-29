@@ -6,7 +6,8 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['scripts/**/*.mjs', 'src/lib/**/*.{ts,mjs,js}'],
-      exclude: ['scripts/claims-lint*', 'scripts/screenshots.mjs'],
+      // src/lib/lead-form.ts is covered by the Workers-runtime suite in functions-dev/ (npm run test:functions).
+      exclude: ['scripts/claims-lint*', 'scripts/screenshots.mjs', 'src/lib/lead-form.ts'],
       reporter: ['text', 'json-summary'],
       thresholds: { lines: 80 },
     },

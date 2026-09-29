@@ -1,0 +1,26 @@
+# Cloudflare Pages project config for wisevision.tech (wvrevive W7).
+# Local dev/tests: see functions-dev/README.md. Nothing here is a secret.
+name = "wisevision"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-08-15"
+
+[vars]
+# Public Turnstile site key (widget for wisevision.tech).
+TURNSTILE_SITE_KEY = "0x4AAAAAAFJWYFrZOh7sNu11"
+# Secrets (NEVER put values here): set with `wrangler pages secret put <NAME>`.
+#   TURNSTILE_SECRET  - Turnstile secret key
+#   IP_SALT           - random string, used to hash client IPs (daily-rotated with the UTC date)
+#   E2E_KEY           - optional; enables the X-WV-E2E Turnstile bypass for live end-to-end tests
+
+[[d1_databases]]
+binding = "LEADS"
+database_name = "wv-leads"
+database_id = "0c675264-1da8-41e6-a959-3c04b5a5a7a5"
+migrations_dir = "migrations"
+
+# Mail: Pages cannot hold a send_email binding, so leads are mailed by the companion Worker
+# `wv-lead-mailer` (workers/lead-mailer/), reached only through this service binding. The recipient
+# and sender live in that Worker's config. If the binding is absent, /api/lead still stores the row (mail:false).
+[[services]]
+binding = "LEAD_MAILER"
+service = "wv-lead-mailer"
