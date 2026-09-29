@@ -55,14 +55,16 @@ export const COMPOSITIONS: Record<Layout, Composition> = {
     prismPos: new Vector3(3.4, 0, -15.5),
     label: [128, 58],
   },
+  // tuned with scripts/compose-search.mjs + compose.mjs (checkComposition clean): rover three-quarter bottom-left,
+  // quadruped (arc target) right, drone between mast and lidar so its tether lands on free floor, mast far left
   mobile: {
-    roverPos: new Vector3(-0.35, 0, -5.4),
-    roverYaw: -0.32,
-    bearings: [0.43, -0.2, 0.1],
-    heights: [0, 1.9, 0],
-    yaws: [2.6, 0.4, 0.2],
+    roverPos: new Vector3(-0.81, 0, -4.85),
+    roverYaw: -0.6,
+    bearings: [0.52, -0.2, -0.36],
+    heights: [0, 2.1, 0],
+    yaws: [2.91, 0.4, 0.2],
     prismPos: new Vector3(0.3, 0, -17),
-    label: [96, 40],
+    label: [78, 67],
   },
 };
 /** kept for back-compat with the harness/tests */
@@ -153,13 +155,17 @@ export interface HeroScene {
   /** base_link: chassis centre on the ground plane (REP-105) */
   baseLinkWorld: Vector3;
   pointCount: number;
+  /** world wireframe endpoints of each robot, for the screen-space composition check */
+  unitPoints: Record<'rover' | 'quadruped' | 'drone' | 'mast', Vector3[]>;
+  /** the poster signal arc (lidar → quadruped), world points */
+  arcPoints: Vector3[];
   setVanishingPoint(x: number, y: number): void;
   apply(s: BeatState): void;
   dispose(): void;
 }
 
-export function buildScene(layout: Layout = 'desktop'): HeroScene {
-  const comp = COMPOSITIONS[layout];
+export function buildScene(layout: Layout = 'desktop', override?: Partial<Composition>): HeroScene {
+  const comp: Composition = { ...COMPOSITIONS[layout], ...override };
   const ROVER_POS = comp.roverPos, ROVER_YAW = comp.roverYaw;
   const UNIT_BEARINGS = comp.bearings, UNIT_HEIGHTS = comp.heights, UNIT_YAW = comp.yaws;
   const scene = new Scene();
@@ -240,6 +246,7 @@ export function buildScene(layout: Layout = 'desktop'): HeroScene {
   const rover = new Segs();
   rover.collectOccluders = true;
   const roverM = pose(ROVER_POS, ROVER_YAW);
+  const roverMark = rover.mark();
   const { lidar } = leadRover(rover, roverM, C.wire, 1);
   const lidarWorld = lidar.clone().applyMatrix4(roverM);
   const lidarGround = lidarWorld.clone().setY(0);
@@ -248,16 +255,20 @@ export function buildScene(layout: Layout = 'desktop'): HeroScene {
   fleet.collectOccluders = true;
   const unitAnchors: Vector3[] = [];
   const unitBases: Vector3[] = [];
+  const fleetPts: Vector3[][] = [];
   UNIT_DISTANCES.forEach((d, i) => {
     const b = UNIT_BEARINGS[i];
     const p = new Vector3(lidarGround.x + Math.sin(b) * d, UNIT_HEIGHTS[i], lidarGround.z - Math.cos(b) * d);
     const m = pose(p, UNIT_YAW[i]);
     const build = [quadruped, drone, sensorMast][i];
+    const mk = fleet.mark();
     const anchor = build(fleet, m, C.wire, UNIT_BAND[i]).applyMatrix4(m);
+    fleetPts.push(fleet.pointsSince(mk));
     unitAnchors.push(anchor);
     unitBases.push(p.clone());
   });
 
+  const roverPts = rover.pointsSince(roverMark);
   const roverGeo = rover.build();
   const fleetGeo = fleet.build();
   const roverMat = lineMaterial(shared, { width: 1.35, lit: true, fog: [30, 60] });
@@ -328,6 +339,7 @@ export function buildScene(layout: Layout = 'desktop'): HeroScene {
 
   // ---------- signal paths: lead lidar → unit anchor, accent, draw-in, green endpoint ----------
   const pathMats: ShaderMaterial[] = [];
+  const arcs: Vector3[][] = [];
   unitAnchors.forEach((end) => {
     const s = new Segs();
     const start = lidarWorld.clone().add(new Vector3(0, 0.1, 0));
@@ -340,6 +352,7 @@ export function buildScene(layout: Layout = 'desktop'): HeroScene {
       const b = mid.clone().lerp(end, t);
       pts.push(a.lerp(b, t));
     }
+    arcs.push(pts);
     s.poly(pts, C.accent, 1);
     const mat = lineMaterial(shared, { width: 2, fog: [40, 80], depthTest: false, keepOnCollapse: 1 });
     mat.uniforms.uDraw.value = 0;
@@ -489,6 +502,8 @@ export function buildScene(layout: Layout = 'desktop'): HeroScene {
     lidarWorld,
     baseLinkWorld,
     pointCount,
+    unitPoints: { rover: roverPts, quadruped: fleetPts[0], drone: fleetPts[1], mast: fleetPts[2] },
+    arcPoints: arcs[0],
     apply,
     dispose() {
       disposables.forEach((d) => d.dispose());
@@ -511,7 +526,7 @@ export const RIGS: Record<Layout, Rig> = {
   // VP at x=30%, y=41% from top: under the headline's first line in the left column
   desktop: { pos: new Vector3(0, 0.9, 0), dollyPos: new Vector3(0.9, 2.2, 6.5), fov: 30, vp: [-0.4, 0.18] },
   // separate mobile composition: looks across the fleet from front-left, scene sits under the stacked type
-  mobile: { pos: new Vector3(-0.6, 1.5, 1.2), dollyPos: new Vector3(-0.2, 2.8, 7.5), fov: 50, vp: [0, -0.28], target: new Vector3(3.0, 0.9, -9.0) },
+  mobile: { pos: new Vector3(0.1, 2.24, 1.92), dollyPos: new Vector3(0.1, 3.2, 8.5), fov: 45, vp: [0, -0.15], target: new Vector3(-0.25, 0.69, -6.97) },
 };
 
 export function applyRig(cam: PerspectiveCamera, rig: Rig, dolly: number, parallax: [number, number]) {

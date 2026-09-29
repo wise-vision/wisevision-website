@@ -7,7 +7,8 @@
 //   $SCRATCH/wvrevive/C/preview-{desktop,mobile}{,-base_link}.png  1440×900 / 390×844 with headline + CTA
 import { mkdir, copyFile, stat } from 'node:fs/promises';
 import sharp from 'sharp';
-import { launch, collectErrors, waitReady, BASE } from './lib.mjs';
+import { launch, collectErrors, waitReady, layoutReport, BASE } from './lib.mjs';
+import { checkComposition } from '../../src/hero/layout-check.ts';
 
 const OUT = new URL('../out/', import.meta.url).pathname;
 const PUB = new URL('../public/poster/', import.meta.url).pathname;
@@ -38,9 +39,12 @@ for (const v of VARIANTS) {
     const st = await waitReady(page);
     if (!st.ready) throw new Error(`WebGL did not start for ${p.name}${v.suffix}: ${JSON.stringify(st.fallback)}`);
     await page.waitForTimeout(1000); // canvas/label fade-in (700ms)
+    // composition gate: no unit cropped, label/leader/arc never cross a wireframe (parent's W2 vision verdict)
+    const layoutIssues = checkComposition(await layoutReport(page));
+    if (layoutIssues.length) allErrors.push(`${p.name}${v.suffix} composition: ${layoutIssues.join('; ')}`);
     const base = `${OUT}${p.name}${v.suffix}`;
     await page.screenshot({ path: `${base}.png` });
-    await sharp(`${base}.png`).avif({ quality: 58, effort: 7, chromaSubsampling: '4:4:4' }).toFile(`${base}.avif`);
+    await sharp(`${base}.png`).avif({ quality: 58, effort: Number(process.env.AVIF_EFFORT ?? 4), chromaSubsampling: '4:4:4' }).toFile(`${base}.avif`);
     await sharp(`${base}.png`).webp({ quality: 82, effort: 6 }).toFile(`${base}.webp`);
     for (const ext of ['avif', 'webp'])
       for (const d of [PUB, DIST]) await copyFile(`${base}.${ext}`, `${d}${p.name}${v.suffix}.${ext}`);

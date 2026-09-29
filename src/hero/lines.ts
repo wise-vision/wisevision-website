@@ -222,6 +222,19 @@ export class Segs {
     return this;
   }
 
+  /** Opaque cursor into the vertex stream; pair with boundsSince() to box one robot. */
+  mark(): number {
+    return this.a.length;
+  }
+
+  /** Every segment endpoint added since `mark` (world space), for tight screen-space bounds. */
+  pointsSince(mark: number): Vector3[] {
+    const out: Vector3[] = [];
+    // each segment is 6 vertices with identical a/b; take one per segment
+    for (let i = mark; i < this.a.length; i += 18) out.push(new Vector3(this.a[i], this.a[i + 1], this.a[i + 2]), new Vector3(this.b[i], this.b[i + 1], this.b[i + 2]));
+    return out;
+  }
+
   /** Polyline with draw-in parameter running 0..1 along its length. */
   poly(pts: Vector3[], color: RGB, alpha = 1, normal?: Vector3): this {
     let total = 0;

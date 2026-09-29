@@ -3,7 +3,8 @@
  * Loaded lazily by index.ts only after the capability gate passes.
  */
 import { WebGLRenderer, PerspectiveCamera, Vector3, Color } from 'three';
-import { buildScene, RIGS, applyRig, type Layout } from './scene';
+import { buildScene, RIGS, applyRig, type Layout, type Composition, type Rig } from './scene';
+import { rasterize, type CompositionReport, type Rect, type Pt } from './layout-check';
 import { beatState } from './beats';
 import { HEX } from './palette';
 import type { HeroOptions } from './index';
@@ -37,6 +38,10 @@ export function startHero(container: HTMLElement, opts: HeroOptions) {
   if (posterEl?.nextSibling) container.insertBefore(canvas, posterEl.nextSibling);
   else container.prepend(canvas);
 
+  // lab-only tuning overrides (composition + camera rig); empty in production
+  let compOverride: Partial<Composition> | undefined;
+  let rigOverride: Partial<Rig> | undefined;
+  const rigFor = (l: Layout): Rig => ({ ...RIGS[l], ...rigOverride });
   let hero = buildScene('desktop');
   const cam = new PerspectiveCamera(30, 1, 0.05, 200);
 
@@ -89,17 +94,21 @@ export function startHero(container: HTMLElement, opts: HeroOptions) {
     return Number.isFinite(p) ? p : 0;
   };
 
+  function rebuild() {
+    const shared = hero.shared;
+    hero.dispose();
+    hero = buildScene(layout, compOverride);
+    hero.shared.uCollapseY.value = shared.uCollapseY.value;
+    hero.shared.uRes.value = shared.uRes.value;
+    hero.shared.uPx.value = shared.uPx.value;
+  }
+
   function resize() {
     const r = container.getBoundingClientRect();
     w = Math.max(1, Math.round(r.width));
     h = Math.max(1, Math.round(r.height));
     layout = opts.layout && opts.layout !== 'auto' ? opts.layout : w < 768 || h > w * 1.05 ? 'mobile' : 'desktop';
-    if (hero.layout !== layout) {
-      const shared = hero.shared;
-      hero.dispose();
-      hero = buildScene(layout);
-      hero.shared.uCollapseY.value = shared.uCollapseY.value;
-    }
+    if (hero.layout !== layout) rebuild();
     const cap = opts.maxDpr ?? (layout === 'mobile' ? 1.25 : 1.5);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));
     renderer.setSize(w, h, false);
@@ -120,8 +129,8 @@ export function startHero(container: HTMLElement, opts: HeroOptions) {
     cur[0] += (target[0] - cur[0]) * 0.12;
     cur[1] += (target[1] - cur[1]) * 0.12;
     hero.apply(s);
-    applyRig(cam, RIGS[layout], s.dolly, parallaxOn ? cur : [0, 0]);
-    const rig = RIGS[layout];
+    const rig = rigFor(layout);
+    applyRig(cam, rig, s.dolly, parallaxOn ? cur : [0, 0]);
     hero.setVanishingPoint(layout === 'desktop' ? 0.5 + rig.vp[0] * 0.5 : 0.55, layout === 'desktop' ? 0.5 - rig.vp[1] * 0.5 : 0.62);
     renderer.render(hero.scene, cam);
     if (label && leader && labelText) {
@@ -190,6 +199,51 @@ export function startHero(container: HTMLElement, opts: HeroOptions) {
       if (p !== undefined) opts.scrollProgress = () => p;
       lastProgress = -1;
       frame();
+    },
+    /** lab: re-compose live (composition + rig overrides), then render */
+    tune: (c?: Record<string, unknown>, r?: Record<string, unknown>) => {
+      // plain-JSON friendly: [x,y,z] arrays become Vector3
+      const v3 = (o?: Record<string, unknown>) =>
+        o && Object.fromEntries(Object.entries(o).map(([k, v]) => [k, Array.isArray(v) && v.length === 3 && k !== 'bearings' && k !== 'heights' && k !== 'yaws' ? new Vector3(...(v as [number, number, number])) : v]));
+      compOverride = v3(c) as Partial<Composition> | undefined;
+      rigOverride = v3(r) as Partial<Rig> | undefined;
+      rebuild();
+      lastProgress = -1;
+      frame();
+    },
+    /** screen-space boxes (CSS px) of every unit, the label, its leader and the poster arc */
+    layoutReport: (): CompositionReport => {
+      const proj = (v: Vector3): Pt => {
+        tmp.copy(v).project(cam);
+        return [(tmp.x * 0.5 + 0.5) * w, (-tmp.y * 0.5 + 0.5) * h];
+      };
+      const box = (world: Vector3[]): Rect => {
+        const pts = world.map(proj);
+        const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+        const x0 = Math.min(...xs), y0 = Math.min(...ys);
+        return { x: x0, y: y0, w: Math.max(...xs) - x0, h: Math.max(...ys) - y0 };
+      };
+      const b = hero.unitPoints;
+      let lab: Rect | null = null;
+      let lead: Pt[] | null = null;
+      if (labelText && leader) {
+        const bb = labelText.getBBox();
+        lab = { x: bb.x, y: bb.y, w: bb.width, h: bb.height };
+        lead = (leader.getAttribute('points') ?? '').trim().split(/\s+/).map((q) => q.split(',').map(Number) as Pt);
+      }
+      const occ = (world: Vector3[]) => {
+        const segs: [Pt, Pt][] = [];
+        for (let i = 0; i + 1 < world.length; i += 2) segs.push([proj(world[i]), proj(world[i + 1])]);
+        return rasterize(segs, { w, h });
+      };
+      return {
+        frame: { w, h },
+        units: { rover: box(b.rover), quadruped: box(b.quadruped), drone: box(b.drone), mast: box(b.mast) },
+        occupancy: { rover: occ(b.rover), quadruped: occ(b.quadruped), drone: occ(b.drone), mast: occ(b.mast) },
+        label: lab,
+        leader: lead,
+        arc: hero.arcPoints.map(proj),
+      };
     },
   };
 

@@ -24,3 +24,15 @@ export async function waitReady(page, timeout = 20000) {
   await page.waitForFunction(() => window.__heroReady || window.__heroFallback, null, { timeout });
   return page.evaluate(() => ({ ready: window.__heroReady ?? null, fallback: window.__heroFallback ?? null }));
 }
+
+/** Screen-space composition report from the live page; Sets are shipped as arrays and rebuilt here. */
+export async function layoutReport(page, tune) {
+  const r = await page.evaluate(([c, g]) => {
+    const h = document.getElementById('hero').__hero;
+    if (c || g) h.tune(c, g);
+    const rep = h.layoutReport();
+    return { ...rep, occupancy: Object.fromEntries(Object.entries(rep.occupancy).map(([k, v]) => [k, [...v]])) };
+  }, tune ?? [null, null]);
+  r.occupancy = Object.fromEntries(Object.entries(r.occupancy).map(([k, v]) => [k, new Set(v)]));
+  return r;
+}
