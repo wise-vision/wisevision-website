@@ -36,7 +36,7 @@ git lfs pull --include="static/gifs/*"
 bash media/proof/make-proof.sh
 node media/build.mjs                       # after editing media/src/*.html
 node media/claims-check.mjs                # 0 violations required
-node --test media/test/                    # claims-check unit tests
+node --test media/test/claims-check.test.mjs                    # claims-check unit tests
 systemd-run --user --scope -p MemoryMax=12G bash media/render-all.sh
 ```
 
