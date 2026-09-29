@@ -2,11 +2,11 @@
  * three.js runtime: renderer, on-demand loop, resize, visibility/offscreen pause, pointer parallax.
  * Loaded lazily by index.ts only after the capability gate passes.
  */
-import { WebGLRenderer, PerspectiveCamera, Vector3, Color } from 'three';
+import { WebGLRenderer, PerspectiveCamera, Vector3, Color, Matrix4, Ray } from 'three';
 import { buildScene, buildSceneAsync, RIGS, applyRig, type Layout, type Composition, type Rig } from './scene';
 import { rasterize, type CompositionReport, type Rect, type Pt } from './layout-check';
 import { beatState } from './beats';
-import { MOBILE_MEDIA } from './poster';
+import { MOBILE_MEDIA, POSTERS, objectPosition } from './poster';
 import { HEX } from './palette';
 import type { HeroOptions } from './index';
 
@@ -151,10 +151,14 @@ export async function startHero(container: HTMLElement, opts: HeroOptions, isDea
       const ox = (tmp.x * 0.5 + 0.5) * w, oy = (-tmp.y * 0.5 + 0.5) * h;
       const [dx, dy] = hero.comp.label;
       const lx = ox + dx, ly = oy + dy;
-      // leader: starts just clear of the triad origin, elbows into a short horizontal shelf under the text
-      const len = Math.hypot(dx - 18, dy) || 1;
-      const sx = ox + ((dx - 18) / len) * 10, sy = oy + (dy / len) * 10;
-      leader.setAttribute('points', `${sx.toFixed(1)},${sy.toFixed(1)} ${(lx - 18).toFixed(1)},${(ly + 4).toFixed(1)} ${(lx + 66).toFixed(1)},${(ly + 4).toFixed(1)}`);
+      // leader: starts just clear of the triad origin, elbows into a short horizontal shelf under the text; the elbow is
+      // the shelf end nearer the origin, so the diagonal never runs underneath the word
+      const shelf: [number, number] = [lx - 6, lx + 66];
+      const ex = Math.abs(shelf[0] - ox) <= Math.abs(shelf[1] - ox) ? shelf[0] : shelf[1];
+      const fx = ex === shelf[0] ? shelf[1] : shelf[0];
+      const len = Math.hypot(ex - ox, ly + 4 - oy) || 1;
+      const sx = ox + ((ex - ox) / len) * 10, sy = oy + ((ly + 4 - oy) / len) * 10;
+      leader.setAttribute('points', `${sx.toFixed(1)},${sy.toFixed(1)} ${ex.toFixed(1)},${(ly + 4).toFixed(1)} ${fx.toFixed(1)},${(ly + 4).toFixed(1)}`);
       labelText.setAttribute('x', lx.toFixed(1));
       labelText.setAttribute('y', (ly - 1).toFixed(1));
       label.style.opacity = String(0.95 * (1 - s.dolly * 1.6 > 0 ? 1 - s.dolly * 1.6 : 0));
@@ -232,7 +236,7 @@ export async function startHero(container: HTMLElement, opts: HeroOptions, isDea
     tune: (c?: Record<string, unknown>, r?: Record<string, unknown>) => {
       // plain-JSON friendly: [x,y,z] arrays become Vector3
       const v3 = (o?: Record<string, unknown>) =>
-        o && Object.fromEntries(Object.entries(o).map(([k, v]) => [k, Array.isArray(v) && v.length === 3 && k !== 'bearings' && k !== 'heights' && k !== 'yaws' ? new Vector3(...(v as [number, number, number])) : v]));
+        o && Object.fromEntries(Object.entries(o).map(([k, v]) => [k, Array.isArray(v) && v.length === 3 && !['bearings', 'heights', 'yaws', 'scales', 'bands'].includes(k) ? new Vector3(...(v as [number, number, number])) : v]));
       compOverride = v3(c) as Partial<Composition> | undefined;
       rigOverride = v3(r) as Partial<Rig> | undefined;
       rebuild();
@@ -271,6 +275,34 @@ export async function startHero(container: HTMLElement, opts: HeroOptions, isDea
         label: lab,
         leader: lead,
         arc: hero.arcPoints.map(proj),
+        baseLinkTriad: box(hero.baseLinkTriadPoints),
+        // the poster's copy boxes, mapped through object-fit: cover into this frame
+        reserved: (() => {
+          const P = POSTERS[layout], pw = P.width / 2, ph = P.height / 2;
+          const k = Math.max(w / pw, h / ph);
+          const [ax, ay] = objectPosition(layout).map((v) => v / 100);
+          const ox = (w - pw * k) * ax, oy = (h - ph * k) * ay;
+          return P.copyZone.map(([x, y, rw, rh]) => ({ x: ox + x * k, y: oy + y * k, w: rw * k, h: rh * k }));
+        })(),
+        // triads are clamped to >= 12-16 px on screen, so pad the projected box by the clamp
+        triads: Object.fromEntries(
+          Object.entries(hero.unitTriadPoints).map(([n, pts]) => {
+            const b = box(pts!);
+            return [n, { x: b.x - 16, y: b.y - 16, w: b.w + 32, h: b.h + 32 }];
+          }),
+        ),
+        wheels: hero.wheelPoints.map((pts) => {
+          // only tyre wires the camera actually sees: a far-side tyre's rim rising behind the tub is not "under" the callout
+          const inv = new Matrix4().copy(hero.roverMatrix).invert();
+          const eye = cam.position.clone().applyMatrix4(inv);
+          const hit = new Vector3();
+          const seen = pts.filter((p) => {
+            const q = p.clone().applyMatrix4(inv);
+            const ray = new Ray(eye, q.clone().sub(eye).normalize());
+            return !ray.intersectBox(hero.chassisBox, hit) || hit.distanceTo(eye) > q.distanceTo(eye) - 1e-3;
+          });
+          return seen.length ? box(seen) : { x: -1e4, y: -1e4, w: 0, h: 0 };
+        }),
       };
     },
   };

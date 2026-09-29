@@ -24,7 +24,7 @@ export interface Anchor {
 }
 
 /** Six-wheel lead rover with lidar puck on a short mast. Returns lidar anchor (local). Yields between part groups (it is the heaviest build step). */
-export function* leadRover(s: Segs, base: Matrix4, col: RGB, a = 1): Generator<void, { lidar: Vector3; footprint: [number, number] }> {
+export function* leadRover(s: Segs, base: Matrix4, col: RGB, a = 1): Generator<void, { lidar: Vector3; footprint: [number, number]; wheels: Vector3[][] }> {
   const part = (g: import('three').BufferGeometry, m: Matrix4, alpha = a, th = 25) => s.edges(g, base.clone().multiply(m), col, alpha, th);
   // chassis: lower tub + upper deck with chamfered nose
   part(new BoxGeometry(1.24, 0.22, 0.66), M(0, 0.36, 0));
@@ -32,12 +32,15 @@ export function* leadRover(s: Segs, base: Matrix4, col: RGB, a = 1): Generator<v
   part(new BoxGeometry(0.2, 0.16, 0.6), M(0.66, 0.35, 0, 0, 0, 0.5));
   // bogie rails
   for (const z of [-0.39, 0.39]) part(new BoxGeometry(1.1, 0.05, 0.05), M(0, 0.25, z));
-  // six wheels (12-seg cylinders: rim circles + hub)
+  // six wheels (12-seg cylinders: rim circles + hub); each wheel's world wire points are returned for the composition gate
+  const wheels: Vector3[][] = [];
   for (const x of [-0.46, 0, 0.46]) {
     yield;
     for (const z of [-0.43, 0.43]) {
+      const mk = s.mark();
       part(new CylinderGeometry(0.17, 0.17, 0.12, 14, 1), M(x, 0.17, z, Math.PI / 2, 0, 0), a, 40);
       part(new CylinderGeometry(0.07, 0.07, 0.13, 8, 1), M(x, 0.17, z, Math.PI / 2, 0, 0), a * 0.6, 40);
+      wheels.push(s.pointsSince(mk));
     }
   }
   yield;
@@ -51,14 +54,18 @@ export function* leadRover(s: Segs, base: Matrix4, col: RGB, a = 1): Generator<v
   // GNSS antenna rod
   part(new CylinderGeometry(0.008, 0.008, 0.42, 4, 1), M(-0.44, 0.8, 0.2), a * 0.7, 30);
   part(new SphereGeometry(0.025, 6, 4), M(-0.44, 1.02, 0.2), a * 0.7, 30);
-  return { lidar: new Vector3(0.18, 0.98, 0), footprint: [1.5, 1.0] };
+  return { lidar: new Vector3(0.18, 0.98, 0), footprint: [1.5, 1.0], wheels };
 }
 
-/** Quadruped: body, head, four two-segment legs in a mid stride. */
+/** Quadruped: body, head, four two-segment legs in a mid stride, and a lidar payload on its back.
+ *  Returns the payload's top (its laser frame): the signal arc lands there from above, clear of the body's top edges. */
 export function quadruped(s: Segs, base: Matrix4, col: RGB, a = 1): Vector3 {
-  const part = (g: import('three').BufferGeometry, m: Matrix4, alpha = a) => s.edges(g, base.clone().multiply(m), col, alpha);
+  const part = (g: import('three').BufferGeometry, m: Matrix4, alpha = a, th = 25) => s.edges(g, base.clone().multiply(m), col, alpha, th);
   part(new BoxGeometry(0.82, 0.18, 0.3), M(0, 0.6, 0));
   part(new BoxGeometry(0.16, 0.12, 0.22), M(0.48, 0.64, 0, 0, 0, -0.15));
+  // back payload: a short riser + lidar puck (Spot-style), centred on the body
+  part(new CylinderGeometry(0.035, 0.035, 0.06, 8, 1), M(-0.04, 0.72, 0), a * 0.8, 30);
+  part(new CylinderGeometry(0.075, 0.085, 0.07, 16, 1), M(-0.04, 0.785, 0), a, 30);
   const legs: [number, number, number, number][] = [
     [0.3, 0.17, 0.35, -0.6],
     [0.3, -0.17, -0.2, 0.55],
@@ -80,7 +87,7 @@ export function quadruped(s: Segs, base: Matrix4, col: RGB, a = 1): Vector3 {
     seg(hipP, kneeP, 0.07);
     seg(kneeP, footP, 0.045);
   }
-  return new Vector3(0, 0.6, 0);
+  return new Vector3(-0.04, 0.82, 0);
 }
 
 /** Quadcopter: X frame, four rotor discs, body pod, landing skids. */
@@ -102,7 +109,7 @@ export function drone(s: Segs, base: Matrix4, col: RGB, a = 1): Vector3 {
   return new Vector3(0, 0, 0);
 }
 
-/** Sensor mast: tripod, pole, sensor head (camera + radome). */
+/** Sensor mast: tripod, pole, sensor head (camera box) topped by a 3-D lidar puck. Returns the puck's optical centre (its laser frame). */
 export function sensorMast(s: Segs, base: Matrix4, col: RGB, a = 1): Vector3 {
   const part = (g: import('three').BufferGeometry, m: Matrix4, alpha = a, th = 25) => s.edges(g, base.clone().multiply(m), col, alpha, th);
   for (let i = 0; i < 3; i++) {
@@ -116,8 +123,12 @@ export function sensorMast(s: Segs, base: Matrix4, col: RGB, a = 1): Vector3 {
     s.edges(new BoxGeometry(0.03, len, 0.03), base.clone().multiply(new Matrix4().compose(mid, q, new Vector3(1, 1, 1))), col, a);
   }
   part(new CylinderGeometry(0.025, 0.03, 1.55, 6, 1), M(0, 1.32, 0), a, 40);
+  // camera box + lens
   part(new BoxGeometry(0.28, 0.16, 0.2), M(0.02, 2.14, 0));
   part(new CylinderGeometry(0.05, 0.05, 0.08, 10, 1), M(0.18, 2.14, 0, 0, 0, Math.PI / 2), a, 30);
-  part(new SphereGeometry(0.13, 10, 5, 0, Math.PI * 2, 0, Math.PI / 2), M(0, 2.23, 0), a * 0.75, 30);
-  return new Vector3(0, 2.14, 0);
+  // lidar puck (Velodyne/Ouster silhouette): base ring, window band, cap
+  part(new CylinderGeometry(0.11, 0.11, 0.04, 20, 1), M(0.02, 2.24, 0), a, 30);
+  part(new CylinderGeometry(0.1, 0.1, 0.1, 20, 1), M(0.02, 2.31, 0), a, 30);
+  part(new CylinderGeometry(0.11, 0.11, 0.035, 20, 1), M(0.02, 2.378, 0), a, 30);
+  return new Vector3(0.02, 2.31, 0);
 }

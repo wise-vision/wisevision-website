@@ -20,6 +20,7 @@ import {
   NormalBlending,
   PerspectiveCamera,
   MeshBasicMaterial,
+  Box3,
 } from 'three';
 import { Segs, lineMaterial, createShared, type Shared } from './lines';
 import { leadRover, quadruped, drone, sensorMast } from './robots';
@@ -45,6 +46,19 @@ export interface Composition {
   prismPos: Vector3;
   /** base_link label position relative to the projected base_link origin, CSS px (text baseline-left) */
   label: [number, number];
+  /** per-unit uniform scale (quadruped, drone, mast): mobile enlarges the far units so they read at 390 px */
+  scales: number[];
+  /** per-unit line opacity band (near, mid, far) */
+  bands: number[];
+  /** base_link along the rover's own +x (forward), metres. Chosen per camera with scripts/baselink-search.mjs so the
+   *  projected triad clears every tyre (checkComposition "base_link triad overlaps wheel N"); both stay inside the tub */
+  baseLinkX: number;
+  /** base_link height, metres: 0.36 = the lower tub's centre (a body frame INSIDE the chassis; its ground projection is the footprint cross) */
+  baseLinkY: number;
+  /** base_link axis length, metres (shorter than the unit triads: it is a body frame, not a callout) */
+  baseLinkLen: number;
+  /** always-on TF triad at the sensor mast's lidar (mobile: the mast must read as a sensor, not a streetlamp) */
+  mastTriad: boolean;
 }
 export const COMPOSITIONS: Record<Layout, Composition> = {
   // composed so that at the desktop rig: quadruped ≈ (86%, 60%), drone ≈ (78%, 18%), sensor mast ≈ (51%, 23–53%)
@@ -55,7 +69,13 @@ export const COMPOSITIONS: Record<Layout, Composition> = {
     heights: [0, 2.2, 0],
     yaws: [2.3, 0.5, 0.3],
     prismPos: new Vector3(3.4, 0, -15.5),
-    label: [128, 58],
+    label: [60, -150],
+    scales: [1, 1, 1],
+    bands: [0.9, 0.66, 0.4],
+    baseLinkX: 0.16,
+    baseLinkY: 0.36,
+    baseLinkLen: 0.18,
+    mastTriad: false,
   },
   // tuned at the site's real mobile hero aspect (390×780) with scripts/compose-search.mjs + compose.mjs
   // (checkComposition clean): rover three-quarter bottom-left,
@@ -63,20 +83,26 @@ export const COMPOSITIONS: Record<Layout, Composition> = {
   mobile: {
     roverPos: new Vector3(-0.6, 0, -4.98),
     roverYaw: -0.76,
-    bearings: [0.41, -0.26, -0.32],
+    bearings: [0.41, -0.26, 0.35],
     heights: [0, 1.93, 0],
     yaws: [2.78, 0.4, 0.2],
     prismPos: new Vector3(0.3, 0, -17),
-    label: [98, 85],
+    label: [120, 90],
+    // drone + mast 1.5× and one opacity band brighter: at 390 px they read as "a speck" / "a streetlamp" otherwise
+    scales: [1, 1.5, 1.5],
+    bands: [0.9, 0.9, 0.66],
+    baseLinkX: -0.35,
+    baseLinkY: 0.36,
+    baseLinkLen: 0.18,
+    mastTriad: true,
   },
 };
 /** kept for back-compat with the harness/tests */
 export const ROVER_POS = COMPOSITIONS.desktop.roverPos;
 export const ROVER_YAW = COMPOSITIONS.desktop.roverYaw;
-const UNIT_BAND = [0.9, 0.66, 0.4]; // near, mid, far floor 40%
 
 const Q = (x: number, y: number, z: number) => new Quaternion().setFromEuler(new Euler(x, y, z));
-const pose = (p: Vector3, yaw: number) => new Matrix4().compose(p, Q(0, yaw, 0), new Vector3(1, 1, 1));
+const pose = (p: Vector3, yaw: number, s = 1) => new Matrix4().compose(p, Q(0, yaw, 0), new Vector3(s, s, s));
 
 const POINT_VERT = /* glsl */ `
 attribute vec4 aColor;
@@ -89,6 +115,8 @@ uniform vec3 uCentre;
 uniform float uCollapse;
 uniform float uCollapseY;
 uniform vec2 uArc;
+uniform vec3 uMaskC;
+uniform vec2 uMaskR;
 varying vec4 vColor;
 varying float vArc;
 void main() {
@@ -104,6 +132,18 @@ void main() {
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
   if (mv.z > -0.1) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
   gl_Position = projectionMatrix * mv;
+  if (uRing > 0.5 && uMaskR.x > 0.0) {
+    // the nearest unit (quadruped) occludes the scan behind it: points farther than the unit that project inside its
+    // silhouette ellipse are hidden, so the band never threads through its legs
+    vec4 mc = viewMatrix * vec4(uMaskC, 1.0);
+    if (mv.z < mc.z) {
+      vec4 cc = projectionMatrix * mc;
+      vec2 d = gl_Position.xy / gl_Position.w - cc.xy / cc.w;
+      vec2 rr = vec2(uMaskR.x * projectionMatrix[0][0], uMaskR.y * projectionMatrix[1][1]) / -mc.z;
+      float e = length(d / rr);
+      vArc *= smoothstep(0.85, 1.1, e);
+    }
+  }
   gl_Position.y = mix(gl_Position.y, uCollapseY * gl_Position.w, uCollapse);
   gl_PointSize = aSize * uPx * clamp(6.0 / -mv.z, 0.55, 1.6);
   vColor = aColor;
@@ -139,6 +179,8 @@ function pointMaterial(shared: Shared, ring: boolean, additive = true): ShaderMa
       uRing: { value: ring ? 1 : 0 },
       uCentre: { value: new Vector3() },
       uArc: { value: [-0.3, 1.9] },
+      uMaskC: { value: new Vector3() },
+      uMaskR: { value: [0, 0] },
     },
   });
 }
@@ -162,6 +204,14 @@ export interface HeroScene {
   unitPoints: Record<'rover' | 'quadruped' | 'drone' | 'mast', Vector3[]>;
   /** the poster signal arc (lidar → quadruped), world points */
   arcPoints: Vector3[];
+  /** each rover tyre's world wire points, and base_link's origin + three axis tips: for the "triad not at a wheel" gate */
+  wheelPoints: Vector3[][];
+  baseLinkTriadPoints: Vector3[];
+  /** rover pose + its chassis solid (local AABB): the composition gate drops tyre wires hidden behind the tub */
+  roverMatrix: Matrix4;
+  chassisBox: Box3;
+  /** always-on unit TF triads (origin + axis tips, world), for the copy-zone gate */
+  unitTriadPoints: Partial<Record<'quadruped' | 'drone' | 'mast', Vector3[]>>;
   setVanishingPoint(x: number, y: number): void;
   apply(s: BeatState): void;
   dispose(): void;
@@ -277,7 +327,8 @@ function* buildSceneSteps(layout: Layout, override?: Partial<Composition>): Gene
   rover.collectOccluders = true;
   const roverM = pose(ROVER_POS, ROVER_YAW);
   const roverMark = rover.mark();
-  const { lidar } = yield* leadRover(rover, roverM, C.wire, 1);
+  const { lidar, wheels: wheelsLocal } = yield* leadRover(rover, roverM, C.wire, 1);
+  const UNIT_BAND = comp.bands;
   const lidarWorld = lidar.clone().applyMatrix4(roverM);
   const lidarGround = lidarWorld.clone().setY(0);
 
@@ -291,10 +342,10 @@ function* buildSceneSteps(layout: Layout, override?: Partial<Composition>): Gene
     const d = UNIT_DISTANCES[i];
     const b = UNIT_BEARINGS[i];
     const p = new Vector3(lidarGround.x + Math.sin(b) * d, UNIT_HEIGHTS[i], lidarGround.z - Math.cos(b) * d);
-    const m = pose(p, UNIT_YAW[i]);
+    const m = pose(p, UNIT_YAW[i], comp.scales[i]);
     const build = [quadruped, drone, sensorMast][i];
     const mk = fleet.mark();
-    const anchor = build(fleet, m, C.wire, UNIT_BAND[i]).applyMatrix4(m);
+    const anchor = build(fleet, m, C.wire, comp.bands[i]).applyMatrix4(m);
     fleetPts.push(fleet.pointsSince(mk));
     unitAnchors.push(anchor);
     unitBases.push(p.clone());
@@ -351,11 +402,36 @@ function* buildSceneSteps(layout: Layout, override?: Partial<Composition>): Gene
     s.seg(o, o.clone().add(new Vector3(0, 0, len).applyQuaternion(q)), C.tfZ, 1);
   };
   const leadTriad = new Segs();
-  // laser frame at the sensor head, base_link at the chassis centre on the ground plane (never at a wheel)
+  // laser frame at the sensor head: drawn on top (it is the signal origin)
   triad(leadTriad, lidarWorld.clone().add(new Vector3(0, 0.1, 0)), 0.34, ROVER_YAW);
-  const baseLinkWorld = ROVER_POS.clone().add(new Vector3(0, 0.02, 0));
-  triad(leadTriad, baseLinkWorld, 0.3, ROVER_YAW);
   add(new Mesh(leadTriad.build(), lineMaterial(shared, { width: 2, minPx: 16, fog: [40, 80], depthTest: false })), 6);
+  // base_link (REP-105): rigid body frame at the chassis centre, a hair behind it (comp.baseLinkX) so the low 3/4
+  // camera never projects it onto a tyre. Depth-tested against the chassis occluder so it reads as INSIDE / UNDER the
+  // body, plus a faint x-ray pass (RViz's alpha-robot look) so its origin is still findable. Its ground projection
+  // (base_footprint) is a cross on the grid that runs out to the footprint polygon, visible either side of the tub.
+  const roverQ = Q(0, ROVER_YAW, 0);
+  const baseLinkWorld = new Vector3(comp.baseLinkX, comp.baseLinkY, 0).applyQuaternion(roverQ).add(ROVER_POS);
+  const baseTriad = new Segs();
+  triad(baseTriad, baseLinkWorld, comp.baseLinkLen, ROVER_YAW);
+  const baseTriadGeo = baseTriad.build();
+  add(new Mesh(baseTriadGeo, lineMaterial(shared, { width: 2, fog: [40, 80] })), 6);
+  const baseGhost = new Mesh(baseTriadGeo, lineMaterial(shared, { width: 1.6, fog: [40, 80], depthTest: false, opacity: 0.62 }));
+  baseGhost.frustumCulled = false;
+  baseGhost.renderOrder = 5.5;
+  scene.add(baseGhost);
+  disposables.push(baseGhost.material as ShaderMaterial);
+  const baseLinkAxes = [new Vector3(comp.baseLinkLen, 0, 0).applyQuaternion(roverQ), new Vector3(0, comp.baseLinkLen, 0), new Vector3(0, 0, comp.baseLinkLen).applyQuaternion(roverQ)].map((v) => v.add(baseLinkWorld));
+  {
+    const fp = new Segs();
+    const c = baseLinkWorld.clone().setY(0.007);
+    const hx = 0.78, hz = 0.52;
+    for (const [ax, az, len] of [[1, 0, hx - comp.baseLinkX], [-1, 0, hx + comp.baseLinkX], [0, 1, hz], [0, -1, hz]] as const) {
+      const dir = new Vector3(ax, 0, az).applyQuaternion(roverQ);
+      // dashed: 5 dashes from the centre out to the footprint edge
+      for (let k = 0; k < 5; k++) fp.seg(c.clone().addScaledVector(dir, (k / 5) * len), c.clone().addScaledVector(dir, ((k + 0.55) / 5) * len), C.grid, 0.55);
+    }
+    add(new Mesh(fp.build(), lineMaterial(shared, { width: 1, fog: [30, 60] })), 2);
+  }
 
   const unitTriadMats: ShaderMaterial[] = [];
   unitAnchors.forEach((a, i) => {
@@ -369,21 +445,37 @@ function* buildSceneSteps(layout: Layout, override?: Partial<Composition>): Gene
     unitTriadMats.push(mat);
     add(new Mesh(s.build(), mat), 6);
   });
+  const unitTriadPoints: HeroScene['unitTriadPoints'] = {};
+  if (comp.mastTriad) {
+    // the mast's own laser frame, always on: without it a far tripod + pole reads as a streetlamp
+    const s = new Segs();
+    const L = 0.24 * comp.scales[2];
+    triad(s, unitAnchors[2], L, UNIT_YAW[2]);
+    const q = Q(0, UNIT_YAW[2], 0);
+    unitTriadPoints.mast = [unitAnchors[2].clone(), ...[new Vector3(L, 0, 0).applyQuaternion(q), new Vector3(0, L, 0), new Vector3(0, 0, L).applyQuaternion(q)].map((v) => v.add(unitAnchors[2]))];
+    add(new Mesh(s.build(), lineMaterial(shared, { width: 1.5, minPx: 12, fog: [40, 80], depthTest: false, opacity: 0.85 })), 6);
+  }
 
   // ---------- signal paths: lead lidar → unit anchor, accent, draw-in, green endpoint ----------
+  // cubic Bézier whose last control point sits straight above the endpoint: the arc lands ON the unit's frame origin
+  // travelling downward, so it never cuts through the unit's top edges on the way in
   const pathMats: ShaderMaterial[] = [];
   const arcs: Vector3[][] = [];
   unitAnchors.forEach((end) => {
     const s = new Segs();
     const start = lidarWorld.clone().add(new Vector3(0, 0.1, 0));
-    const mid = start.clone().lerp(end, 0.5);
-    mid.y = Math.max(start.y, end.y) + 0.35 + start.distanceTo(end) * 0.06;
+    const lift = Math.max(start.y, end.y) + 0.35 + start.distanceTo(end) * 0.06;
+    const c1 = start.clone().lerp(end, 0.25).setY(lift);
+    const c2 = end.clone().setY(lift);
     const pts: Vector3[] = [];
-    for (let k = 0; k <= 40; k++) {
-      const t = k / 40;
-      const a = start.clone().lerp(mid, t);
-      const b = mid.clone().lerp(end, t);
-      pts.push(a.lerp(b, t));
+    for (let k = 0; k <= 48; k++) {
+      const t = k / 48, u = 1 - t;
+      pts.push(
+        start.clone().multiplyScalar(u * u * u)
+          .addScaledVector(c1, 3 * u * u * t)
+          .addScaledVector(c2, 3 * u * t * t)
+          .addScaledVector(end, t * t * t),
+      );
     }
     arcs.push(pts);
     s.poly(pts, C.accent, 1);
@@ -480,6 +572,9 @@ function* buildSceneSteps(layout: Layout, override?: Partial<Composition>): Gene
   ringGeo.setAttribute('aJit', new Float32BufferAttribute(ringJit, 1));
   const ringMat = pointMaterial(shared, true);
   ringMat.uniforms.uCentre.value.copy(lidarGround);
+  // occlusion proxy for the quadruped (body + legs): centre at mid-height, half-extents in metres
+  ringMat.uniforms.uMaskC.value.copy(unitBases[0]).setY(0.42 * comp.scales[0]);
+  ringMat.uniforms.uMaskR.value = [0.62 * comp.scales[0], 0.46 * comp.scales[0]];
   add(new Points(ringGeo, ringMat), 8);
 
   const epPos: number[] = [], epCol: number[] = [], epSize: number[] = [], epJit: number[] = [];
@@ -539,6 +634,12 @@ function* buildSceneSteps(layout: Layout, override?: Partial<Composition>): Gene
     pointCount,
     unitPoints: { rover: roverPts, quadruped: fleetPts[0], drone: fleetPts[1], mast: fleetPts[2] },
     arcPoints: arcs[0],
+    wheelPoints: wheelsLocal,
+    roverMatrix: roverM,
+    unitTriadPoints,
+    // lower tub (1.24×0.22×0.66 at y 0.36) ∪ deck; bogie rails excluded (they are thin)
+    chassisBox: new Box3(new Vector3(-0.62, 0.25, -0.33), new Vector3(0.62, 0.59, 0.33)),
+    baseLinkTriadPoints: [baseLinkWorld.clone(), ...baseLinkAxes],
     apply,
     dispose() {
       disposables.forEach((d) => d.dispose());
