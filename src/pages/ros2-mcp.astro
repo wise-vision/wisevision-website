@@ -1,14 +1,47 @@
 ---
-import Base from '../layouts/Base.astro';
-import PageShell from '../components/PageShell.astro';
-import { SITE } from '../lib/site.mjs';
+// /ros2-mcp/ : hero → security (read first) → install → tools → proof → CTA. Copy: content/copy/ros2-mcp.md.
+import CopyPage from '../layouts/CopyPage.astro';
+import PageHero from '../components/copy/PageHero.astro';
+import CopySection from '../components/copy/CopySection.astro';
+import Blocks from '../components/copy/Blocks.astro';
+import VideoSlot from '../components/VideoSlot.astro';
+import { loadCopy, section } from '../lib/pages';
+import { softwareApplicationJsonLd } from '../lib/seo';
+import { inline } from '../lib/copy';
+
+const doc = loadCopy('ros2-mcp');
+const proof = section(doc, 'proof');
+const proofItems = proof.blocks.flatMap((b) => (b.type === 'list' ? b.items : []));
 ---
-<Base title="ROS2 MCP" description="ROS2 MCP: an open-source (MPL-2.0) Model Context Protocol server for ROS 2 Humble and Jazzy.">
-  <PageShell eyebrow="Open source · MPL-2.0" title="ROS2 MCP" lede="A Model Context Protocol server that connects AI agents to ROS 2 Humble and Jazzy systems. Full page coming soon.">
-    <div id="install">
-      <h2>Install</h2>
-      <p class="muted">Installation steps live in the repository README until the docs are complete.</p>
-      <p><a class="btn btn-primary" href={SITE.repo} rel="noopener">View on GitHub</a></p>
-    </div>
-  </PageShell>
-</Base>
+<CopyPage slug="ros2-mcp" jsonLd={[softwareApplicationJsonLd()]}>
+  <PageHero s={section(doc, 'hero')} />
+
+  <section class="container proof-strip" aria-label="Proof points">
+    <ul>
+      {proofItems.map((p, i) => <li data-reveal style={`--reveal-i:${i}`} set:html={inline(p)} />)}
+    </ul>
+  </section>
+
+  <div class="container media-wrap">
+    <VideoSlot name="ros2-mcp-30s-16x9" label="ROS2 MCP: an AI agent reading a live ROS 2 graph" />
+  </div>
+
+  <CopySection s={section(doc, 'security')} class="security" narrow />
+  <CopySection s={section(doc, 'install')} narrow />
+  <CopySection s={section(doc, 'tools')} class="tools" />
+  <CopySection s={section(doc, 'cta')} class="closing" />
+</CopyPage>
+<style>
+  .proof-strip ul { list-style: none; margin: 0; padding: var(--space-8) 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-6); }
+  .proof-strip li { border-left: 2px solid var(--color-accent); padding-left: var(--space-4); color: var(--color-text); font-size: var(--size-sm); }
+  .media-wrap { padding-bottom: var(--space-16); }
+  .media-wrap:empty { display: none; }
+  :global(.security) { background: linear-gradient(180deg, color-mix(in srgb, var(--color-danger) 5%, transparent), transparent 40%); }
+  :global(.tools ul) { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: none !important; gap: var(--space-6) var(--space-12) !important; list-style: none; padding: 0 !important; }
+  :global(.tools ul li) { border-top: 1px solid var(--color-bg-line); padding-top: var(--space-4); }
+  :global(.closing h2) { font-size: var(--size-display) !important; max-width: 14ch !important; }
+  @media (max-width: 900px) {
+    .proof-strip ul { grid-template-columns: 1fr 1fr; }
+    :global(.tools ul) { grid-template-columns: 1fr; }
+  }
+</style>

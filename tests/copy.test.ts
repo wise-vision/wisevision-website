@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { parseCopy, inline, stripClaims, claimIds, splitLabelHref } from '../src/lib/copy';
+import { parseCopy, inline, stripClaims, claimIds, splitLabelHref, docsResolver, docsRoutesFromFiles, plainText } from '../src/lib/copy';
 
 const SAMPLE = `---
 title: "Hello: world"
@@ -130,4 +130,29 @@ describe('real copy files', () => {
       expect(h1).toBeTruthy();
     });
   }
+});
+
+describe('docsResolver', () => {
+  const resolve = docsResolver(['/docs/', '/docs/ros2-mcp/quickstart/']);
+  it('keeps built docs routes and non-docs paths', () => {
+    expect(resolve('/docs/ros2-mcp/quickstart/')).toBe('/docs/ros2-mcp/quickstart/');
+    expect(resolve('/contact/?topic=defence')).toBe('/contact/?topic=defence');
+    expect(resolve('/ros2-mcp/#install')).toBe('/ros2-mcp/#install');
+  });
+  it('falls back to the nearest built docs ancestor for docs pages that do not exist yet', () => {
+    expect(resolve('/docs/ros2-mcp/security/')).toBe('/docs/');
+    expect(resolve('/docs/ros2-mcp/security/#readonly')).toBe('/docs/');
+    expect(docsResolver(['/docs/', '/docs/ros2-mcp/'])('/docs/ros2-mcp/tools/')).toBe('/docs/ros2-mcp/');
+  });
+  it('docsRoutesFromFiles maps content paths to routes', () => {
+    expect(
+      docsRoutesFromFiles(['/src/content/docs/docs/index.mdx', '/src/content/docs/docs/ros2-mcp/quickstart.mdx', '/src/content/docs/docs/ros2-mcp/index.md']),
+    ).toEqual(['/docs/', '/docs/ros2-mcp/quickstart/', '/docs/ros2-mcp/']);
+  });
+});
+
+describe('plainText', () => {
+  it('drops markers, markdown emphasis, code ticks and arrows for meta/OG use', () => {
+    expect(plainText('Your agent **can** see `ros2`. {#c:x}')).toBe('Your agent can see ros2.');
+  });
 });

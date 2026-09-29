@@ -1,0 +1,62 @@
+---
+// Muted, looped, inline product video that only plays while in view and never under reduced motion.
+// Media files are NOT in git (GitHub Release media-v1 → public/media/ in CI). Existence is checked at BUILD time:
+//   mp4 + poster → <video poster>; poster only → <img>; nothing → render nothing (no broken UI, no layout shift).
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+
+interface Props { name: string; label: string; class?: string }
+const { name, label, class: cls } = Astro.props;
+const pub = (f: string) => existsSync(path.join(process.cwd(), 'public', 'media', f));
+const hasVideo = pub(`${name}.mp4`);
+const hasPoster = pub(`${name}.poster.jpg`);
+const src = `/media/${name}.mp4`;
+const poster = `/media/${name}.poster.jpg`;
+---
+{(hasVideo || hasPoster) && (
+  <figure class:list={['media', cls]} data-reveal>
+    {hasVideo ? (
+      <video
+        data-inview-video
+        preload="none"
+        muted
+        loop
+        playsinline
+        disablepictureinpicture
+        poster={hasPoster ? poster : undefined}
+        width="1920"
+        height="1080"
+        aria-label={label}
+      >
+        <source src={src} type="video/mp4" />
+      </video>
+    ) : (
+      <img src={poster} alt={label} width="1920" height="1080" loading="lazy" decoding="async" />
+    )}
+  </figure>
+)}
+<style>
+  .media {
+    margin: 0; aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--radius-lg);
+    border: 1px solid var(--color-bg-line); background: var(--color-bg-surface);
+  }
+  .media video, .media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+</style>
+<script>
+  // One observer for every in-view video on the page. Play only when ≥35% visible; pause when out of view.
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const vids = document.querySelectorAll<HTMLVideoElement>('video[data-inview-video]');
+  if (!reduce && 'IntersectionObserver' in window && vids.length) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          const v = e.target as HTMLVideoElement;
+          if (e.isIntersecting) v.play().catch(() => { /* missing file or autoplay refused: the poster stays */ });
+          else v.pause();
+        }
+      },
+      { threshold: 0.35 },
+    );
+    vids.forEach((v) => io.observe(v));
+  }
+</script>

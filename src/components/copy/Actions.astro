@@ -1,0 +1,32 @@
+---
+// A row of CTA links from a copy section. The first link (or keys ending in primary_cta/cta) is the primary button.
+import type { CopyLink } from '../../lib/copy';
+import { resolveHref } from '../../lib/pages';
+
+interface Props { links: CopyLink[]; keys?: string[]; reveal?: boolean }
+const { links, keys, reveal = true } = Astro.props;
+const shown = keys ? links.filter((l) => keys.includes(l.key)) : links;
+const isPrimary = (k: string) => k === 'primary_cta' || k === 'cta';
+const ext = (h: string) => /^https?:\/\//.test(h);
+---
+{shown.length > 0 && (
+  <div class="actions" data-reveal={reveal ? '' : undefined} style="--reveal-i:3">
+    {shown.map((l) => (
+      <a
+        class:list={['btn', isPrimary(l.key) ? 'btn-primary' : l.key === 'link' ? 'btn-link' : 'btn-ghost']}
+        href={l.href.startsWith('/') ? resolveHref(l.href) : l.href}
+        rel={ext(l.href) ? 'noopener' : undefined}
+      >
+        {l.label}
+        <span aria-hidden="true" class="arrow">{ext(l.href) ? '↗' : '→'}</span>
+      </a>
+    ))}
+  </div>
+)}
+<style>
+  .actions { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-4); margin-top: var(--space-8); align-items: center; }
+  .arrow { transition: transform var(--motion-duration-fast) var(--motion-ease-standard); }
+  .btn:hover .arrow { transform: translateX(3px); }
+  .btn-link { padding-inline: 0; color: var(--color-accent-text); }
+  .btn-link:hover { color: var(--color-accent); }
+</style>

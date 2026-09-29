@@ -1,10 +1,38 @@
 ---
-import Base from '../layouts/Base.astro';
-import PageShell from '../components/PageShell.astro';
+// /contact/ : hero → form (contact; ?topic=demo → demo variant) → community. Copy: content/copy/contact.md.
+import CopyPage from '../layouts/CopyPage.astro';
+import PageHero from '../components/copy/PageHero.astro';
+import CopySection from '../components/copy/CopySection.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { loadCopy, section } from '../lib/pages';
 import { SITE } from '../lib/site.mjs';
+
+const doc = loadCopy('contact');
+const form = section(doc, 'form');
 ---
-<Base title="Contact" description="Contact WiseVision.">
-  <PageShell eyebrow="Contact" title="Get in touch" lede="Questions about ROS2 MCP, WiseOS early access or a demo? Email us.">
-    <p><a class="btn btn-primary" href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
-  </PageShell>
-</Base>
+<CopyPage slug="contact">
+  <PageHero s={section(doc, 'hero')}>
+    <p class="mail" data-reveal style="--reveal-i:3"><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+  </PageHero>
+
+  <section id="form" class="section container" aria-label="Contact form">
+    <div data-reveal>
+      <LeadForm
+        kind="contact"
+        id="contact-form"
+        consentLabel={form.fields.consent_label}
+        topics={form.lists.topics}
+        success={form.fields.success}
+        error={form.fields.error}
+        useCaseLabel="What do you need?"
+      />
+    </div>
+    <p class="demo-hint muted">Want to see WiseOS running? <a href="/contact/?topic=demo#form">Request a demo</a>.</p>
+  </section>
+
+  <CopySection s={section(doc, 'community')} />
+</CopyPage>
+<style>
+  .mail { font-family: var(--font-display); font-size: var(--size-2xl); margin-top: var(--space-8); }
+  .demo-hint { margin-top: var(--space-6); font-size: var(--size-sm); }
+</style>

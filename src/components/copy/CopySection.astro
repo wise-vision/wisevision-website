@@ -1,0 +1,28 @@
+---
+// A generic copy section: eyebrow, H2 (from the first ### / #### heading), body blocks, links.
+import Blocks from './Blocks.astro';
+import Actions from './Actions.astro';
+import type { Section } from '../../lib/copy';
+import { inline } from '../../lib/copy';
+import { headingOf, bodyOf, resolveHref } from '../../lib/pages';
+
+interface Props { s: Section; id?: string; level?: number; narrow?: boolean; class?: string; linkKeys?: string[] }
+const { s, id, level = 3, narrow = false, class: cls, linkKeys } = Astro.props;
+const title = headingOf(s, level);
+const hid = `${id ?? s.id}-title`;
+---
+<section id={id ?? s.id} class:list={['section', 'copy-section', cls]} aria-labelledby={title ? hid : undefined}>
+  <div class:list={['container', narrow && 'narrow']}>
+    {s.fields.eyebrow && <p class="eyebrow" data-reveal>{s.fields.eyebrow}</p>}
+    {title && <h2 id={hid} data-reveal style="--reveal-i:1" set:html={inline(title, { resolve: resolveHref })} />}
+    <slot name="before" />
+    <Blocks blocks={title ? bodyOf(s, level) : s.blocks} />
+    <slot />
+    <Actions links={linkKeys ? s.links.filter((l) => linkKeys.includes(l.key)) : s.links} />
+  </div>
+</section>
+<style>
+  .copy-section { border-top: 1px solid var(--color-bg-line); scroll-margin-top: var(--layout-header); }
+  .copy-section h2 { font-size: var(--size-3xl); line-height: var(--leading-tight); max-width: 20ch; margin-bottom: var(--space-8); }
+  .narrow { max-width: 860px; }
+</style>
