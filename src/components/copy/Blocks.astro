@@ -1,0 +1,48 @@
+---
+// Renders copy blocks (from src/lib/copy.ts) with the site's type scale. Claim anchors become hidden data-claim spans.
+import type { Block } from '../../lib/copy';
+import { inline } from '../../lib/copy';
+import { resolveHref } from '../../lib/pages';
+
+interface Props { blocks: Block[]; headingOffset?: number; reveal?: boolean; class?: string }
+const { blocks, headingOffset = 0, reveal = true, class: cls } = Astro.props;
+const html = (s: string) => inline(s, { resolve: resolveHref });
+const tag = (level: number) => `h${Math.min(6, Math.max(2, level + headingOffset))}`;
+---
+<div class:list={['prose', cls]}>
+  {blocks.map((b, i) => {
+    const r = reveal ? { 'data-reveal': '', style: `--reveal-i:${Math.min(i, 4)}` } : {};
+    if (b.type === 'heading') { const H = tag(b.level); return <H {...r} set:html={html(b.text)} />; }
+    if (b.type === 'paragraph') return <p {...r} set:html={html(b.text)} />;
+    if (b.type === 'quote') return <blockquote {...r}><p set:html={html(b.text)} /></blockquote>;
+    if (b.type === 'code')
+      return (
+        <div class="code" {...r}>
+          <span class="code-lang" aria-hidden="true">{b.lang}</span>
+          <pre tabindex="0"><code>{b.code}</code></pre>
+        </div>
+      );
+    return <ul {...r}>{b.items.map((it) => <li set:html={html(it)} />)}</ul>;
+  })}
+</div>
+<style>
+  .prose :global(p), .prose :global(li) { color: var(--color-text-muted); }
+  .prose :global(strong) { color: var(--color-text); font-weight: 600; }
+  .prose :global(code) { color: var(--color-text); background: var(--color-bg-surface); border: 1px solid var(--color-bg-line); border-radius: var(--radius-sm); padding: 0.05em 0.35em; }
+  .prose :global(cite.src) { font-style: normal; font-family: var(--font-mono); font-size: var(--size-xs); color: var(--color-text-subtle); white-space: nowrap; }
+  .prose ul { padding-left: 1.1em; margin: 0 0 var(--space-6); display: grid; gap: var(--space-2); max-width: 72ch; }
+  .prose ul li::marker { color: var(--color-accent); }
+  .prose blockquote { margin: 0 0 var(--space-6); padding-left: var(--space-4); border-left: 2px solid var(--color-accent); }
+  .prose blockquote p { color: var(--color-text); font-family: var(--font-display); font-size: var(--size-xl); }
+  .code { position: relative; margin: 0 0 var(--space-6); max-width: 78ch; }
+  .code pre {
+    margin: 0; overflow-x: auto; padding: var(--space-6) var(--space-6) var(--space-6);
+    background: var(--color-bg-surface); border: 1px solid var(--color-bg-line); border-radius: var(--radius-md);
+    font-size: var(--size-sm); line-height: 1.6;
+  }
+  .code pre code { background: none; border: 0; padding: 0; color: var(--color-text); }
+  .code-lang {
+    position: absolute; top: var(--space-2); right: var(--space-3); font-family: var(--font-mono);
+    font-size: 0.7rem; letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--color-text-subtle);
+  }
+</style>

@@ -1,0 +1,256 @@
+---
+// Lead form (early access / contact / demo) → POST /api/lead (Pages Function from PR #2).
+// Works without JS (plain form POST). With JS: inline validation, Turnstile loaded lazily when the form nears
+// the viewport, JSON submit via src/lib/lead-form.ts, success/error states in place (fixed box, no layout shift).
+import { inline } from '../lib/copy';
+
+interface Props {
+  kind: 'early-access' | 'contact' | 'demo';
+  id: string;
+  consentLabel: string;
+  submitLabel?: string;
+  useCaseLabel?: string;
+  topics?: string[];
+  success?: string;
+  error?: string;
+}
+const {
+  kind,
+  id,
+  consentLabel,
+  submitLabel = 'Send',
+  useCaseLabel = 'What do you want to do?',
+  topics = [],
+  success = 'Thanks. It is in our inbox, and you will hear back from hello@wisevision.tech.',
+  error = 'That did not go through. Try again, or write to hello@wisevision.tech.',
+} = Astro.props;
+const sitekey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '0x4AAAAAAFJWYFrZOh7sNu11';
+const f = (n: string) => `${id}-${n}`;
+---
+<form
+  class="lead"
+  id={id}
+  method="post"
+  action="/api/lead"
+  novalidate
+  data-lead-form
+  data-sitekey={sitekey}
+  data-error={error}
+>
+  <input type="hidden" name="form" value={kind} data-kind />
+  <div class="grid">
+    <div class="field">
+      <label for={f('email')}>Work email <span class="req" aria-hidden="true">*</span></label>
+      <input id={f('email')} name="email" type="email" autocomplete="email" required maxlength="254" aria-describedby={f('email-err')} />
+      <p class="err" id={f('email-err')} data-err="email"></p>
+    </div>
+    <div class="field">
+      <label for={f('org')}>Organisation</label>
+      <input id={f('org')} name="org" type="text" autocomplete="organization" maxlength="200" aria-describedby={f('org-err')} />
+      <p class="err" id={f('org-err')} data-err="org"></p>
+    </div>
+    <div class="field">
+      <label for={f('role')}>Role</label>
+      <input id={f('role')} name="role" type="text" autocomplete="organization-title" maxlength="120" aria-describedby={f('role-err')} />
+      <p class="err" id={f('role-err')} data-err="role"></p>
+    </div>
+    {topics.length > 0 && (
+      <div class="field">
+        <label for={f('topic')}>Topic</label>
+        <select id={f('topic')} name="topic" data-topic>
+          {topics.map((t) => <option value={t}>{t}</option>)}
+        </select>
+      </div>
+    )}
+    <div class="field wide">
+      <label for={f('use_case')}>{useCaseLabel}</label>
+      <textarea id={f('use_case')} name="use_case" rows="5" maxlength="4000" aria-describedby={f('use_case-err')}></textarea>
+      <p class="err" id={f('use_case-err')} data-err="use_case"></p>
+    </div>
+    <div class="hp" aria-hidden="true">
+      <label for={f('website')}>Website (leave empty)</label>
+      <input id={f('website')} name="website" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+    <div class="field wide consent">
+      <input id={f('consent')} name="consent" type="checkbox" required aria-describedby={f('consent-err')} />
+      <label for={f('consent')} set:html={inline(consentLabel)} />
+      <p class="err" id={f('consent-err')} data-err="consent"></p>
+    </div>
+    <div class="field wide">
+      <div class="turnstile" data-turnstile></div>
+      <p class="err" id={f('turnstile-err')} data-err="turnstile"></p>
+    </div>
+  </div>
+  <div class="foot">
+    <button class="btn btn-primary" type="submit" data-submit>{submitLabel}</button>
+    <p class="status" role="status" aria-live="polite" data-status></p>
+  </div>
+  <div class="done" data-done hidden tabindex="-1">
+    <p class="done-mark" aria-hidden="true">✓</p>
+    <p class="done-text">{success}</p>
+  </div>
+</form>
+<style>
+  .lead {
+    position: relative; border: 1px solid var(--color-bg-line); border-radius: var(--radius-lg);
+    background: var(--color-bg-raised); padding: clamp(var(--space-6), 4vw, var(--space-12)); max-width: 820px;
+  }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4) var(--space-6); }
+  .wide { grid-column: 1 / -1; }
+  .field { display: grid; gap: var(--space-2); align-content: start; }
+  label { font-size: var(--size-sm); color: var(--color-text); }
+  .req { color: var(--color-accent-text); }
+  input[type='email'], input[type='text'], textarea, select {
+    width: 100%; font: inherit; color: var(--color-text); background: var(--color-bg-base);
+    border: 1px solid var(--color-bg-line); border-radius: var(--radius-sm); padding: var(--space-3) var(--space-4);
+  }
+  select { appearance: auto; text-overflow: ellipsis; min-width: 0; max-width: 100%; }
+  textarea { resize: vertical; min-height: 7.5rem; }
+  input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 1px; }
+  [aria-invalid='true'] { border-color: var(--color-danger); }
+  .err { min-height: 1.5em; line-height: 1.5; margin: 0; font-size: var(--size-xs); color: var(--color-danger); }
+  .consent { grid-template-columns: auto 1fr; column-gap: var(--space-3); align-items: start; }
+  .consent input { width: 1.15rem; height: 1.15rem; margin-top: 0.2rem; accent-color: var(--color-accent); }
+  .consent label { color: var(--color-text-muted); }
+  .consent .err { grid-column: 2; min-height: 3em; } /* the consent message wraps to 2 lines on phones: reserve them */
+  .turnstile { min-height: 65px; }
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .foot { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; margin-top: var(--space-4); }
+  .status { margin: 0; font-size: var(--size-sm); color: var(--color-text-muted); min-height: 1.4em; }
+  .status.is-error { color: var(--color-danger); }
+  button[disabled] { opacity: 0.6; cursor: progress; }
+  .done {
+    position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: var(--space-4);
+    background: var(--color-bg-raised); border-radius: inherit; padding: var(--space-8);
+  }
+  .done[hidden] { display: none; }
+  .done-mark { margin: 0 auto; width: 3.5rem; height: 3.5rem; border-radius: 50%; display: grid; place-content: center; background: var(--color-accent); color: var(--color-accent-ink); font-size: 1.6rem; font-weight: 700; }
+  .done-text { font-family: var(--font-display); font-size: var(--size-xl); color: var(--color-text); max-width: 28ch; margin-inline: auto; }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+</style>
+<script>
+  import { buildLeadPayload, submitLead } from '../lib/lead-form';
+  import { fieldErrors, topicFromSearch, formKindFor } from '../lib/lead-ui';
+
+  type TurnstileApi = {
+    render: (el: HTMLElement, opts: Record<string, unknown>) => string;
+    reset: (id?: string) => void;
+  };
+  declare global { interface Window { turnstile?: TurnstileApi; __wvTurnstile?: Promise<TurnstileApi> } }
+
+  function loadTurnstile(): Promise<TurnstileApi> {
+    if (window.__wvTurnstile) return window.__wvTurnstile;
+    window.__wvTurnstile = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      s.async = true;
+      s.onload = () => (window.turnstile ? resolve(window.turnstile) : reject(new Error('turnstile missing')));
+      s.onerror = () => reject(new Error('turnstile failed to load'));
+      document.head.appendChild(s);
+    });
+    return window.__wvTurnstile;
+  }
+
+  for (const form of document.querySelectorAll<HTMLFormElement>('form[data-lead-form]')) {
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const done = form.querySelector<HTMLElement>('[data-done]')!;
+    const btn = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const slot = form.querySelector<HTMLElement>('[data-turnstile]')!;
+    let widget: string | undefined;
+
+    // ?topic=demo → demo variant; ?topic=defence etc. preselects the topic dropdown.
+    const topic = topicFromSearch(location.search);
+    const kindInput = form.querySelector<HTMLInputElement>('[data-kind]')!;
+    if (kindInput.value !== 'early-access') kindInput.value = formKindFor(topic);
+    const select = form.querySelector<HTMLSelectElement>('[data-topic]');
+    if (select && topic) {
+      const hit = [...select.options].find((o) => o.value.toLowerCase().includes(topic === 'demo' ? 'demo' : topic));
+      if (hit) select.value = hit.value;
+    }
+
+    // Turnstile (~200 kB of third-party JS) is loaded only on intent: the first focus / pointer on the form,
+    // or once the user has scrolled and the form is in view. Never on first paint, so it costs nothing to
+    // visitors who don't use the form. Submit waits (≤12 s) for the token if the widget is still solving.
+    let mounted = false;
+    let resolveToken: (t: string) => void = () => {};
+    let token: Promise<string> = new Promise((r) => (resolveToken = r));
+    const mount = () => {
+      if (mounted) return;
+      mounted = true;
+      loadTurnstile()
+        .then((ts) => {
+          widget = ts.render(slot, {
+            sitekey: form.dataset.sitekey,
+            theme: 'dark',
+            size: 'flexible',
+            'response-field-name': 'cf-turnstile-response',
+            callback: (t: string) => resolveToken(t),
+            'expired-callback': () => { token = new Promise((r) => (resolveToken = r)); },
+          });
+        })
+        .catch(() => { /* the server answers 403/503; the error message tells the user to retry or email */ });
+    };
+    for (const ev of ['focusin', 'pointerenter', 'touchstart'] as const) form.addEventListener(ev, mount, { once: true, passive: true });
+    if ('IntersectionObserver' in window) {
+      let scrolled = false;
+      let visible = false;
+      const io = new IntersectionObserver((es) => {
+        visible = es.some((e) => e.isIntersecting);
+        if (visible && scrolled) { io.disconnect(); mount(); }
+      });
+      io.observe(form);
+      window.addEventListener('scroll', () => { scrolled = true; if (visible) { io.disconnect(); mount(); } }, { once: true, passive: true });
+    }
+    const waitToken = () =>
+      Promise.race([token, new Promise<string>((r) => setTimeout(() => r(''), 12_000))]);
+
+    const setErrors = (errs: Record<string, string>) => {
+      form.querySelectorAll<HTMLElement>('[data-err]').forEach((p) => {
+        const k = p.dataset.err!;
+        p.textContent = errs[k] ?? '';
+        const input = form.querySelector<HTMLElement>(`[name="${k}"]`);
+        if (input) input.setAttribute('aria-invalid', errs[k] ? 'true' : 'false');
+      });
+      const first = Object.keys(errs)[0];
+      if (first) form.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const local: Record<string, string> = {};
+      const email = String(fd.get('email') ?? '').trim();
+      if (!email) local.email = 'required';
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) local.email = 'invalid';
+      if (!fd.get('consent')) local.consent = 'required';
+      if (Object.keys(local).length) { setErrors(fieldErrors(local)); return; }
+      setErrors({});
+      btn.disabled = true;
+      status.classList.remove('is-error');
+      status.textContent = 'Sending…';
+      mount();
+      if (!fd.get('cf-turnstile-response')) {
+        const tok = await waitToken();
+        if (tok) fd.set('cf-turnstile-response', tok);
+      }
+      const payload = buildLeadPayload(fd);
+      const t = fd.get('topic');
+      if (typeof t === 'string' && t) payload.use_case = `Topic: ${t}\n\n${payload.use_case ?? ''}`.trim();
+      const r = await submitLead(payload);
+      btn.disabled = false;
+      if (r.ok) {
+        status.textContent = '';
+        done.hidden = false;
+        done.focus();
+        return;
+      }
+      status.classList.add('is-error');
+      status.textContent = r.status === 400 ? r.message : `${r.message} ${form.dataset.error ?? ''}`.trim();
+      if (r.fields) setErrors(fieldErrors(r.fields));
+      if (widget && window.turnstile) {
+        token = new Promise((res) => (resolveToken = res));
+        window.turnstile.reset(widget);
+      }
+    });
+  }
+</script>

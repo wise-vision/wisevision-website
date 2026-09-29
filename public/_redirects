@@ -1,0 +1,80 @@
+# Cloudflare Pages redirects for wisevision.tech (wvrevive W0.6).
+# Old Docusaurus routes (tag docusaurus-final) + historical 2025 Next.js paths (Wayback CDX) → nearest new page.
+# Every rule is a 301 to one of: / /ros2-mcp/ /wiseos/ /defence/ /contact/ /privacy/ /docs/...
+# Never a mass redirect to /. Asset paths (/_next/*, /img/*, /static/icons/* ...) are intentionally dropped (404).
+# Inventory and reasons: docs-internal/redirect-inventory.md. Tested by scripts/tests/redirects.test.mjs.
+# Pages matches the source path exactly, so both /x and /x/ are listed. Static rules first, splats last.
+
+/about                          /           301
+/about/                         /           301
+/ai-automations                 /wiseos/    301
+/ai-automations/                /wiseos/    301
+/case-studies                   /wiseos/    301
+/case-studies/                  /wiseos/    301
+/case-studies/agri-field        /wiseos/    301
+/case-studies/agri-field/       /wiseos/    301
+/case-studies/automotive-twin   /wiseos/    301
+/case-studies/automotive-twin/  /wiseos/    301
+/case-studies/pv-farm           /wiseos/    301
+/case-studies/pv-farm/          /wiseos/    301
+/case-studies/smart-city        /wiseos/    301
+/case-studies/smart-city/       /wiseos/    301
+/case-studies/warehouse-amr     /wiseos/    301
+/case-studies/warehouse-amr/    /wiseos/    301
+/contact                        /contact/   301
+/demo                           /wiseos/    301
+/demo/                          /wiseos/    301
+/digital-twins                  /ros2-mcp/  301
+/digital-twins/                 /ros2-mcp/  301
+/mcp-ros2                       /ros2-mcp/  301
+/mcp-ros2/                      /ros2-mcp/  301
+/products                       /ros2-mcp/  301
+/products/                      /ros2-mcp/  301
+/solutions                      /wiseos/    301
+/solutions/                     /wiseos/    301
+/technology                     /ros2-mcp/  301
+/technology/                    /ros2-mcp/  301
+/thank-you                      /contact/   301
+/thank-you/                     /contact/   301
+/use-cases                      /wiseos/    301
+/use-cases/                     /wiseos/    301
+/wiseos                         /wiseos/    301
+/agriculture                    /wiseos/    301
+/agriculture/                   /wiseos/    301
+/ai-centric-systems             /wiseos/    301
+/ai-centric-systems/            /wiseos/    301
+/downloads                      /docs/      301
+/downloads/                     /docs/      301
+/enhanced-dry-port              /wiseos/    301
+/enhanced-dry-port/             /wiseos/    301
+/dry-port                       /wiseos/    301
+/dry-port/                      /wiseos/    301
+/logistics                      /wiseos/    301
+/logistics/                     /wiseos/    301
+/pricing                        /ros2-mcp/  301
+/pricing/                       /ros2-mcp/  301
+/robotics                       /ros2-mcp/  301
+/robotics/                      /ros2-mcp/  301
+/smart-city                     /wiseos/    301
+/smart-city/                    /wiseos/    301
+/smart-factory                  /wiseos/    301
+/smart-factory/                 /wiseos/    301
+/privacy-policy                 /privacy/   301
+/privacy-policy/                /privacy/   301
+/basic-demo                     /wiseos/    301
+/basic-demo/                    /wiseos/    301
+/data-management                /wiseos/    301
+/data-management/               /wiseos/    301
+/wisevision-lora-bridge         /wiseos/    301
+/wisevision-lora-bridge/        /wiseos/    301
+/static/doc                     /docs/      301
+/static/doc/                    /docs/      301
+/static/doc/blog                /           301
+/static/doc/blog/               /           301
+/static/doc/blackbox/*          /wiseos/    301
+/static/doc/bridge/*            /wiseos/    301
+/static/doc/dashboard/*         /wiseos/    301
+/static/doc/devboard/*          /docs/      301
+/static/doc/tools/*             /docs/      301
+/static/doc/blog/*              /           301
+/static/doc/docs/*              /docs/      301

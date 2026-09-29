@@ -29,4 +29,16 @@ if (reduce || !('IntersectionObserver' in window)) {
     { rootMargin: '0px 0px -10% 0px', threshold: 0.1 },
   );
   targets.forEach((el) => io.observe(el));
+  // Safety net: the rootMargin trims the bottom 10% of the viewport, so an element parked there on load
+  // (e.g. the hero chip) would stay invisible until the user scrolls. Reveal anything on screen after 1.2s.
+  window.setTimeout(() => {
+    targets.forEach((el) => {
+      if (el.classList.contains('is-visible')) return;
+      const r = el.getBoundingClientRect();
+      if (r.top < window.innerHeight && r.bottom > 0) {
+        el.classList.add('is-visible');
+        io.unobserve(el);
+      }
+    });
+  }, 1200);
 }

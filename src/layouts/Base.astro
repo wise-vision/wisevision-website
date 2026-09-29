@@ -11,6 +11,10 @@ interface Props {
   /** Override the canonical URL (absolute). Defaults to the current path on wisevision.tech. */
   canonical?: string;
   ogImage?: string;
+  /** OG/Twitter title (defaults to the page title). */
+  ogTitle?: string;
+  /** Use `title` verbatim as <title> (no " · WiseVision" suffix), e.g. when the copy title already names the brand. */
+  exactTitle?: boolean;
   ogType?: string;
   /** Extra JSON-LD objects for this page (Organization is always emitted). */
   jsonLd?: object[];
@@ -24,12 +28,14 @@ const {
   description = SITE.description,
   canonical = canonicalFor(Astro.url.pathname),
   ogImage,
+  ogTitle,
+  exactTitle = false,
   ogType = 'website',
   jsonLd = [],
   markdownAlternate,
   noindex = false,
 } = Astro.props;
-const fullTitle = title ? `${title} · WiseVision` : 'WiseVision: the AI layer for ROS 2 robots';
+const fullTitle = title ? (exactTitle ? title : `${title} · WiseVision`) : 'WiseVision: the AI layer for ROS 2 robots';
 const ld = [organizationJsonLd(), ...jsonLd];
 ---
 <!doctype html>
@@ -40,7 +46,7 @@ const ld = [organizationJsonLd(), ...jsonLd];
     <script is:inline>document.documentElement.classList.add('js');</script>
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {!noindex && <link rel="canonical" href={canonical} />}
     {noindex && <meta name="robots" content="noindex" />}
     <meta name="theme-color" content="#07080B" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -49,11 +55,16 @@ const ld = [organizationJsonLd(), ...jsonLd];
     {markdownAlternate && <link rel="alternate" type="text/markdown" href={markdownAlternate} />}
     <meta property="og:site_name" content="WiseVision" />
     <meta property="og:type" content={ogType} />
-    <meta property="og:title" content={fullTitle} />
+    <meta property="og:title" content={ogTitle ?? fullTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
+    {!noindex && <meta property="og:url" content={canonical} />}
     {ogImage && <meta property="og:image" content={new URL(ogImage, SITE.url).href} />}
+    {ogImage && <meta property="og:image:width" content="1200" />}
+    {ogImage && <meta property="og:image:height" content="630" />}
     <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={ogTitle ?? fullTitle} />
+    <meta name="twitter:description" content={description} />
+    {ogImage && <meta name="twitter:image" content={new URL(ogImage, SITE.url).href} />}
     <slot name="head" />
     {ld.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj)} />)}
   </head>
