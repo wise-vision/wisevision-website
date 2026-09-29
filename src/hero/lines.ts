@@ -200,6 +200,9 @@ export class Segs {
   private nrm: number[] = [];
   private draw: number[] = [];
   count = 0;
+  /** triangles of every solid part (world space), for the depth-only hidden-line occluder */
+  private occ: number[] = [];
+  collectOccluders = false;
 
   seg(A: Vector3, B: Vector3, color: RGB, alpha = 1, normal?: Vector3, d0 = 0, d1 = 0): this {
     const n = normal ?? new Vector3(0, 1, 0);
@@ -250,8 +253,25 @@ export class Segs {
       this.seg(A.clone().applyMatrix4(m), B.clone().applyMatrix4(m), color, alpha, n.clone());
     }
     eg.dispose();
+    if (this.collectOccluders) {
+      const tri = geom.index ? geom.toNonIndexed() : geom;
+      const tp = tri.getAttribute('position');
+      const v = new Vector3();
+      for (let i = 0; i < tp.count; i++) {
+        v.fromBufferAttribute(tp, i).applyMatrix4(m);
+        this.occ.push(v.x, v.y, v.z);
+      }
+      if (tri !== geom) tri.dispose();
+    }
     geom.dispose();
     return this;
+  }
+
+  /** Depth-only solid of everything added via edges(): gives CAD-style hidden-line removal. */
+  buildOccluder(): BufferGeometry {
+    const g = new BufferGeometry();
+    g.setAttribute('position', new Float32BufferAttribute(this.occ, 3));
+    return g;
   }
 
   circle(c: Vector3, r: number, axis: 'x' | 'y' | 'z', n: number, color: RGB, alpha = 1): this {

@@ -19,6 +19,7 @@ import {
   AdditiveBlending,
   NormalBlending,
   PerspectiveCamera,
+  MeshBasicMaterial,
 } from 'three';
 import { Segs, lineMaterial, createShared, type Shared } from './lines';
 import { leadRover, quadruped, drone, sensorMast } from './robots';
@@ -116,6 +117,7 @@ export interface HeroScene {
   shared: Shared;
   lidarWorld: Vector3;
   pointCount: number;
+  setVanishingPoint(x: number, y: number): void;
   apply(s: BeatState): void;
   dispose(): void;
 }
@@ -131,6 +133,40 @@ export function buildScene(): HeroScene {
     disposables.push(o.geometry, o.material as ShaderMaterial);
     return o;
   };
+
+  // ---------- base: radial #0B0E14 → #07080B centred on the vanishing point (screen space) ----------
+  const bgMat = new ShaderMaterial({
+    depthTest: false,
+    depthWrite: false,
+    uniforms: { uVp: { value: [0.3, 0.41] }, uRes: shared.uRes, uA: { value: new Vector3(...hexToRgb(HEX.base1)) }, uB: { value: new Vector3(...hexToRgb(HEX.base0)) } },
+    vertexShader: `void main(){ gl_Position = vec4(position.xy, 0.0, 1.0); }`,
+    fragmentShader: `uniform vec2 uVp; uniform vec2 uRes; uniform vec3 uA; uniform vec3 uB;
+      void main(){ vec2 uv = gl_FragCoord.xy / uRes; uv.y = 1.0 - uv.y; vec2 d = (uv - uVp) * vec2(uRes.x / uRes.y, 1.0);
+        float t = smoothstep(0.0, 1.05, length(d * vec2(0.8, 1.25)));
+        // 1/255 dither so the gradient never bands in the AVIF poster
+        float n = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) / 255.0;
+        gl_FragColor = vec4(mix(uA, uB, t) + n, 1.0); }`,
+  });
+  const bg = new Mesh(new PlaneGeometry(2, 2), bgMat);
+  add(bg, -10);
+  const bgUniforms = bgMat.uniforms;
+
+  // warm key pool on the floor around the lead rover (product-shot lighting, no shadow maps, no bloom)
+  const poolMat = new ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    blending: AdditiveBlending,
+    uniforms: { uCol: { value: new Vector3(...C.key) }, uCool: { value: new Vector3(...C.fill) }, uOpacity: { value: 1 }, uCollapse: shared.uCollapse },
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);} `,
+    fragmentShader: `uniform vec3 uCol; uniform vec3 uCool; uniform float uOpacity; uniform float uCollapse; varying vec2 vUv;
+      void main(){ vec2 d = (vUv - vec2(0.5, 0.5)) * 2.0; float r = length(d);
+        float warm = exp(-r * r * 3.0) * 0.12; float cool = exp(-dot(d - vec2(-0.55, 0.3), d - vec2(-0.55, 0.3)) * 2.5) * 0.035;
+        gl_FragColor = vec4(uCol * warm + uCool * cool, 1.0) * uOpacity * (1.0 - uCollapse); }`,
+  });
+  const pool = new Mesh(new PlaneGeometry(11, 9), poolMat);
+  pool.rotation.x = -Math.PI / 2;
+  pool.position.set(ROVER_POS.x + 0.8, 0.002, ROVER_POS.z - 1.6);
+  add(pool, 0);
 
   // ---------- ROS grid (1 m cells, 5 m majors), near band 2x opacity ----------
   const grid = new Segs();
@@ -163,12 +199,14 @@ export function buildScene(): HeroScene {
 
   // ---------- robots ----------
   const rover = new Segs();
+  rover.collectOccluders = true;
   const roverM = pose(ROVER_POS, ROVER_YAW);
   const { lidar } = leadRover(rover, roverM, C.wire, 1);
   const lidarWorld = lidar.clone().applyMatrix4(roverM);
   const lidarGround = lidarWorld.clone().setY(0);
 
   const fleet = new Segs();
+  fleet.collectOccluders = true;
   const unitAnchors: Vector3[] = [];
   const unitBases: Vector3[] = [];
   UNIT_DISTANCES.forEach((d, i) => {
@@ -185,6 +223,17 @@ export function buildScene(): HeroScene {
   const fleetGeo = fleet.build();
   const roverMat = lineMaterial(shared, { width: 1.35, lit: true, fog: [30, 60] });
   const fleetMat = lineMaterial(shared, { width: 1.1, lit: true, fog: [30, 60] });
+  // hidden-line removal: depth-only solids, pushed back so their own edges survive
+  const occMat = new MeshBasicMaterial({ colorWrite: false, polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 4 });
+  const occ = new Mesh(rover.buildOccluder(), occMat);
+  occ.frustumCulled = false;
+  occ.renderOrder = 2.5;
+  scene.add(occ);
+  const occF = new Mesh(fleet.buildOccluder(), occMat);
+  occF.frustumCulled = false;
+  occF.renderOrder = 2.5;
+  scene.add(occF);
+  disposables.push(occ.geometry, occF.geometry, occMat);
   add(new Mesh(roverGeo, roverMat), 3);
   add(new Mesh(fleetGeo, fleetMat), 3);
   // floor mirror (~4% reflection below y=0)
@@ -309,11 +358,11 @@ export function buildScene(): HeroScene {
     for (let i = 0; i < RING_N; i++) {
       const t = (i / RING_N) * Math.PI * 2 + R() * 0.004;
       ringPos.push(t, 0.03, 0);
-      const fade = [1, 0.45, 0.2, 0.08][ti];
+      const fade = [1, 0.5, 0.26, 0.12][ti];
       const c = C.scan;
       ringCol.push(c[0], c[1], c[2], fade * (0.55 + R() * 0.45));
-      ringSize.push(ti === 0 ? 3.2 : 2.4);
-      ringJit.push(off + (R() - 0.5) * 0.006);
+      ringSize.push(ti === 0 ? 4.2 : 3.0);
+      ringJit.push(off + (R() - 0.5) * (ti === 0 ? 0.012 : 0.02));
     }
   });
   const ringGeo = new BufferGeometry();
@@ -372,6 +421,9 @@ export function buildScene(): HeroScene {
   return {
     scene,
     shared,
+    setVanishingPoint(x: number, y: number) {
+      bgUniforms.uVp.value = [x, y];
+    },
     lidarWorld,
     pointCount,
     apply,

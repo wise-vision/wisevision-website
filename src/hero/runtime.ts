@@ -105,6 +105,8 @@ export function startHero(container: HTMLElement, opts: HeroOptions) {
     cur[1] += (target[1] - cur[1]) * 0.12;
     hero.apply(s);
     applyRig(cam, RIGS[layout], s.dolly, parallaxOn ? cur : [0, 0]);
+    const rig = RIGS[layout];
+    hero.setVanishingPoint(layout === 'desktop' ? 0.5 + rig.vp[0] * 0.5 : 0.55, layout === 'desktop' ? 0.5 - rig.vp[1] * 0.5 : 0.62);
     renderer.render(hero.scene, cam);
     if (label) {
       tmp.copy(hero.lidarWorld).add(new Vector3(0.05, 0.47, 0)).project(cam);
