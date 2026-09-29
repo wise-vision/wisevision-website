@@ -10,12 +10,13 @@
     "dev": "astro dev",
     "tokens": "node scripts/build-tokens.mjs",
     "contrast": "node scripts/contrast-check.mjs",
-    "prebuild": "npm run tokens",
+    "prebuild": "npm run tokens && npm run tool-docs",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
     "test": "vitest run --coverage",
-    "test:functions": "npm --prefix workers/lead-mailer ci && npm --prefix functions-dev ci && npm --prefix functions-dev run coverage"
+    "test:functions": "npm --prefix workers/lead-mailer ci && npm --prefix functions-dev ci && npm --prefix functions-dev run coverage",
+    "tool-docs": "node scripts/sync-tool-docs.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
