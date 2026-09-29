@@ -20,3 +20,5 @@ yarn-error.log*
 /hero-lab/dist
 /hero-lab/test-results
 /hero-lab/playwright-report
+/hero-lab/out/*.png
+/hero-lab/public/poster

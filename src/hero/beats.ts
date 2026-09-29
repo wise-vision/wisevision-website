@@ -17,13 +17,13 @@ export type Beat = (typeof BEATS)[number];
 /**
  * Ground distance (world units, metres) from the lead rover's lidar to each fleet unit, in sweep order.
  * The scene places units at exactly these ranges so the ring "finds" them when it crosses them.
- *   0 = sensor mast, 1 = quadruped, 2 = drone
+ *   0 = quadruped (near band), 1 = drone (mid band), 2 = sensor mast (far band, 40%)
  */
-export const UNIT_DISTANCES = [4.6, 5.6, 7.4] as const;
+export const UNIT_DISTANCES = [4.7, 6.3, 9.5] as const;
 export const UNIT_COUNT = UNIT_DISTANCES.length;
 
 /** Ring radius at the poster frame: past unit 0, before unit 1 (mid-sweep). */
-export const RING_POSTER = 5.0;
+export const RING_POSTER = 5.5;
 /** Ring radius once every unit has been found (beat 50). */
 export const RING_FOUND_ALL = UNIT_DISTANCES[UNIT_COUNT - 1] + 1.4;
 /** Ring radius at the end of the sweep (beat 75+), where it has left the frame. */

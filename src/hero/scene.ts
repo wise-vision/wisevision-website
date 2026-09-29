@@ -28,13 +28,14 @@ import { UNIT_DISTANCES, type BeatState } from './beats';
 export type Layout = 'desktop' | 'mobile';
 
 /** Lead rover pose (world). Camera looks down -Z; the grid's Z family converges at the principal point. */
-export const ROVER_POS = new Vector3(1.2, 0, -3.6);
+export const ROVER_POS = new Vector3(1.48, 0, -4.8);
 export const ROVER_YAW = 0.62; // three-quarter: nose toward camera-left
 /** Unit bearings from the rover's lidar (rad, 0 = -Z, + toward +X). Ranges come from UNIT_DISTANCES. */
-const UNIT_BEARINGS = [0.6, 0.2, 0.35];
-const UNIT_HEIGHTS = [0, 0, 2.7];
-const UNIT_BAND = [0.8, 0.7, 0.4]; // mid, mid, far floor 40%
-const UNIT_YAW = [0.4, 0.9, 0.6];
+// composed so that at the desktop rig: quadruped ≈ (86%, 60%), drone ≈ (78%, 18%), sensor mast ≈ (51%, 23–53%)
+const UNIT_BEARINGS = [0.587, 0.448, 0.1];
+const UNIT_HEIGHTS = [0, 2.2, 0];
+const UNIT_BAND = [0.9, 0.66, 0.4]; // near, mid, far floor 40%
+const UNIT_YAW = [2.3, 0.5, 0.3];
 
 const Q = (x: number, y: number, z: number) => new Quaternion().setFromEuler(new Euler(x, y, z));
 const pose = (p: Vector3, yaw: number) => new Matrix4().compose(p, Q(0, yaw, 0), new Vector3(1, 1, 1));
@@ -49,6 +50,7 @@ uniform float uRing;
 uniform vec3 uCentre;
 uniform float uCollapse;
 uniform float uCollapseY;
+uniform vec2 uArc;
 varying vec4 vColor;
 varying float vArc;
 void main() {
@@ -57,8 +59,9 @@ void main() {
   if (uRing > 0.5) {
     float r = uRadius * (1.0 + aJit) ;
     p = uCentre + vec3(cos(position.x) * r, position.y, sin(position.x) * r);
-    // scan front: only the arc ahead of the lead rover (away from camera) reads; the near half would cross the type column
-    vArc = smoothstep(0.05, 0.55, -sin(position.x));
+    // scan front: only the arc ahead of the lead rover, right of the type column, reads
+    float b = atan(cos(position.x), -sin(position.x)); // bearing, 0 = -Z
+    vArc = smoothstep(uArc.x, uArc.x + 0.35, b) * (1.0 - smoothstep(uArc.y - 0.35, uArc.y, b));
   }
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
   if (mv.z > -0.1) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
@@ -97,6 +100,7 @@ function pointMaterial(shared: Shared, ring: boolean, additive = true): ShaderMa
       uRadius: { value: 1 },
       uRing: { value: ring ? 1 : 0 },
       uCentre: { value: new Vector3() },
+      uArc: { value: [-0.3, 1.9] },
     },
   });
 }
@@ -171,7 +175,7 @@ export function buildScene(): HeroScene {
     const b = UNIT_BEARINGS[i];
     const p = new Vector3(lidarGround.x + Math.sin(b) * d, UNIT_HEIGHTS[i], lidarGround.z - Math.cos(b) * d);
     const m = pose(p, UNIT_YAW[i]);
-    const build = [sensorMast, quadruped, drone][i];
+    const build = [quadruped, drone, sensorMast][i];
     const anchor = build(fleet, m, C.wire, UNIT_BAND[i]).applyMatrix4(m);
     unitAnchors.push(anchor);
     unitBases.push(p.clone());
@@ -204,7 +208,7 @@ export function buildScene(): HeroScene {
   const unitTriadMats: ShaderMaterial[] = [];
   unitAnchors.forEach((a, i) => {
     const s = new Segs();
-    const base = i === 2 ? a : unitBases[i].clone().add(new Vector3(0, 0.02, 0));
+    const base = i === 1 ? a : unitBases[i].clone().add(new Vector3(0, 0.02, 0));
     triad(s, base, 0.3, UNIT_YAW[i]);
     const mat = lineMaterial(shared, { width: 1.8, minPx: 16, fog: [40, 80], depthTest: false, opacity: 0 });
     mat.uniforms.uGrow.value = 0;
@@ -392,7 +396,7 @@ export const RIGS: Record<Layout, Rig> = {
   // VP at x=30%, y=41% from top: under the headline's first line in the left column
   desktop: { pos: new Vector3(0, 0.9, 0), dollyPos: new Vector3(0.9, 2.2, 6.5), fov: 30, vp: [-0.4, 0.18] },
   // separate mobile composition: looks across the fleet from front-left, scene sits under the stacked type
-  mobile: { pos: new Vector3(-0.3, 1.7, 3.6), dollyPos: new Vector3(0.2, 3.0, 9.5), fov: 44, vp: [0, -0.1], target: new Vector3(2.4, 0.7, -6.5) },
+  mobile: { pos: new Vector3(-0.6, 1.5, 1.2), dollyPos: new Vector3(-0.2, 2.8, 7.5), fov: 50, vp: [0, -0.28], target: new Vector3(3.0, 0.9, -9.0) },
 };
 
 export function applyRig(cam: PerspectiveCamera, rig: Rig, dolly: number, parallax: [number, number]) {
