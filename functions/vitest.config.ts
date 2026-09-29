@@ -9,7 +9,6 @@ export default defineConfig(async () => {
       cloudflareTest({
         miniflare: {
           compatibilityDate: "2026-08-15",
-          compatibilityFlags: ["nodejs_compat"],
           d1Databases: ["LEADS"],
           bindings: { TEST_MIGRATIONS: migrations },
         },
@@ -20,7 +19,8 @@ export default defineConfig(async () => {
       setupFiles: ["./test/apply-migrations.ts"],
       coverage: {
         provider: "istanbul",
-        include: ["api/**", "_lib/**", "../src/lib/lead-form.ts"],
+        include: ["api/**/*.ts", "_lib/**/*.ts", "**/src/lib/lead-form.ts"],
+        allowExternal: true,
         reporter: ["text", "json-summary"],
         thresholds: { lines: 80 },
       },

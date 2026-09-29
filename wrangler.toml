@@ -3,7 +3,6 @@
 name = "wisevision-website"
 pages_build_output_dir = "dist"
 compatibility_date = "2026-08-15"
-compatibility_flags = ["nodejs_compat"]
 
 [vars]
 # Public Turnstile site key. The value below is Cloudflare's documented TEST key

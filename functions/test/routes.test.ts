@@ -1,4 +1,3 @@
-import { createPagesEventContext } from "cloudflare:test";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as leadRoute from "../api/lead";
 import * as mw from "../api/_middleware";
@@ -7,13 +6,17 @@ import { ORIGIN, jsonRequest, leadCount, makeEnv, resetDb, validLead } from "./h
 beforeEach(resetDb);
 
 function ctx(request: Request, env = makeEnv(), next?: () => Promise<Response>) {
-  return createPagesEventContext<typeof leadRoute.onRequestPost>({
+  // Plain EventContext: createPagesEventContext() requires an ASSETS binding we do not need here.
+  return {
     request,
-    env: env as never,
+    env,
     params: {},
     data: {},
-    next: next as never,
-  } as never);
+    functionPath: "/api/lead",
+    next: next ?? (async () => new Response(null, { status: 404 })),
+    waitUntil: () => {},
+    passThroughOnException: () => {},
+  };
 }
 
 describe("functions/api/lead.ts route exports", () => {

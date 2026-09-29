@@ -1,3 +1,4 @@
+import type { EmailMessage } from "cloudflare:email";
 import { env as workerEnv } from "cloudflare:workers";
 import type { LeadEnv, LeadDeps } from "../_lib/lead";
 
@@ -11,15 +12,19 @@ export interface SentMail {
   from: string;
   to: string;
   raw: string;
+  isEmailMessage: boolean;
 }
 
 export function fakeMail(opts: { fail?: boolean } = {}) {
   const sent: SentMail[] = [];
   const binding = {
-    async send(message: { from: string; to: string; raw: ReadableStream | string }) {
+    async send(message: EmailMessage) {
       if (opts.fail) throw new Error("destination address not verified");
-      const raw = typeof message.raw === "string" ? message.raw : await new Response(message.raw).text();
-      sent.push({ from: message.from, to: message.to, raw });
+      // Miniflare's EmailMessage keeps the MIME source under this key; fall back to `.raw`.
+      const m = message as unknown as Record<string, unknown>;
+      const src = (m["EmailMessage::raw"] ?? m.raw) as ReadableStream | string;
+      const raw = typeof src === "string" ? src : await new Response(src).text();
+      sent.push({ from: message.from, to: message.to, raw, isEmailMessage: "EmailMessage::raw" in m });
     },
   };
   return { binding, sent };
@@ -91,4 +96,24 @@ export async function resetDb() {
 
 export function deps(over: Partial<LeadDeps> = {}): LeadDeps {
   return { fetch: fakeSiteverify().fn, ...over };
+}
+
+function b64utf8(b64: string): string {
+  const bin = atob(b64.replace(/\s+/g, ""));
+  return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)));
+}
+
+/** Minimal decoder for the single-part text/plain MIME message the handler builds. */
+export function decodeMail(raw: string) {
+  const norm = raw.replace(/\r\n/g, "\n");
+  const split = norm.indexOf("\n\n");
+  const head = norm.slice(0, split);
+  const headers: Record<string, string> = {};
+  for (const line of head.split("\n")) {
+    const i = line.indexOf(":");
+    if (i > 0) headers[line.slice(0, i).toLowerCase()] = line.slice(i + 1).trim();
+  }
+  const subject = headers.subject.replace(/=\?utf-8\?B\?([^?]*)\?=/gi, (_m, b) => b64utf8(b));
+  const body = /base64/i.test(headers["content-transfer-encoding"] ?? "") ? b64utf8(norm.slice(split + 2)) : norm.slice(split + 2);
+  return { headers, subject, body, headerLines: head.split("\n") };
 }

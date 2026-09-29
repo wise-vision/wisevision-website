@@ -4,7 +4,10 @@
   "type": "module",
   "scripts": {
     "test": "vitest run",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "typecheck": "tsc -p .",
+    "smoke": "./scripts/smoke.sh",
+    "stage": "./scripts/stage.sh"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.22.0",

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { handleLead } from "../_lib/lead";
 import {
-  FAIL_SECRET, ORIGIN, db, deps, fakeMail, fakeSiteverify, jsonRequest, leadCount, makeEnv, resetDb, validLead,
+  FAIL_SECRET, ORIGIN, db, decodeMail, deps, fakeMail, fakeSiteverify, jsonRequest, leadCount, makeEnv, resetDb, validLead,
 } from "./helpers";
 
 beforeEach(async () => {
@@ -38,22 +38,24 @@ describe("POST /api/lead: happy path", () => {
     expect(vb.get("remoteip")).toBe("203.0.113.7");
 
     expect(mail.sent).toHaveLength(1);
+    expect(mail.sent[0].isEmailMessage).toBe(true);
     expect(mail.sent[0].from).toBe("leads@wisevision.tech");
     expect(mail.sent[0].to).toBe("adam.krawczyk0698@gmail.com");
-    const raw = mail.sent[0].raw;
-    expect(raw).toMatch(/Subject: .*\[wisevision lead\] early-access/);
-    expect(raw).toContain("Acme Robotics");
-    expect(raw).toContain("ros.dev@example.org");
-    expect(raw).toContain("Drive a Nav2 stack from Claude");
-    expect(raw).toMatch(/Reply-To: <?ros\.dev@example\.org>?/);
+    const m = decodeMail(mail.sent[0].raw);
+    expect(m.subject).toBe("[wisevision lead] early-access — Acme Robotics");
+    expect(m.headers["reply-to"]).toBe("<ros.dev@example.org>");
+    expect(m.headers.from).toContain("<leads@wisevision.tech>");
+    expect(m.headers.to).toBe("<adam.krawczyk0698@gmail.com>");
+    for (const v of ["early-access", "ros.dev@example.org", "Acme Robotics", "Robotics engineer", "Drive a Nav2 stack from Claude", "consent:   yes", "vitest/agent"]) {
+      expect(m.body).toContain(v);
+    }
   });
 
   it("uses the email in the subject when org is empty", async () => {
     const mail = fakeMail();
     const res = await handleLead(jsonRequest(validLead({ org: "", form: "contact" })), makeEnv({}, mail), deps());
     expect(res.status).toBe(200);
-    expect(mail.sent[0].raw).toMatch(/Subject: .*\[wisevision lead\] contact/);
-    expect(mail.sent[0].raw).toMatch(/contact .* ros\.dev@example\.org/);
+    expect(decodeMail(mail.sent[0].raw).subject).toBe("[wisevision lead] contact — ros.dev@example.org");
   });
 
   it("accepts an application/x-www-form-urlencoded body (no-JS form post)", async () => {
@@ -305,6 +307,14 @@ describe("POST /api/lead: mail failure", () => {
 });
 
 describe("POST /api/lead: injection safety", () => {
+  it("round-trips UTF-8 free text through the mail body", async () => {
+    const mail = fakeMail();
+    await handleLead(jsonRequest(validLead({ org: "Żółć Robotyka", use_case: "Łódź → Kraków, 2 AMRs ✓\nline two" })), makeEnv({}, mail), deps());
+    const m = decodeMail(mail.sent[0].raw);
+    expect(m.subject).toBe("[wisevision lead] early-access — Żółć Robotyka");
+    expect(m.body).toContain("Łódź → Kraków, 2 AMRs ✓\nline two");
+  });
+
   it("stores SQL-injection-ish strings verbatim (parameterised queries)", async () => {
     const evil = {
       org: "Robert'); DROP TABLE leads;--",
@@ -322,7 +332,9 @@ describe("POST /api/lead: injection safety", () => {
     const mail = fakeMail();
     const res = await handleLead(jsonRequest(validLead({ org: "Evil\r\nBcc: victim@example.org" })), makeEnv({}, mail), deps());
     expect(res.status).toBe(200);
-    expect(mail.sent[0].raw).not.toMatch(/^Bcc:/m);
+    const m = decodeMail(mail.sent[0].raw);
+    expect(m.headerLines.some((l) => /^bcc:/i.test(l))).toBe(false);
+    expect(m.subject).toBe("[wisevision lead] early-access — Evil Bcc: victim@example.org");
     const row = await db.prepare("SELECT org FROM leads").first<{ org: string }>();
     expect(row!.org).toBe("Evil Bcc: victim@example.org");
   });

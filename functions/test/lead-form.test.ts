@@ -37,7 +37,7 @@ describe("src/lib/lead-form.ts", () => {
     expect(r).toEqual({ ok: true, duplicate: false, mail: true });
     expect(f.calls[0].url).toBe("/api/lead");
     expect(f.calls[0].init.method).toBe("POST");
-    expect(f.calls[0].init.credentials).toBe("same-origin");
+    expect((f.calls[0].init as { credentials?: string }).credentials).toBe("same-origin");
     expect((f.calls[0].init.headers as Record<string, string>)["content-type"]).toBe("application/json");
   });
 
