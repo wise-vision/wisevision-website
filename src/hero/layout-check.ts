@@ -27,7 +27,35 @@ export interface CompositionReport {
   /** optional rasterised wire occupancy per unit (see rasterize); when present it replaces bbox tests */
   occupancy?: Record<UnitName, Set<number>>;
   cell?: number;
+  /** projected bbox of the rover's base_link TF triad (all three axes) */
+  baseLinkTriad?: Rect | null;
+  /** projected bbox of each rover tyre; the base_link triad must clear every one (a frame "at a wheel" reads wrong to a ROS dev) */
+  wheels?: Rect[];
+  /** frame regions owned by the HTML headline + CTA: no unit (or its TF triad) may reach into them */
+  reserved?: Rect[];
+  /** projected bbox of each unit's always-on TF triad, checked against `reserved` */
+  triads?: Partial<Record<UnitName, Rect>>;
 }
+
+/** Arc samples farther than `skip` px from its endpoint: the approach, which must not cut through the target's own wires. */
+function approachCells(pts: Pt[], frame: { w: number; h: number }, cell: number, skip: number): Set<number> {
+  const end = pts[pts.length - 1];
+  const out = new Set<number>();
+  const mx = Math.ceil(frame.w / cell), my = Math.ceil(frame.h / cell);
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1], b = pts[i];
+    const n = Math.max(1, Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / (cell / 2)));
+    for (let k = 0; k <= n; k++) {
+      const x = a[0] + ((b[0] - a[0]) * k) / n, y = a[1] + ((b[1] - a[1]) * k) / n;
+      if (Math.hypot(x - end[0], y - end[1]) < skip) continue;
+      const cx = Math.floor(x / cell), cy = Math.floor(y / cell);
+      if (cx >= 0 && cy >= 0 && cx < mx && cy < my) out.add(key(cx, cy));
+    }
+  }
+  return out;
+}
+/** px around the arc endpoint where touching the target's wires is expected (the endpoint sits ON its frame origin) */
+export const ARC_END_SKIP = 10;
 
 const CELL = 6;
 const key = (cx: number, cy: number) => cy * 4096 + cx;
@@ -87,6 +115,22 @@ const polyHits = (pts: Pt[], r: Rect) => pts.some((p, i) => i > 0 && segmentHits
 export function checkComposition(r: CompositionReport, margin = 4): string[] {
   const issues: string[] = [];
   const names = Object.keys(r.units) as UnitName[];
+  if (r.baseLinkTriad && r.wheels)
+    r.wheels.forEach((w, i) => {
+      if (rectOverlap(r.baseLinkTriad!, w) > 0) issues.push(`base_link triad overlaps wheel ${i}`);
+    });
+  if (r.leader && r.wheels)
+    r.wheels.forEach((w, i) => {
+      if (polyHits(r.leader!, w)) issues.push(`leader crosses wheel ${i}`);
+    });
+  for (const z of r.reserved ?? []) {
+    const zc = r.occupancy ? rectCells(z, r.cell ?? CELL) : null;
+    for (const n of names) {
+      const hit = zc && r.occupancy ? shared(zc, r.occupancy[n]) > 0 : rectOverlap(r.units[n], z) > 0;
+      if (hit) issues.push(`${n} intrudes on the copy zone`);
+    }
+    for (const [n, t] of Object.entries(r.triads ?? {})) if (t && rectOverlap(t, z) > 0) issues.push(`${n} triad intrudes on the copy zone`);
+  }
   for (const n of names) {
     const u = r.units[n];
     if (u.x < margin || u.y < margin || u.x + u.w > r.frame.w - margin || u.y + u.h > r.frame.h - margin)
@@ -112,6 +156,8 @@ export function checkComposition(r: CompositionReport, margin = 4): string[] {
       const target = r.arcTarget ?? 'quadruped';
       const ac = rasterize(polySegs(r.arc), r.frame, cell);
       for (const n of names) if (n !== 'rover' && n !== target && shared(ac, occ[n]) > 0) issues.push(`arc crosses ${n}`);
+      if (r.arc.length > 1 && shared(approachCells(r.arc, r.frame, cell, ARC_END_SKIP), occ[target]) > 0)
+        issues.push(`arc passes through ${target} before its endpoint`);
     }
     return issues;
   }

@@ -62,6 +62,58 @@ describe('checkComposition', () => {
   });
 });
 
+describe('base_link triad vs the wheels (W2 polish: "triad sits on the front wheel")', () => {
+  const wheels = [R(70, 440, 40, 50), R(120, 445, 40, 50), R(170, 450, 40, 50)];
+  it('passes when the projected triad clears every wheel box', () => {
+    expect(checkComposition(report({ wheels, baseLinkTriad: R(135, 400, 20, 30), leader: [[145, 410], [40, 330], [100, 330]] }))).toEqual([]);
+  });
+  it('flags a triad that lands on a wheel, naming the wheel', () => {
+    const issues = checkComposition(report({ wheels, baseLinkTriad: R(125, 430, 20, 30) }));
+    expect(issues).toContain('base_link triad overlaps wheel 1');
+  });
+  it('flags the base_link leader crossing a wheel (a callout through a tyre reads as "this wheel")', () => {
+    const issues = checkComposition(report({ wheels, baseLinkTriad: R(135, 400, 20, 30), leader: [[145, 415], [140, 470], [60, 540], [120, 540]] }));
+    expect(issues).toContain('leader crosses wheel 1');
+  });
+});
+
+describe('copy zone (headline + CTA sit over the poster)', () => {
+  it('flags a unit reaching into the reserved copy zone', () => {
+    const issues = checkComposition(report({ reserved: [R(0, 0, 390, 140)] }));
+    expect(issues).toEqual([]);
+    const hit = checkComposition(report({ reserved: [R(0, 0, 390, 160)] }));
+    expect(hit).toContain('drone intrudes on the copy zone');
+  });
+  it('counts a unit TF triad as part of the unit (a triad over the CTA is still clutter)', () => {
+    const hit = checkComposition(report({ reserved: [R(0, 0, 390, 140)], triads: { mast: R(170, 125, 20, 24) } }));
+    expect(hit).toContain('mast triad intrudes on the copy zone');
+  });
+  it('uses wire occupancy when present: an empty bbox corner under the copy is fine, a real wire is not', () => {
+    const frame = { w: 390, h: 600 };
+    // L-shaped rover: bbox reaches up-left into the zone, wires don't
+    const occ = { rover: rasterize([[[200, 300], [200, 500]], [[60, 500], [200, 500]]], frame), mast: new Set<number>(), quadruped: new Set<number>(), drone: new Set<number>() };
+    const base = report({ units: { ...report().units, rover: R(60, 300, 140, 200) }, occupancy: occ, label: null, leader: null, arc: null });
+    expect(checkComposition({ ...base, reserved: [R(0, 280, 150, 60)] })).toEqual([]);
+    expect(checkComposition({ ...base, reserved: [R(0, 280, 210, 60)] })).toContain('rover intrudes on the copy zone');
+  });
+});
+
+describe('arc endpoint (W2 polish: "arc crosses the quadruped platform line")', () => {
+  const frame = { w: 390, h: 600 };
+  // quadruped top platform: a horizontal line at y=360; its frame origin sits ON the line at (300, 360)
+  const occ = { rover: new Set<number>(), mast: new Set<number>(), drone: new Set<number>(), quadruped: rasterize([[[260, 360], [340, 360]], [[260, 360], [260, 390]], [[340, 360], [340, 390]]], frame) };
+  const base = report({ occupancy: occ, label: null, leader: null });
+  it('accepts an arc that ends on the target origin, arriving from above', () => {
+    const arc: [number, number][] = [[150, 380], [220, 250], [300, 280], [300, 320], [300, 360]];
+    expect(checkComposition({ ...base, arc })).toEqual([]);
+  });
+  it('flags an arc that passes through the target wires before reaching its end', () => {
+    // dips below the platform line and comes back up to the origin
+    const arc: [number, number][] = [[150, 380], [240, 300], [280, 385], [300, 360]];
+    expect(checkComposition({ ...base, arc })).toContain('arc passes through quadruped before its endpoint');
+  });
+});
+
 describe('occupancy (rasterised wires)', () => {
   const frame = { w: 390, h: 600 };
   // an L-shaped rover: its bbox covers the empty top-right corner where the mast stands
