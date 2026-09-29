@@ -1,0 +1,8 @@
+---
+// The site is dark-only (DESIGN.md). Starlight would switch to its light theme for visitors whose OS prefers light,
+// which breaks our token mapping (light header, unreadable asides, light code blocks). Always render dark.
+---
+<script is:inline>
+  document.documentElement.dataset.theme = 'dark';
+  window.StarlightThemeProvider = { updatePickers() {} };
+</script>

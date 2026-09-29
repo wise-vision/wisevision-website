@@ -19,6 +19,10 @@ export default defineConfig({
       customCss: ['./src/styles/tokens.css', './src/styles/starlight.css'],
       social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/wise-vision' }],
       routeMiddleware: './src/lib/route-md-twin.ts',
+      components: {
+        ThemeProvider: './src/components/starlight/ThemeProvider.astro',
+        ThemeSelect: './src/components/starlight/ThemeSelect.astro',
+      },
       sidebar: [
         { label: 'Overview', link: '/docs/' },
         {
