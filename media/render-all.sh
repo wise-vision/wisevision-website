@@ -21,6 +21,13 @@ for dir in "$MEDIA"/compositions/*/; do
   # Web delivery: H.264 high, yuv420p, faststart, no audio (explainers are silent). CRF picked to keep loops small.
   crf=24; [[ "$name" == hero-loop* ]] && crf=26
   ffmpeg -v error -y -i "$raw" -an -c:v libx264 -profile:v high -preset slow -crf "$crf" -pix_fmt yuv420p -movflags +faststart "$OUT/$name.mp4"
+  # Size gates: Cloudflare Pages hard limit 25 MiB/file; 16:9 web loops must be <= 6 MB. Step CRF up until they fit.
+  limit=26214400; [[ "$name" == *-16x9 ]] && limit=6000000
+  while [[ $(stat -c %s "$OUT/$name.mp4") -gt $limit && $crf -lt 36 ]]; do
+    crf=$((crf + 2)); echo "   size $(stat -c %s "$OUT/$name.mp4") > $limit, re-encode crf=$crf"
+    ffmpeg -v error -y -i "$raw" -an -c:v libx264 -profile:v high -preset slow -crf "$crf" -pix_fmt yuv420p -movflags +faststart "$OUT/$name.mp4"
+  done
+  [[ $(stat -c %s "$OUT/$name.mp4") -le 26214400 ]] || { echo "FAIL: $name over 25 MiB"; exit 1; }
   rm -f "$raw"
   # Poster = a settled, content-bearing frame (hero: t=0 so the poster matches the first frame of the loop).
   pt=4.5; [[ "$name" == hero-loop* ]] && pt=0
