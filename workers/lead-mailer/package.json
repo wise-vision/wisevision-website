@@ -1,0 +1,19 @@
+{
+  "name": "wv-lead-mailer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "check": "wrangler deploy --dry-run --outdir .wrangler/dry"
+  },
+  "dependencies": {
+    "mimetext": "^3.0.28"
+  },
+  "devDependencies": {
+    "wrangler": "4.143.1"
+  },
+  "allowScripts": {
+    "workerd@1.20260926.1": true,
+    "esbuild@0.28.1": true
+  }
+}

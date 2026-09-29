@@ -1,6 +1,6 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "node_modules", "coverage"],
+  "exclude": ["dist", "node_modules", "coverage", "functions", "functions-dev", "workers"],
   "compilerOptions": { "allowJs": true }
 }

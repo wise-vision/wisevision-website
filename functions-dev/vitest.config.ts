@@ -19,7 +19,7 @@ export default defineConfig(async () => {
       setupFiles: ["./test/apply-migrations.ts"],
       coverage: {
         provider: "istanbul",
-        include: ["**/functions/api/**/*.ts", "**/functions/_lib/**/*.ts", "**/src/lib/lead-form.ts"],
+        include: ["**/functions/api/**/*.ts", "**/functions/_lib/**/*.ts", "**/src/lib/lead-form.ts", "**/workers/lead-mailer/src/**/*.ts"],
         allowExternal: true,
         reporter: ["text", "json-summary"],
         thresholds: { lines: 80 },

@@ -3,21 +3,21 @@
  *
  * Order of checks (cheap and abuse-resistant first):
  *   method → same-origin → config → rate limit (D1, atomic) → body parse/size → validation + honeypot
- *   → Turnstile siteverify → duplicate check → INSERT (UNIQUE dedupe_key) → send_email (best effort).
+ *   → Turnstile siteverify → duplicate check → INSERT (UNIQUE dedupe_key) → mail (best effort).
+ *
+ * Mail: Pages Functions cannot hold a `send_email` binding, so the mail goes through the `LEAD_MAILER`
+ * service binding to the companion Worker `wv-lead-mailer` (workers/lead-mailer/). It receives only
+ * {subject, text, replyTo}; the recipient is fixed in that Worker's config and never sent from here.
  *
  * Privacy: the raw IP is never stored; only SHA-256(ip | IP_SALT | UTC day). No lead PII is logged.
  */
-import { EmailMessage } from "cloudflare:email";
-// Browser build: pure JS, CRLF line endings, no Node built-ins (so no nodejs_compat is needed).
-import { Mailbox, createMimeMessage } from "mimetext/browser";
 
 export interface LeadEnv {
   LEADS: D1Database;
-  LEAD_MAIL?: SendEmail;
+  /** Service binding → the `wv-lead-mailer` Worker (owns `send_email`). Optional: missing → `mail:false`. */
+  LEAD_MAILER?: Fetcher;
   TURNSTILE_SECRET: string;
   IP_SALT: string;
-  LEAD_TO: string;
-  LEAD_FROM?: string;
   /** Optional secret. When set, a request whose `X-WV-E2E` header equals it skips Turnstile (live E2E tests). */
   E2E_KEY?: string;
 }
@@ -36,7 +36,8 @@ export const LIMITS = { email: 254, org: 200, role: 120, use_case: 4000, token: 
 export const RATE = { max: 5, windowMs: 10 * 60_000 } as const;
 const DUP_WINDOW_MS = 24 * 3600_000;
 const ATTEMPT_RETENTION_MS = 24 * 3600_000;
-const DEFAULT_FROM = "leads@wisevision.tech";
+/** The host is irrelevant for a service binding; it only has to be a valid absolute URL. */
+export const MAILER_URL = "https://wv-lead-mailer.internal/send";
 
 export interface Lead {
   form: LeadFormKind;
@@ -218,13 +219,6 @@ export async function verifyTurnstile(token: string, secret: string, ip: string,
 
 // ---------- mail ----------
 
-function base64Lines(text: string): string {
-  const bytes = new TextEncoder().encode(text);
-  let bin = "";
-  for (const b of bytes) bin += String.fromCharCode(b);
-  return (btoa(bin).match(/.{1,76}/g) ?? []).join("\r\n");
-}
-
 export function mailSubject(lead: Pick<Lead, "form" | "org" | "email">): string {
   return `[wisevision lead] ${lead.form} — ${lead.org ?? lead.email}`;
 }
@@ -249,27 +243,14 @@ export function mailBody(lead: Lead, meta: { id: number; ts: string; ua: string 
   ].join("\n");
 }
 
-export function buildRawMail(lead: Lead, meta: { id: number; ts: string; ua: string | null }, from: string, to: string): string {
-  const msg = createMimeMessage();
-  msg.setSender({ name: "wisevision.tech leads", addr: from });
-  msg.setRecipient(to);
-  msg.setSubject(mailSubject(lead));
-  msg.setHeader("Reply-To", new Mailbox(lead.email));
-  // base64 so UTF-8 in free-text fields survives any relay (7bit would be non-compliant).
-  msg.addMessage({ contentType: "text/plain", charset: "UTF-8", encoding: "base64", data: base64Lines(mailBody(lead, meta)) });
-  return msg.asRaw();
-}
-
 // ---------- handler ----------
 
 export async function handleLead(req: Request, env: LeadEnv, deps: LeadDeps): Promise<Response> {
   if (req.method !== "POST") return fail(405, "method_not_allowed", {}, { allow: "POST" });
   if (!isSameOrigin(req)) return fail(403, "cross_origin");
 
-  if (!env.LEADS || !env.TURNSTILE_SECRET || !env.IP_SALT || !env.LEAD_TO) {
-    console.error("lead_config_missing", {
-      LEADS: !!env.LEADS, TURNSTILE_SECRET: !!env.TURNSTILE_SECRET, IP_SALT: !!env.IP_SALT, LEAD_TO: !!env.LEAD_TO,
-    });
+  if (!env.LEADS || !env.TURNSTILE_SECRET || !env.IP_SALT) {
+    console.error("lead_config_missing", { LEADS: !!env.LEADS, TURNSTILE_SECRET: !!env.TURNSTILE_SECRET, IP_SALT: !!env.IP_SALT });
     return fail(500, "server_misconfigured");
   }
 
@@ -358,10 +339,13 @@ export async function handleLead(req: Request, env: LeadEnv, deps: LeadDeps): Pr
 
   let mail = false;
   try {
-    if (!env.LEAD_MAIL) throw new Error("LEAD_MAIL binding missing");
-    const from = env.LEAD_FROM || DEFAULT_FROM;
-    const rawMail = buildRawMail(lead, { id, ts, ua }, from, env.LEAD_TO);
-    await env.LEAD_MAIL.send(new EmailMessage(from, env.LEAD_TO, rawMail));
+    if (!env.LEAD_MAILER) throw new Error("LEAD_MAILER binding missing");
+    const res = await env.LEAD_MAILER.fetch(MAILER_URL, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ subject: mailSubject(lead), text: mailBody(lead, { id, ts, ua }), replyTo: lead.email }),
+    });
+    if (!res.ok) throw new Error(`lead-mailer answered ${res.status}`);
     mail = true;
   } catch (e) {
     // The row stands; Adam can still read it from D1. Never log the lead's PII.

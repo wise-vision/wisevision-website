@@ -1,6 +1,7 @@
 import type { EmailMessage } from "cloudflare:email";
 import { env as workerEnv } from "cloudflare:workers";
 import type { LeadEnv, LeadDeps } from "../../functions/_lib/lead";
+import mailer from "../../workers/lead-mailer/src/index";
 
 export const PASS_SECRET = "1x0000000000000000000000000000000AA"; // Cloudflare test secret: always passes
 export const FAIL_SECRET = "2x0000000000000000000000000000000AA"; // Cloudflare test secret: always fails
@@ -48,14 +49,33 @@ export function fakeSiteverify() {
   return { fn: fn as typeof fetch, calls };
 }
 
+/**
+ * A fake `LEAD_MAILER` service binding that routes into the REAL wv-lead-mailer Worker module, whose own
+ * `send_email` binding is the `fakeMail()` capture. So Pages-side tests exercise both sides of the hop.
+ * `calls` records every request body the Pages Function sent over the binding.
+ */
+export function fakeMailer(mail = fakeMail()) {
+  const calls: { url: string; body: unknown }[] = [];
+  const binding = {
+    async fetch(input: RequestInfo | URL, init?: RequestInit) {
+      const req = new Request(input, init);
+      calls.push({ url: req.url, body: await req.clone().json().catch(() => null) });
+      return mailer.fetch(req, {
+        LEAD_MAIL: mail.binding as unknown as SendEmail,
+        LEAD_TO: "adam.krawczyk0698@gmail.com",
+        LEAD_FROM: "leads@wisevision.tech",
+      });
+    },
+  };
+  return { binding: binding as unknown as Fetcher, calls, sent: mail.sent };
+}
+
 export function makeEnv(over: Partial<LeadEnv> = {}, mail = fakeMail()): LeadEnv {
   return {
     LEADS: db,
-    LEAD_MAIL: mail.binding as unknown as SendEmail,
+    LEAD_MAILER: fakeMailer(mail).binding,
     TURNSTILE_SECRET: PASS_SECRET,
     IP_SALT: "test-salt",
-    LEAD_TO: "adam.krawczyk0698@gmail.com",
-    LEAD_FROM: "leads@wisevision.tech",
     ...over,
   };
 }

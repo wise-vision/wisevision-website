@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { handleLead } from "../../functions/_lib/lead";
 import {
-  FAIL_SECRET, ORIGIN, db, decodeMail, deps, fakeMail, fakeSiteverify, jsonRequest, leadCount, makeEnv, resetDb, validLead,
+  FAIL_SECRET, ORIGIN, db, decodeMail, deps, fakeMail, fakeMailer, fakeSiteverify, jsonRequest, leadCount, makeEnv, resetDb, validLead,
 } from "./helpers";
 
 beforeEach(async () => {
@@ -49,6 +49,19 @@ describe("POST /api/lead: happy path", () => {
     for (const v of ["early-access", "ros.dev@example.org", "Acme Robotics", "Robotics engineer", "Drive a Nav2 stack from Claude", "consent:   yes", "vitest/agent"]) {
       expect(m.body).toContain(v);
     }
+  });
+
+  it("calls the LEAD_MAILER service binding with exactly {subject, text, replyTo} (no recipient)", async () => {
+    const m = fakeMailer();
+    const res = await handleLead(jsonRequest(validLead()), makeEnv({ LEAD_MAILER: m.binding }), deps());
+    expect(res.status).toBe(200);
+    expect(m.calls).toHaveLength(1);
+    const b = m.calls[0].body as Record<string, string>;
+    expect(Object.keys(b).sort()).toEqual(["replyTo", "subject", "text"]);
+    expect(b.subject).toBe("[wisevision lead] early-access — Acme Robotics");
+    expect(b.replyTo).toBe("ros.dev@example.org");
+    expect(b.text).toContain("Drive a Nav2 stack from Claude");
+    expect(m.sent).toHaveLength(1);
   });
 
   it("uses the email in the subject when org is empty", async () => {
@@ -295,10 +308,28 @@ describe("POST /api/lead: mail failure", () => {
     err.mockRestore();
   });
 
+  it("keeps the row and answers mail:false when the mailer answers non-2xx", async () => {
+    const err = vi.spyOn(console, "error").mockImplementation(() => {});
+    const env = makeEnv({ LEAD_MAILER: { fetch: async () => new Response("{}", { status: 500 }) } as unknown as Fetcher });
+    const res = await handleLead(jsonRequest(validLead()), env, deps());
+    expect(await body(res)).toEqual({ ok: true, duplicate: false, mail: false });
+    expect(await leadCount()).toBe(1);
+    err.mockRestore();
+  });
+
+  it("keeps the row and answers mail:false when the service binding throws", async () => {
+    const err = vi.spyOn(console, "error").mockImplementation(() => {});
+    const env = makeEnv({ LEAD_MAILER: { fetch: async () => { throw new Error("no such service"); } } as unknown as Fetcher });
+    const res = await handleLead(jsonRequest(validLead()), env, deps());
+    expect(await body(res)).toEqual({ ok: true, duplicate: false, mail: false });
+    expect(await leadCount()).toBe(1);
+    err.mockRestore();
+  });
+
   it("keeps the row and answers mail:false when the binding is missing", async () => {
     const err = vi.spyOn(console, "error").mockImplementation(() => {});
     const env = makeEnv();
-    delete (env as Partial<typeof env>).LEAD_MAIL;
+    delete (env as Partial<typeof env>).LEAD_MAILER;
     const res = await handleLead(jsonRequest(validLead()), env, deps());
     expect(await body(res)).toMatchObject({ ok: true, mail: false });
     expect(await leadCount()).toBe(1);

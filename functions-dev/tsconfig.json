@@ -9,5 +9,5 @@
     "lib": ["es2022"],
     "types": ["@cloudflare/workers-types", "@cloudflare/vitest-pool-workers/types"]
   },
-  "include": ["../functions/api/**/*.ts", "../functions/_lib/**/*.ts", "test/**/*.ts", "../src/lib/lead-form.ts"]
+  "include": ["../functions/api/**/*.ts", "../functions/_lib/**/*.ts", "test/**/*.ts", "../src/lib/lead-form.ts", "../workers/lead-mailer/src/**/*.ts"]
 }
