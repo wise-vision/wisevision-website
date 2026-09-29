@@ -1,0 +1,55 @@
+{
+  "$description": "WiseVision design tokens. SINGLE SOURCE OF TRUTH. Edit this file, then run `npm run tokens` to regenerate tokens.css + tokens.json. Never edit the generated files by hand.",
+  "color": {
+    "bg": { "base": "#07080B", "raised": "#0B0E14", "surface": "#11151D", "line": "#1C222C" },
+    "text": { "DEFAULT": "#F2F5F7", "muted": "#A3ACB9", "subtle": "#7D8795" },
+    "accent": { "DEFAULT": "#3CFFB4", "text": "#2EE6A0", "ink": "#04110C" },
+    "focus": "#3CFFB4",
+    "danger": "#FF6B6B"
+  },
+  "font": {
+    "display": "'Space Grotesk', 'Inter Variable', system-ui, sans-serif",
+    "body": "'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif",
+    "mono": "'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace"
+  },
+  "weight": { "body": "400", "medium": "500", "display": "700" },
+  "size": {
+    "xs": "0.8125rem",
+    "sm": "0.9375rem",
+    "base": "1.0625rem",
+    "lg": "1.25rem",
+    "xl": "1.625rem",
+    "2xl": "2.25rem",
+    "3xl": "clamp(2.5rem, 1.6rem + 3.2vw, 4rem)",
+    "display": "clamp(3rem, 1.4rem + 6.4vw, 6.5rem)"
+  },
+  "leading": { "tight": "1.02", "snug": "1.2", "body": "1.6" },
+  "tracking": { "display": "-0.035em", "caps": "0.12em" },
+  "space": {
+    "1": "0.25rem", "2": "0.5rem", "3": "0.75rem", "4": "1rem", "6": "1.5rem",
+    "8": "2rem", "12": "3rem", "16": "4rem", "24": "6rem", "32": "8rem"
+  },
+  "radius": { "sm": "6px", "md": "10px", "lg": "16px", "pill": "999px" },
+  "layout": { "max": "1200px", "gutter": "clamp(1.25rem, 4vw, 2.5rem)", "header": "64px" },
+  "motion": {
+    "duration": { "fast": "160ms", "base": "300ms", "reveal": "700ms" },
+    "ease": { "reveal": "cubic-bezier(.16,1,.3,1)", "standard": "cubic-bezier(.2,0,0,1)" },
+    "distance": { "reveal": "24px" }
+  },
+  "pairs": [
+    { "fg": "text.DEFAULT", "bg": "bg.base" },
+    { "fg": "text.DEFAULT", "bg": "bg.raised" },
+    { "fg": "text.DEFAULT", "bg": "bg.surface" },
+    { "fg": "text.muted", "bg": "bg.base" },
+    { "fg": "text.muted", "bg": "bg.raised" },
+    { "fg": "text.muted", "bg": "bg.surface" },
+    { "fg": "text.subtle", "bg": "bg.base" },
+    { "fg": "text.subtle", "bg": "bg.raised" },
+    { "fg": "accent.text", "bg": "bg.base" },
+    { "fg": "accent.text", "bg": "bg.raised" },
+    { "fg": "accent.text", "bg": "bg.surface" },
+    { "fg": "accent.DEFAULT", "bg": "bg.base", "size": "large" },
+    { "fg": "accent.ink", "bg": "accent.DEFAULT" },
+    { "fg": "danger", "bg": "bg.base" }
+  ]
+}

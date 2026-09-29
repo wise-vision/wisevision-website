@@ -1,0 +1,7 @@
+{
+  "color": { "bg": { "base": "#07080B" }, "text": { "DEFAULT": "#F2F5F7", "faint": "#3A3F48" } },
+  "pairs": [
+    { "fg": "text.DEFAULT", "bg": "bg.base" },
+    { "fg": "text.faint", "bg": "bg.base" }
+  ]
+}
