@@ -1,0 +1,39 @@
+---
+import Logo from './Logo.astro';
+import { NAV, CTA, isActive } from '../lib/site.mjs';
+const path = Astro.url.pathname;
+---
+<header class="site-header">
+  <div class="container bar">
+    <a href="/" class="brand" aria-label="WiseVision home"><Logo /></a>
+    <nav aria-label="Main">
+      <ul>
+        {NAV.map((n) => (
+          <li><a href={n.href} aria-current={isActive(n.href, path) ? 'page' : undefined}>{n.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+    <a class="btn btn-primary cta" href={CTA.href}>{CTA.label}</a>
+  </div>
+</header>
+<style>
+  .site-header {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--color-bg-base) 82%, transparent);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--color-bg-line);
+  }
+  .bar { display: flex; align-items: center; gap: var(--space-6); min-height: var(--layout-header); }
+  .brand { flex: none; }
+  nav { flex: 1; min-width: 0; }
+  ul { display: flex; gap: var(--space-6); list-style: none; margin: 0; padding: 0; }
+  nav a { color: var(--color-text-muted); text-decoration: none; font-size: var(--size-sm); white-space: nowrap; }
+  nav a:hover, nav a[aria-current='page'] { color: var(--color-text); }
+  .cta { flex: none; padding: var(--space-2) var(--space-4); font-size: var(--size-sm); }
+  @media (max-width: 1000px) {
+    .bar { flex-wrap: wrap; row-gap: 0; padding-top: var(--space-3); }
+    nav { order: 3; flex-basis: 100%; padding-block: var(--space-3); }
+    ul { flex-wrap: wrap; gap: var(--space-2) var(--space-4); }
+    .brand { margin-right: auto; }
+  }
+</style>

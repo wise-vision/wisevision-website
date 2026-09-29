@@ -6,7 +6,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['scripts/**/*.mjs', 'src/lib/**/*.{ts,mjs,js}'],
-      exclude: ['scripts/claims-lint*'],
+      exclude: ['scripts/claims-lint*', 'scripts/screenshots.mjs'],
       reporter: ['text', 'json-summary'],
       thresholds: { lines: 80 },
     },

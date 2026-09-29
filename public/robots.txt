@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://wisevision.tech/sitemap-index.xml

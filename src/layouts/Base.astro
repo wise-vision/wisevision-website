@@ -1,0 +1,71 @@
+---
+import '../styles/global.css';
+import displayFont from '@fontsource/space-grotesk/files/space-grotesk-latin-700-normal.woff2?url';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE, canonicalFor, organizationJsonLd } from '../lib/site.mjs';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Override the canonical URL (absolute). Defaults to the current path on wisevision.tech. */
+  canonical?: string;
+  ogImage?: string;
+  ogType?: string;
+  /** Extra JSON-LD objects for this page (Organization is always emitted). */
+  jsonLd?: object[];
+  /** Path of this page's Markdown twin, e.g. "/ros2-mcp.md", emitted as <link rel=alternate type=text/markdown>. */
+  markdownAlternate?: string;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description = SITE.description,
+  canonical = canonicalFor(Astro.url.pathname),
+  ogImage,
+  ogType = 'website',
+  jsonLd = [],
+  markdownAlternate,
+  noindex = false,
+} = Astro.props;
+const fullTitle = title ? `${title} · WiseVision` : 'WiseVision: the AI layer for ROS 2 robots';
+const ld = [organizationJsonLd(), ...jsonLd];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#07080B" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {markdownAlternate && <link rel="alternate" type="text/markdown" href={markdownAlternate} />}
+    <meta property="og:site_name" content="WiseVision" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {ogImage && <meta property="og:image" content={new URL(ogImage, SITE.url).href} />}
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    <slot name="head" />
+    {ld.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj)} />)}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      import '../scripts/motion.ts';
+    </script>
+  </body>
+</html>
