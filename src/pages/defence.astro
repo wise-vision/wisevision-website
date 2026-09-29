@@ -27,7 +27,7 @@ const cta = section(doc, 'cta');
 </CopyPage>
 <style>
   .media-wrap { padding-top: var(--space-16); }
-  .media-wrap:empty { display: none; }
+  .media-wrap:not(:has(figure)) { display: none; }
   :global(.shift ul), :global(.build ul) { list-style: none; padding: 0 !important; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: none !important; gap: var(--space-8) var(--space-12) !important; }
   :global(.shift li), :global(.build li) { border-top: 1px solid var(--color-bg-line); padding-top: var(--space-4); }
   :global(.principle h2) { font-size: var(--size-display) !important; max-width: 12ch !important; }

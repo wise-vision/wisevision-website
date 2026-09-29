@@ -43,7 +43,7 @@ docker run -i --rm -e ROS2_MCP_READONLY=1 mcp/ros2
 
 Read-only mode fails closed: a tool is only registered if it was reviewed and listed as read-only, and a test fails when a new tool is added without that review. {#c:mcp-readonly-failclosed}
 
-Read-only mode ships in the next ROS2 MCP release; the image in Docker's catalog does not have it yet. {#c:mcp-readonly-release}
+Read-only mode ships in release 2610 and the `wisevision/ros2_mcp:humble` / `:jazzy` images. The `mcp/ros2` image in Docker's catalog is rebuilt by Docker and does not have it yet. {#c:mcp-readonly-release}
 
 Also worth knowing:
 

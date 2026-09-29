@@ -104,7 +104,7 @@ const f = (n: string) => `${id}-${n}`;
     width: 100%; font: inherit; color: var(--color-text); background: var(--color-bg-base);
     border: 1px solid var(--color-bg-line); border-radius: var(--radius-sm); padding: var(--space-3) var(--space-4);
   }
-  select { appearance: auto; }
+  select { appearance: auto; text-overflow: ellipsis; min-width: 0; max-width: 100%; }
   textarea { resize: vertical; min-height: 7.5rem; }
   input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 1px; }
   [aria-invalid='true'] { border-color: var(--color-danger); }

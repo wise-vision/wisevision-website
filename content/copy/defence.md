@@ -14,9 +14,9 @@ eyebrow: Defence & dual-use
 
 # The front line is going unmanned.
 
-In August 2026, Ukraine's ground robots ran more than 25,000 logistics and evacuation missions in a single month, 3.3 times the January figure. [Ministry of Defence of Ukraine] {#c:def-ugv-missions}
+In August 2026, Ukraine's ground robots ran more than 25,000 logistics and evacuation missions in a single month, 3.3 times the January figure. [Ministry of Defence of Ukraine, 7 Sep 2026] {#c:def-ugv-missions}
 
-The machines that carry ammunition and pull out the wounded are now robots. The software that coordinates them decides whether they arrive.
+The machines that carry supplies and pull out the wounded are now robots. The software that coordinates them decides whether they arrive.
 
 - primary_cta: Talk to us → /contact/?topic=defence
 

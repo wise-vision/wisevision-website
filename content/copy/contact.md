@@ -21,7 +21,7 @@ One inbox for everything: ROS2 MCP on a real fleet, WiseOS early access, dual-us
 form: contact (fields: email, organisation, role, what you need, consent)
 
 topics:
-- ROS2 MCP on a real robot or fleet
+- ROS2 MCP on a real fleet
 - WiseOS early access or demo
 - Defence & dual-use
 - Something else
