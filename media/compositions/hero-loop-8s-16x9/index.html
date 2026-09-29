@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>WiseVision ambient hero loop</title>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="shared/base.css" />
+<script src="vendor/gsap.min.js"></script>
+<script src="shared/wv.js"></script>
+<style>
+html, body { width: 1920px; height: 1080px; }
+#cam { position: absolute; inset: -40px; }
+#cam svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(110% 80% at 55% 55%, rgba(7,8,11,0) 55%, rgba(7,8,11,.85) 100%); }
+</style>
+</head>
+<body>
+<div id="root" class="land" data-composition-id="main" data-start="0" data-duration="8" data-width="1920" data-height="1080">
+  <div id="cam"><svg id="scene" viewBox="0 0 1920 1080"></svg></div>
+  <div class="vignette"></div>
+</div>
+<script>
+(function () {
+  var W = 1920, H = 1080, PORT = false;
+  var svg = document.getElementById('scene');
+  // Left column kept clean for type (16:9); mobile crop composed separately: lead rover + 3 units.
+  WV.grid(svg, W, H, { vx: PORT ? W * 0.5 : W * 0.34, vy: PORT ? H * 0.44 : H * 0.36, rows: 18, cols: 30 });
+  var L = PORT ? [540, 1330, 1.25] : [1180, 760, 1.35];
+  var U = PORT
+    ? [['quadruped', 850, 1120, 0.62, 0.8], ['drone', 250, 880, 0.7, 0.65], ['mast', 860, 820, 0.55, 0.45]]
+    : [['quadruped', 1640, 640, 0.72, 0.8], ['drone', 1520, 330, 0.72, 0.65], ['mast', 820, 520, 0.6, 0.45]];
+  var ring = WV.scanRing(svg, 'ring', L[0], L[1] + 10, PORT ? 520 : 760, PORT ? 170 : 210, 180);
+  WV.rover(svg, 'lead', L[0], L[1], L[2], 1);
+  WV.triad(svg, L[0] + 20 * L[2], L[1] - 100 * L[2], 36);
+  var hits = WV.el('g', { id: 'hits' }, svg);
+  U.forEach(function (u, i) {
+    WV[u[0]](svg, 'u' + i, u[1], u[2], u[3], u[4]);
+    WV.el('circle', { id: 'h' + i, cx: u[1], cy: u[2] - 20, r: 70, fill: 'none', stroke: '#3CFFB4', 'stroke-width': 2, opacity: 0 }, hits);
+  });
+  // The one signal line: lead rover -> first fleet unit, ending in a green endpoint dot.
+  var t = U[0];
+  WV.el('path', { id: 'sig', d: 'M ' + (L[0] + 30) + ' ' + (L[1] - 130) + ' Q ' + ((L[0] + t[1]) / 2) + ' ' + (Math.min(L[1], t[2]) - 260) + ' ' + t[1] + ' ' + (t[2] - 70), fill: 'none', stroke: '#3CFFB4', 'stroke-width': 3 }, svg);
+  WV.el('circle', { id: 'sigdot', cx: t[1], cy: t[2] - 70, r: 9, fill: '#3CFFB4' }, svg);
+
+  // Seamless 8 s loop: every tween returns to its t=0 state by t=8.
+  var tl = gsap.timeline({ paused: true });
+  tl.fromTo(ring, { scale: 0.12, opacity: 0.95 }, { scale: 1.2, opacity: 0, duration: 4, ease: 'power1.out', transformOrigin: '50% 50%', repeat: 1 }, 0);
+  // The sweep "finds" each unit as it passes (unit distance -> hit time within each 4 s cycle).
+  [1.3, 2.0, 2.5].forEach(function (at, i) {
+    [0, 4].forEach(function (c) {
+      tl.fromTo('#h' + i, { opacity: 0, scale: 0.7 }, { opacity: 0.9, scale: 1, duration: 0.35, ease: 'back.out(1.6)', transformOrigin: '50% 50%' }, c + at);
+      tl.to('#h' + i, { opacity: 0, duration: 0.9, ease: 'sine.in' }, c + at + 0.45);
+    });
+  });
+  tl.fromTo('#sigdot', { scale: 1 }, { scale: 1.6, duration: 1, ease: 'sine.inOut', yoyo: true, repeat: 3, transformOrigin: '50% 50%' }, 0);
+  tl.fromTo('#cam', { x: 0, y: 0 }, { x: PORT ? -12 : -24, y: -8, duration: 4, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 0);
+  window.__timelines['main'] = tl;
+})();
+</script>
+</body>
+</html>

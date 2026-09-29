@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>ROS2 MCP: your agent can see your robot</title>
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="shared/base.css" />
+<script src="vendor/gsap.min.js"></script>
+<script src="shared/wv.js"></script>
+<style>
+html, body { width: 1920px; height: 1080px; }
+.chat { display: flex; flex-direction: column; gap: 18px; padding: 30px 32px; }
+.msg { font-size: 30px; line-height: 1.4; padding: 18px 24px; border-radius: 18px; max-width: 92%; }
+.msg.user { align-self: flex-end; background: rgba(242,245,247,.08); border: 1px solid var(--wv-line); }
+.msg.ai { align-self: flex-start; background: rgba(60,255,180,.07); border: 1px solid rgba(60,255,180,.3); }
+.msg.ai b { color: var(--wv-accent-text); font-weight: 600; }
+.tool { align-self: flex-start; font-family: var(--wv-font-mono); font-size: 24px; color: var(--wv-text-muted); display: flex; gap: 12px; align-items: center; }
+.tool .fn { color: var(--wv-accent-text); font-weight: 600; }
+.tool .arg { color: var(--wv-text-dim); }
+.res { align-self: stretch; font-family: var(--wv-font-mono); font-size: 22px; line-height: 1.6; color: #B8C4CE; background: rgba(0,0,0,.35); border-radius: 12px; padding: 14px 20px; white-space: pre; }
+.port .msg { font-size: 32px; }
+.port .res { font-size: 21px; }
+.land #p3 .card, .land #p2 .card { flex: 1 1 auto; min-width: 0; }
+.land #p2 .col.text, .land #p3 .col.text { flex-basis: 560px; }
+.land #p2 .term { font-size: 25px; }
+.res { font-size: 25px !important; color: #D3DCE3 !important; }
+.tool { font-size: 26px !important; }
+.land #p4 .footage { flex: 0 0 960px; height: 720px; }
+.port #p4 .footage { width: 920px; height: 690px; align-self: center; }
+.proofgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.proof { border: 1px solid var(--wv-line); border-radius: 16px; padding: 22px 24px; background: var(--wv-panel); }
+.proof .k { font-family: var(--wv-font-mono); font-size: 20px; letter-spacing: .12em; text-transform: uppercase; color: var(--wv-text-dim); }
+.proof .v { font-family: var(--wv-font-display); font-weight: 700; font-size: 38px; margin-top: 8px; }
+.port .proof .v { font-size: 40px; }
+.agentnode { position: absolute; font-family: var(--wv-font-mono); font-size: 26px; font-weight: 600; color: var(--wv-bg-0); background: var(--wv-accent); padding: 12px 18px; border-radius: 10px; }
+.land .agentnode { left: 1380px; top: 250px; }
+.port .agentnode { left: 640px; top: 1080px; }
+.land #p1 .col.text { flex-basis: 820px; }
+.land #p5 .col.wide { flex: 0 0 1180px; }
+.port #p3 .sub { display: none; }
+.port #p3 { gap: 44px; }
+.port .msg { font-size: 30px !important; }
+.port #p1 { justify-content: flex-start; padding-top: 300px; }
+</style>
+</head>
+<body>
+<div id="root" class="land" data-composition-id="main" data-start="0" data-duration="30" data-width="1920" data-height="1080">
+  <div class="bg" id="bgscene"><svg id="scene" viewBox="0 0 1920 1080"></svg></div>
+  <div class="brand" id="brand"><span class="dot"></span>WiseVision <span class="prod">ROS2 MCP</span></div>
+
+  <div class="phase" id="p1">
+    <div class="col text">
+      <div class="kicker" id="p1k">ROS2 MCP · open source · MPL-2.0</div>
+      <div class="h1 xl" id="p1h">Your agent can <em>see</em> your robot.</div>
+      <div class="sub" id="p1s">Claude, Cursor or Codex reads your ROS 2 topics, services and actions over MCP.</div>
+    </div>
+    <div class="agentnode" id="p1a">agent</div>
+  </div>
+
+  <div class="phase" id="p2">
+    <div class="col text">
+      <div class="kicker" id="p2k">01 · install</div>
+      <div class="h1" id="p2h">One container. No broker.</div>
+      <div class="sub" id="p2s">stdio transport. Build the image, point your MCP client at it.</div>
+    </div>
+    <div class="card" id="p2c">
+      <div class="bar"><i></i><i></i><i></i>&nbsp;terminal</div>
+      <div class="term"><div id="t1"><span class="p">$ </span>git clone https://github.com/wise-vision/ros2_mcp.git</div><div id="t2"><span class="p">$ </span>cd ros2_mcp</div><div id="t3"><span class="p">$ </span>docker build -t wisevision/ros2_mcp .</div><div id="t4" class="c"># MCP client config</div><div id="t5" class="s">"command": "docker",</div><div id="t6" class="s">"args": ["run", "-i", "--rm",</div><div id="t7" class="s">         "wisevision/ros2_mcp:jazzy"]</div></div>
+    </div>
+  </div>
+
+  <div class="phase" id="p3">
+    <div class="col text">
+      <div class="kicker" id="p3k">02 · ask → answer</div>
+      <div class="h1" id="p3h">Ask in plain words.</div>
+      <div class="sub" id="p3s">The agent picks the tool, reads the live topic, answers.</div>
+    </div>
+    <div class="card" id="p3c">
+      <div class="bar"><i></i><i></i><i></i>&nbsp;agent chat · example</div>
+      <div class="chat">
+        <div class="msg user" id="c1">Is the lidar publishing?</div>
+        <div class="tool" id="c2"><span>→</span><span class="fn">ros2_topic_list</span></div>
+        <div class="res" id="c3">/scan    sensor_msgs/msg/LaserScan
+/odom    nav_msgs/msg/Odometry
+/cmd_vel geometry_msgs/msg/Twist</div>
+        <div class="tool" id="c4"><span>→</span><span class="fn">ros2_topic_subscribe</span><span class="arg">topic_name: /scan · duration: 5</span></div>
+        <div class="msg ai" id="c5">Yes. <b>/scan</b> delivered <b>50 messages in 5 s</b>, about 10 Hz.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase" id="p4">
+    <div class="col text">
+      <div class="footage-tag" id="p4k"><span class="rec"></span>Real footage</div>
+      <div class="h1" id="p4h">Not a mock-up.</div>
+      <div class="sub" id="p4s">Claude publishes to /move, then checks /position, on a live ROS 2 graph.</div>
+    </div>
+    <div class="footage" id="p4f">
+      <video id="p4v" class="vid" src="proof/claude-ros2-topics.mp4" data-start="20" data-duration="6.5" data-wv-scene-end="25.45" data-track-index="2" muted playsinline style="inset:0;width:100%;height:100%"></video>
+    </div>
+  </div>
+
+  <div class="phase" id="p5">
+    <div class="col wide">
+      <div class="kicker" id="p5k">ROS2 MCP</div>
+      <div class="h1" id="p5h">Give your agent <em>eyes</em> on ROS 2.</div>
+      <div class="proofgrid" id="p5g">
+        <div class="proof"><div class="k">clients</div><div class="v">Claude · Cursor · Codex</div></div>
+        <div class="proof"><div class="k">ROS 2</div><div class="v">Humble + Jazzy</div></div>
+        <div class="proof"><div class="k">catalog</div><div class="v">Docker MCP catalog</div></div>
+        <div class="proof"><div class="k">licence</div><div class="v">Open source · MPL-2.0</div></div>
+      </div>
+      <div class="cta" id="p5c">github.com/wise-vision/ros2_mcp</div>
+    </div>
+  </div>
+
+  <div class="progress"><span class="fill" id="prog"></span></div>
+</div>
+<script>
+(function () {
+  var W = 1920, H = 1080, PORT = false;
+  var svg = document.getElementById('scene');
+  WV.grid(svg, W, H, { vx: PORT ? W * 0.5 : W * 0.62, vy: PORT ? H * 0.5 : H * 0.36 });
+  var rx = PORT ? 330 : 1300, ry = PORT ? 1560 : 820, rs = PORT ? 1.5 : 1.7;
+  var ringG = WV.scanRing(svg, 'ring', rx, ry, PORT ? 420 : 560, PORT ? 120 : 150, 140);
+  WV.rover(svg, 'rover', rx, ry, rs, 1);
+  WV.triad(svg, rx + 20 * rs, ry - 100 * rs, 34);
+  WV.quadruped(svg, 'quad', PORT ? 760 : 1760, PORT ? 1290 : 600, PORT ? 0.8 : 0.9, 0.45);
+  var sig = WV.el('path', { id: 'sig', d: PORT ? 'M ' + (rx + 30) + ' ' + (ry - 150) + ' C 520 1300, 600 1180, 700 1140' : 'M ' + (rx + 30) + ' ' + (ry - 170) + ' C 1330 460, 1380 360, 1440 320', fill: 'none', stroke: '#3CFFB4', 'stroke-width': 3, 'stroke-dasharray': 900, 'stroke-dashoffset': 900 }, svg);
+  WV.el('circle', { id: 'sigdot', cx: PORT ? 700 : 1440, cy: PORT ? 1140 : 320, r: 8, fill: '#3CFFB4', opacity: 0 }, svg);
+
+  var tl = gsap.timeline({ paused: true });
+  gsap.set(['#p2', '#p3', '#p4', '#p5'], { opacity: 0 });
+  tl.fromTo('#prog', { scaleX: 0 }, { scaleX: 1, duration: 30, ease: 'none' }, 0);
+  tl.from('#brand', { opacity: 0, y: -16, duration: 0.6, ease: 'power2.out' }, 0.1);
+  tl.from('#rover', { y: 18, duration: 1.2, ease: 'expo.out' }, 0.1);
+  tl.fromTo(ringG, { scale: 0.15, opacity: 1 }, { scale: 1.25, opacity: 0, duration: 2.2, ease: 'power1.out', transformOrigin: '50% 50%', repeat: 12 }, 0.4);
+  // S1 hook
+  tl.from('#p1k', { opacity: 0, y: -20, duration: 0.5, ease: 'back.out(1.6)' }, 0.25);
+  tl.from('#p1h', { opacity: 0, y: 60, duration: 0.8, ease: 'power3.out' }, 0.45);
+  tl.from('#p1s', { opacity: 0, y: 30, duration: 0.7, ease: 'power2.out' }, 0.95);
+  tl.to('#sig', { strokeDashoffset: 0, duration: 1.4, ease: 'power2.inOut' }, 1.6);
+  tl.to('#sigdot', { opacity: 1, duration: 0.3, ease: 'power1.out' }, 2.9);
+  tl.from('#p1a', { opacity: 0, scale: 0.7, duration: 0.5, ease: 'back.out(1.8)' }, 2.9);
+  // S1 -> S2
+  tl.to('#p1', { opacity: 0, filter: 'blur(10px)', duration: 0.45, ease: 'sine.inOut' }, 6.0);
+  tl.set('#p1', { opacity: 0 }, 6.45);
+  tl.to('#bgscene', { opacity: 0.14, duration: 0.6, ease: 'sine.inOut' }, 6.0);
+  tl.to('#p2', { opacity: 1, duration: 0.45, ease: 'sine.inOut' }, 6.1);
+  tl.from('#p2k', { opacity: 0, x: -30, duration: 0.5, ease: 'power2.out' }, 6.25);
+  tl.from('#p2h', { opacity: 0, y: 50, duration: 0.7, ease: 'power3.out' }, 6.4);
+  tl.from('#p2s', { opacity: 0, y: 24, duration: 0.6, ease: 'sine.out' }, 6.75);
+  tl.from('#p2c', { opacity: 0, y: 60, scale: 0.97, duration: 0.8, ease: 'expo.out' }, 6.5);
+  ['#t1', '#t2', '#t3', '#t4', '#t5', '#t6', '#t7'].forEach(function (t, i) {
+    tl.from(t, { opacity: 0, x: -14, duration: 0.35, ease: i % 2 ? 'power2.out' : 'back.out(1.4)' }, 7.2 + i * (i < 3 ? 0.8 : 0.4));
+  });
+  // S2 -> S3
+  tl.to('#p2', { opacity: 0, filter: 'blur(10px)', duration: 0.45, ease: 'sine.inOut' }, 13.0);
+  tl.set('#p2', { opacity: 0 }, 13.45);
+  tl.to('#p3', { opacity: 1, duration: 0.45, ease: 'sine.inOut' }, 13.1);
+  tl.from('#p3k', { opacity: 0, x: -30, duration: 0.5, ease: 'power2.out' }, 13.25);
+  tl.from('#p3h', { opacity: 0, y: 50, duration: 0.7, ease: 'power3.out' }, 13.4);
+  tl.from('#p3s', { opacity: 0, y: 24, duration: 0.6, ease: 'sine.out' }, 13.75);
+  tl.from('#p3c', { opacity: 0, x: 60, duration: 0.8, ease: 'expo.out' }, 13.5);
+  tl.from('#c1', { opacity: 0, y: 20, scale: 0.95, duration: 0.45, ease: 'back.out(1.7)' }, 14.2);
+  tl.from('#c2', { opacity: 0, x: -20, duration: 0.4, ease: 'power2.out' }, 15.1);
+  tl.from('#c3', { opacity: 0, y: 14, duration: 0.5, ease: 'power3.out' }, 15.6);
+  tl.from('#c4', { opacity: 0, x: -20, duration: 0.4, ease: 'power2.out' }, 16.6);
+  tl.from('#c5', { opacity: 0, y: 20, scale: 0.96, duration: 0.55, ease: 'back.out(1.5)' }, 17.8);
+  // S3 -> S4 (real footage)
+  tl.to('#p3', { opacity: 0, filter: 'blur(10px)', duration: 0.45, ease: 'sine.inOut' }, 20.0);
+  tl.set('#p3', { opacity: 0 }, 20.45);
+  tl.to('#p4', { opacity: 1, duration: 0.4, ease: 'sine.inOut' }, 20.05);
+  tl.from('#p4k', { opacity: 0, y: -16, duration: 0.45, ease: 'back.out(1.6)' }, 20.2);
+  tl.from('#p4h', { opacity: 0, y: 50, duration: 0.7, ease: 'power3.out' }, 20.35);
+  tl.from('#p4s', { opacity: 0, y: 24, duration: 0.6, ease: 'sine.out' }, 20.7);
+  tl.from('#p4f', { opacity: 0, scale: 0.94, duration: 0.7, ease: 'expo.out' }, 20.15);
+  tl.from('.rec', { opacity: 0.2, duration: 0.5, ease: 'sine.inOut', repeat: 7, yoyo: true }, 20.5);
+  // S4 -> S5 close
+  tl.to('#p4', { opacity: 0, filter: 'blur(10px)', duration: 0.45, ease: 'sine.inOut' }, 25.0);
+  tl.set('#p4', { opacity: 0 }, 25.45);
+  tl.to('#bgscene', { opacity: PORT ? 0.22 : 0.4, duration: 0.8, ease: 'sine.inOut' }, 25.0);
+  tl.to('#p5', { opacity: 1, duration: 0.45, ease: 'sine.inOut' }, 25.1);
+  tl.from('#p5k', { opacity: 0, x: -30, duration: 0.5, ease: 'power2.out' }, 25.25);
+  tl.from('#p5h', { opacity: 0, y: 50, duration: 0.7, ease: 'power3.out' }, 25.4);
+  tl.from('#p5g .proof', { opacity: 0, y: 30, duration: 0.5, ease: 'back.out(1.4)', stagger: 0.15 }, 25.9);
+  tl.from('#p5c', { opacity: 0, scale: 0.9, duration: 0.55, ease: 'expo.out' }, 26.9);
+  window.__timelines['main'] = tl;
+})();
+</script>
+</body>
+</html>

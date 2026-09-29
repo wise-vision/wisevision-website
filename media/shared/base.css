@@ -1,0 +1,49 @@
+/* media/shared/base.css — shared layout for every WiseVision explainer (16:9 = .land, 9:16 = .port). */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { margin: 0; overflow: hidden; background: var(--wv-bg-0); }
+#root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--wv-bg-gradient); color: var(--wv-text); font-family: var(--wv-font-body); }
+.bg { position: absolute; inset: 0; pointer-events: none; }
+.bg svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.phase { position: absolute; inset: 0; display: flex; }
+.land .phase { padding: 150px 140px 130px; flex-direction: row; align-items: center; gap: 90px; }
+.port .phase { padding: 230px 80px 200px; flex-direction: column; justify-content: center; gap: 64px; }
+.col { display: flex; flex-direction: column; gap: 28px; min-width: 0; }
+.land .col.text { flex: 0 0 720px; }
+.land .col.wide { flex: 1 1 auto; }
+.port .col { width: 100%; }
+.kicker { font-family: var(--wv-font-mono); font-size: 26px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--wv-accent-text); }
+.h1 { font-family: var(--wv-font-display); font-weight: 700; line-height: 1.02; letter-spacing: -0.025em; color: var(--wv-text); }
+.land .h1 { font-size: 104px; }
+.port .h1 { font-size: 112px; }
+.h1.xl { font-size: 136px; }
+.port .h1.xl { font-size: 140px; }
+.h1 em { font-style: normal; color: var(--wv-accent); }
+.sub { font-size: 36px; line-height: 1.35; color: var(--wv-text-muted); max-width: 760px; }
+.port .sub { font-size: 40px; max-width: 900px; }
+.brand { position: absolute; display: flex; align-items: center; gap: 18px; font-family: var(--wv-font-display); font-weight: 700; font-size: 30px; letter-spacing: .02em; color: var(--wv-text); z-index: 20; }
+.land .brand { left: 140px; top: 64px; }
+.port .brand { left: 80px; top: 96px; }
+.brand .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--wv-accent); display: block; }
+.brand .prod { font-family: var(--wv-font-mono); font-weight: 400; font-size: 24px; color: var(--wv-text-muted); letter-spacing: .06em; }
+.badge { position: absolute; z-index: 20; font-family: var(--wv-font-mono); font-size: 24px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--wv-bg-0); background: var(--wv-accent); padding: 12px 20px; border-radius: 8px; }
+.land .badge { right: 140px; top: 56px; }
+.port .badge { right: 80px; top: 88px; }
+.progress { position: absolute; left: 0; bottom: 0; height: 6px; width: 100%; background: var(--wv-line); z-index: 20; }
+.progress .fill { display: block; height: 100%; width: 100%; background: var(--wv-accent); transform-origin: 0 50%; }
+.card { background: rgba(11, 14, 20, .86); border: 1px solid var(--wv-line); border-radius: 20px; overflow: hidden; }
+.card .bar { display: flex; align-items: center; gap: 10px; padding: 18px 24px; border-bottom: 1px solid var(--wv-line); font-family: var(--wv-font-mono); font-size: 22px; color: var(--wv-text-dim); }
+.card .bar i { display: block; width: 14px; height: 14px; border-radius: 50%; background: var(--wv-line); }
+.term { padding: 28px 32px; font-family: var(--wv-font-mono); font-size: 28px; line-height: 1.7; color: var(--wv-text); white-space: pre; }
+.port .term { font-size: 25px; padding: 26px 28px; }
+.term .p { color: var(--wv-accent-text); }
+.term .c { color: var(--wv-text-dim); }
+.term .ok { color: var(--wv-accent-text); }
+.term .s { color: #B8C4CE; }
+.chips { display: flex; flex-wrap: wrap; gap: 16px; }
+.chip { display: block; font-family: var(--wv-font-mono); font-size: 25px; padding: 14px 22px; border-radius: 999px; border: 1px solid rgba(60, 255, 180, .35); color: var(--wv-text); background: rgba(60, 255, 180, .06); }
+.cta { display: inline-block; font-family: var(--wv-font-mono); font-size: 32px; font-weight: 600; color: var(--wv-bg-0); background: var(--wv-accent); padding: 20px 30px; border-radius: 12px; align-self: flex-start; }
+.note { font-family: var(--wv-font-mono); font-size: 21px; color: var(--wv-text-dim); letter-spacing: .04em; }
+.footage { position: relative; border-radius: 18px; overflow: hidden; border: 1px solid var(--wv-line); background: #000; }
+.footage-tag { display: inline-flex; align-items: center; gap: 12px; font-family: var(--wv-font-mono); font-size: 24px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--wv-accent-text); }
+.footage-tag .rec { width: 14px; height: 14px; border-radius: 50%; background: var(--wv-accent); display: block; }
+.vid { position: absolute; object-fit: contain; background: #000; border-radius: 18px; }

@@ -1,0 +1,38 @@
+/*
+ * media/tokens.css — WiseVision design tokens for the HyperFrames explainers.
+ *
+ * The locked palette now comes from the site: `site-tokens.css` is a symlink (created by media/build.mjs in every
+ * composition dir) to src/styles/tokens.css, the generated foundation tokens. A plain `@import "../src/styles/..."`
+ * does not work here: HyperFrames lint rejects "../" asset paths and the import would resolve relative to the
+ * composition dir, so build.mjs links the file in instead. The --wv-* names below are aliases of the site's
+ * --color-* / --motion-* tokens; only the video-specific extras (glow, warn, panel, gradient) and the font stacks
+ * (the videos self-host static Inter/JetBrains Mono files in media/fonts) are defined here.
+ */
+@import url("site-tokens.css");
+@font-face { font-family: "Space Grotesk"; font-weight: 700; font-style: normal; font-display: block; src: url("fonts/space-grotesk-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Space Grotesk"; font-weight: 500; font-style: normal; font-display: block; src: url("fonts/space-grotesk-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 400; font-style: normal; font-display: block; src: url("fonts/inter-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 500; font-style: normal; font-display: block; src: url("fonts/inter-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 600; font-style: normal; font-display: block; src: url("fonts/inter-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 400; font-style: normal; font-display: block; src: url("fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 600; font-style: normal; font-display: block; src: url("fonts/jetbrains-mono-latin-600-normal.woff2") format("woff2"); }
+
+:root {
+  --wv-bg-0: var(--color-bg-base);
+  --wv-bg-1: var(--color-bg-raised);
+  --wv-bg-gradient: radial-gradient(120% 90% at 50% 30%, var(--color-bg-raised) 0%, var(--color-bg-base) 70%);
+  --wv-text: var(--color-text);
+  --wv-text-muted: var(--color-text-muted);
+  --wv-text-dim: var(--color-text-subtle);
+  --wv-line: rgba(242, 245, 247, 0.12);
+  --wv-panel: rgba(242, 245, 247, 0.04);
+  --wv-accent: var(--color-accent);          /* fills, paths, CTA */
+  --wv-accent-text: var(--color-accent-text); /* small accent text (AA) */
+  --wv-accent-glow: rgba(60, 255, 180, 0.18);
+  --wv-warn: #FFB547;
+  --wv-font-display: "Space Grotesk", system-ui, sans-serif;
+  --wv-font-body: "Inter", system-ui, sans-serif;
+  --wv-font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --wv-ease-reveal: var(--motion-ease-reveal);
+  --wv-dur-reveal: 700ms;
+}
