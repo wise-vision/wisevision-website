@@ -1,0 +1,10 @@
+---
+import Base from '../layouts/Base.astro';
+import PageShell from '../components/PageShell.astro';
+import { SITE } from '../lib/site.mjs';
+---
+<Base title="Privacy" description="Privacy policy for wisevision.tech.">
+  <PageShell eyebrow="Legal" title="Privacy" lede="The full privacy policy is being written.">
+    <p class="muted">This site sets no advertising or tracking cookies. If you email us, we use your message only to reply. Questions: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+  </PageShell>
+</Base>

@@ -1,0 +1,13 @@
+---
+interface Props { eyebrow?: string; title: string; lede?: string }
+const { eyebrow, title, lede } = Astro.props;
+---
+<section class="section container shell">
+  {eyebrow && <p class="eyebrow" data-reveal>{eyebrow}</p>}
+  <h1 data-reveal style="--reveal-i:1">{title}</h1>
+  {lede && <p class="lede" data-reveal style="--reveal-i:2">{lede}</p>}
+  <div data-reveal style="--reveal-i:3"><slot /></div>
+</section>
+<style>
+  .shell { padding-top: var(--space-32); }
+</style>

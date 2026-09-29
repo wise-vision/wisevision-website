@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+import { CTA, SITE } from '../lib/site.mjs';
+---
+<Base description={SITE.description}>
+  <section class="hero">
+    <div id="hero-slot" class="hero-slot" aria-hidden="true"></div>
+    <div class="container hero-copy">
+      <p class="eyebrow" data-reveal>ROS2 MCP · WiseOS</p>
+      <h1 class="display" data-reveal style="--reveal-i:1">The AI layer for ROS&nbsp;2 robots.</h1>
+      <p class="lede" data-reveal style="--reveal-i:2">Agents that see, understand and operate your fleet.</p>
+      <div class="actions" data-reveal style="--reveal-i:3">
+        <a class="btn btn-primary" href={CTA.href}>{CTA.label}</a>
+        <a class="btn btn-ghost" href="/docs/">Read the docs</a>
+      </div>
+    </div>
+  </section>
+  <section class="section container">
+    <ul class="proof" data-reveal>
+      <li>Listed in Docker's official MCP catalog</li>
+      <li>Open source, MPL-2.0</li>
+      <li>ROS 2 Humble + Jazzy</li>
+      <li>Works with Claude, Cursor and Codex</li>
+    </ul>
+  </section>
+</Base>
+<style>
+  .hero { position: relative; min-height: calc(100svh - var(--layout-header)); display: grid; align-items: end; overflow: hidden; }
+  .hero-slot { position: absolute; inset: 0; z-index: 0; }
+  .hero-copy { position: relative; z-index: 1; padding-block: var(--space-24); }
+  .display { font-size: var(--size-display); line-height: var(--leading-tight); max-width: 14ch; }
+  .actions { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: var(--space-8); }
+  .proof { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .proof li { border-top: 1px solid var(--color-bg-line); padding-top: var(--space-4); color: var(--color-text-muted); font-size: var(--size-sm); }
+</style>

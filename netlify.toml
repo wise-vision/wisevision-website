@@ -1,0 +1,11 @@
+# wvrevive_2809 W10.4: the legacy Netlify site (wisevision.netlify.app) now only
+# 301-redirects to the canonical site on Cloudflare Pages. Nothing is built here.
+[build]
+  command = "echo 'legacy host: redirect-only'"
+  publish = "netlify-redirect"
+
+[[redirects]]
+  from = "/*"
+  to = "https://wisevision.tech/:splat"
+  status = 301
+  force = true

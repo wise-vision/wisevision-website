@@ -1,0 +1,36 @@
+---
+import Logo from './Logo.astro';
+import { NAV, SITE } from '../lib/site.mjs';
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="container grid">
+    <div>
+      <Logo />
+      <p class="muted small">The AI layer for ROS 2 robots.</p>
+    </div>
+    <nav aria-label="Footer">
+      <ul>
+        {NAV.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+        <li><a href="/privacy/">Privacy</a></li>
+      </ul>
+    </nav>
+    <div class="contact">
+      <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      <a href={SITE.github} rel="noopener">GitHub: wise-vision</a>
+      <p class="muted small">ROS2 MCP is open source under the Mozilla Public License 2.0 (MPL-2.0).</p>
+    </div>
+  </div>
+  <div class="container legal muted small">© {year} WiseVision</div>
+</footer>
+<style>
+  .site-footer { border-top: 1px solid var(--color-bg-line); padding-block: var(--space-16) var(--space-8); margin-top: var(--space-24); }
+  .grid { display: grid; gap: var(--space-8); grid-template-columns: 1.2fr 1fr 1.2fr; }
+  ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+  a { color: var(--color-text-muted); text-decoration: none; }
+  a:hover { color: var(--color-text); }
+  .contact { display: grid; gap: var(--space-2); align-content: start; }
+  .small { font-size: var(--size-sm); margin-top: var(--space-3); }
+  .legal { margin-top: var(--space-12); }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+</style>

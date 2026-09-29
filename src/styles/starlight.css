@@ -1,0 +1,19 @@
+/* Map WiseVision tokens onto Starlight's theme variables (dark only). */
+:root,
+:root[data-theme='light'],
+:root[data-theme='dark'] {
+  --sl-font: var(--font-body);
+  --sl-font-mono: var(--font-mono);
+  --sl-color-accent-low: #0c2b20;
+  --sl-color-accent: var(--color-accent);
+  --sl-color-accent-high: var(--color-accent-text);
+  --sl-color-white: var(--color-text);
+  --sl-color-gray-1: #e2e7ec;
+  --sl-color-gray-2: var(--color-text-muted);
+  --sl-color-gray-3: var(--color-text-subtle);
+  --sl-color-gray-4: #4a5260;
+  --sl-color-gray-5: var(--color-bg-line);
+  --sl-color-gray-6: var(--color-bg-raised);
+  --sl-color-black: var(--color-bg-base);
+  --sl-color-text-accent: var(--color-accent-text);
+}
