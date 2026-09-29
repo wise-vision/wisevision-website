@@ -1,8 +1,17 @@
-# wisevision.tech: lead forms backend (Cloudflare Pages Functions + D1)
+# wisevision.tech: lead forms backend (Pages Functions + D1 + mailer Worker)
 
 `POST /api/lead` takes the early-access / contact / demo forms, stores one row in D1 (`wv-leads`) and mails
-Adam through the Email Workers `send_email` binding. Everything here runs locally today. Nothing has been
-created on the Cloudflare account yet; the steps below are what the parent runs once the account is usable.
+Adam. Cloudflare Pages Functions **cannot hold a `send_email` binding** (wrangler rejects the whole Pages config
+if one is declared), so the mail goes through a `LEAD_MAILER` **service binding** to the companion Worker
+`wv-lead-mailer` (`workers/lead-mailer/`). That Worker owns `send_email` and has **no public surface**
+(`workers_dev = false`, `preview_urls = false`, no routes, no custom domain).
+
+```
+browser ──POST /api/lead──▶ Pages Function (functions/) ──INSERT──▶ D1 wv-leads
+                                    │
+                                    └─service binding LEAD_MAILER─▶ Worker wv-lead-mailer ──send_email──▶ adam.krawczyk0698@gmail.com
+                                       {subject, text, replyTo}       (recipient + sender fixed in its own config)
+```
 
 ## What the endpoint does
 
@@ -14,10 +23,15 @@ created on the Cloudflare account yet; the steps below are what the parent runs 
 | Body | JSON, `application/x-www-form-urlencoded` or `multipart/form-data`; ≤ 32 KB (`413`); other types → `415`. |
 | Validation → `400 {fields}` | `form` ∈ early-access/contact/demo · `email` RFC-lite, ≤ 254 · `org` ≤ 200 · `role` ≤ 120 · `use_case` ≤ 4000 · `consent` true/on/1 · honeypot `website` must be empty · `cf-turnstile-response` required. CR/LF are flattened in single-line fields. |
 | Turnstile | `siteverify` with `TURNSTILE_SECRET` + `remoteip`. Fail → `403 turnstile_failed`; siteverify down → `503` (fails closed). |
+| E2E bypass | Only when the `E2E_KEY` secret is set: header `X-WV-E2E` equal to it (constant-time compare) skips Turnstile and prefixes the stored `use_case` with `[e2e]`. A present-but-wrong header → `403 e2e_forbidden`. No secret → the header is ignored. |
 | Duplicate | Same email + form within 24 h → `200 {ok:true, duplicate:true}`, no row, no mail. `dedupe_key UNIQUE` makes concurrent duplicates race-safe. |
 | Store | Parameterised `INSERT` into `leads`. Raw IP never stored: `ip_hash = SHA-256(ip | IP_SALT | UTC date)`. |
-| Mail | From `leads@wisevision.tech` to `LEAD_TO`, subject `[wisevision lead] <form> — <org or email>`, plain-text body with all fields, `Reply-To` = the lead. If sending throws, the row stays and the reply is `200 {mail:false}`; the failure is logged as `lead_mail_failed` (no PII). |
+| Mail | `LEAD_MAILER.fetch()` with `{subject: "[wisevision lead] <form> — <org or email>", text, replyTo: <lead email>}`. The mailer sends from `leads@wisevision.tech` to its fixed `LEAD_TO`, `Reply-To` = the lead. Binding missing / non-2xx / throw → the row stays and the reply is `200 {mail:false}`; logged as `lead_mail_failed` (no PII). |
 | Middleware | `/api/*`: nosniff, DENY framing, CSP `default-src 'none'`, HSTS, `no-store`; any throw → `500 {"error":"internal_error"}`, no stack trace. |
+
+Mailer Worker contract (`workers/lead-mailer/src/index.ts`): `POST` + `application/json` only, body ≤ 64 KB, the object
+must have **exactly** the keys `subject`, `text`, `replyTo` (any extra key such as `to`/`bcc` → `400`), subject ≤ 300 and
+single-line, text ≤ 20 000, `replyTo` a single-line email. `200 {ok:true}` / `400` / `405` / `500 misconfigured` / `502 send_failed`.
 
 Client helper: `src/lib/lead-form.ts` (`buildLeadPayload(new FormData(form))` + `submitLead(payload)`),
 which maps every status code to a user message. Field names: `form, email, org, role, use_case, consent, website,
@@ -29,84 +43,83 @@ controller = WiseVision; deletion via hello@wisevision.tech.
 ## Layout
 
 ```
-wrangler.toml                  Pages config (D1 LEADS → wv-leads, send_email LEAD_MAIL, vars)
-migrations/0001_leads.sql      leads + lead_attempts tables and indexes
-functions/api/lead.ts          route (onRequestPost / onRequest → 405)
-functions/api/_middleware.ts   security headers + JSON errors
-functions/_lib/lead.ts         the handler (pure, deps injectable)
-functions/test/**              vitest + @cloudflare/vitest-pool-workers (miniflare, local D1)
-functions/scripts/stage.sh     builds a clean Pages root (routes only) for dev / deploy
-functions/scripts/smoke.sh     wrangler pages dev + curl + local D1 count
+wrangler.toml                     Pages config: D1 LEADS → wv-leads, service LEAD_MAILER → wv-lead-mailer, TURNSTILE_SITE_KEY
+migrations/0001_leads.sql         leads + lead_attempts tables and indexes
+functions/api/lead.ts             route (onRequestPost / onRequest → 405)
+functions/api/_middleware.ts      security headers + JSON errors
+functions/_lib/lead.ts            the handler (pure, deps injectable)
+workers/lead-mailer/              companion Worker: wrangler.toml (send_email LEAD_MAIL), src/index.ts
+functions-dev/                    dev/test package (NOT deployed): vitest + @cloudflare/vitest-pool-workers, smoke
+functions-dev/test/**             tests for functions/, workers/lead-mailer/ and src/lib/lead-form.ts
+functions-dev/scripts/smoke.sh    wrangler dev (mailer) + wrangler pages dev + curl + local D1 count + captured .eml
 ```
+
+`functions/` holds only deployable code, so wrangler compiles it straight from the repo root (no staging step).
 
 ## Local
 
 ```bash
-cd functions
+cd functions-dev
 npm ci
-npm test                 # 65 tests
+npm test                 # all suites in workerd (miniflare, local D1)
 npm run coverage         # istanbul, threshold 80 % lines
 npm run typecheck
-npm run smoke            # wrangler pages dev on :8788 against test-fixtures/dist, local D1, prints count before/after + the captured .eml
+npm run smoke            # needs no .dev.vars in the repo root (it writes a temporary one with the Turnstile TEST secret)
+# or from the repo root: npm run test:functions
 ```
 
 The smoke uses Cloudflare's documented Turnstile **test** secret `1x0000000000000000000000000000000AA` (always passes;
-`2x0000000000000000000000000000000AA` always fails) via `.dev.vars` in the stage dir, never a real secret.
+`2x0000000000000000000000000000000AA` always fails), never a real secret.
 
-> **Why a stage dir:** the Pages route scanner compiles every `.js/.ts` file under `./functions`, including
-> `functions/node_modules` and `functions/test`. `scripts/stage.sh` copies only `api/` + `_lib/` next to the built
-> `dist/` and symlinks `node_modules`. **Use it for the real deploy too** (below). Alternative for the parent:
-> move `functions/package.json`, the tests and `node_modules` to e.g. `functions-dev/`, which would need the
-> root `package.json` owner (worker A) to add the deps.
+## Production (provisioned 2026-09-29; CI keeps it deployed)
 
-## Deploy (run once Cloudflare is live) — copy-paste
-
-Prereqs: the `wisevision.tech` zone is on Cloudflare, Email Routing is enabled on it, and
-`adam.krawczyk0698@gmail.com` is a **verified destination address** (Email → Email Routing → Destination addresses;
-click the link in the verification mail). `send_email` only delivers to verified destinations.
+Everything below is **already done** and idempotent to re-run. CI (`.github/workflows/ci.yml`, job `deploy`, push to
+`main` only, after `build-test` + `functions` + `claims-lint`) deploys the mailer Worker first, then Pages
+(`dist/` + `functions/`), then smoke-tests `/`, `/llms.txt` and `GET /api/lead` → 405.
+Repo secrets used by CI: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
 
 ```bash
-export HOME=/home/adam
-cd <repo>/functions && npm ci
-export CLOUDFLARE_ACCOUNT_ID=<account id>
-npx wrangler login            # or CLOUDFLARE_API_TOKEN with: Pages Edit, D1 Edit, Account Settings Read
+export HOME=/home/adam; set -a; . ~/.hermes/.env; set +a      # CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID; never print them
+W=functions-dev/node_modules/.bin/wrangler                   # run from the repo root
 
-# 1. D1
-npx wrangler d1 create wv-leads
-#    → paste the printed database_id into ../wrangler.toml ([[d1_databases]] database_id), commit.
-cd .. && functions/node_modules/.bin/wrangler d1 migrations apply wv-leads --remote
-functions/node_modules/.bin/wrangler d1 execute wv-leads --remote --command "select count(*) from leads"   # → 0
+# D1 (id 0c675264-1da8-41e6-a959-3c04b5a5a7a5 is already in wrangler.toml)
+$W d1 migrations apply wv-leads --remote
+$W d1 migrations list  wv-leads --remote                      # → "No migrations to apply!"
 
-# 2. Turnstile widget (dashboard: Turnstile → Add widget, hostnames wisevision.tech + www.wisevision.tech, mode Managed)
-#    → put the SITE key in wrangler.toml [vars] TURNSTILE_SITE_KEY (public) and in the page's widget, commit.
+# Mailer Worker (send_email → verified destination adam.krawczyk0698@gmail.com, sender leads@wisevision.tech)
+(cd workers/lead-mailer && npm ci && npx wrangler deploy)     # → "No targets deployed" is EXPECTED (no public surface)
 
-# 3. Pages project + secrets (project name must match wrangler.toml `name`)
-functions/node_modules/.bin/wrangler pages project create wisevision-website --production-branch main   # skip if W0 created it
-functions/node_modules/.bin/wrangler pages secret put TURNSTILE_SECRET --project-name wisevision-website
-openssl rand -hex 32 | functions/node_modules/.bin/wrangler pages secret put IP_SALT --project-name wisevision-website
+# Pages secrets, via stdin only (production AND preview, so preview deploys work)
+S=/home/adam/.hermes/state/wvrevive                           # 0600 files: turnstile-secret, ip-salt, e2e-key
+for e in production preview; do
+  tr -d '\n' < $S/turnstile-secret | $W pages secret put TURNSTILE_SECRET --project-name wisevision --env $e
+  tr -d '\n' < $S/ip-salt          | $W pages secret put IP_SALT          --project-name wisevision --env $e
+  tr -d '\n' < $S/e2e-key          | $W pages secret put E2E_KEY          --project-name wisevision --env $e
+done
 
-# 4. Build the site (worker A's build → dist/), stage, deploy
-npm run build                                            # root site build → ./dist
-functions/scripts/stage.sh /tmp/wv-deploy ./dist
-cd /tmp/wv-deploy && /path/to/repo/functions/node_modules/.bin/wrangler pages deploy dist --project-name wisevision-website --branch main
-
-# 5. Live end-to-end (W7 gate): submit the real form on https://wisevision.tech, then
-functions/node_modules/.bin/wrangler d1 execute wv-leads --remote --command "select id, ts, form, email, org from leads order by id desc limit 3"
-#    and Adam confirms the "[wisevision lead] …" mail arrived.
+# Manual deploy (CI does this on main): preview first, production only via CI
+npm run build && $W pages deploy dist --project-name wisevision --branch w7-preview
 ```
 
-Bindings the deploy relies on (all declared in `wrangler.toml`; Pages reads them when deploying with wrangler):
-D1 `LEADS` → `wv-leads`; `send_email` `LEAD_MAIL` (destination `adam.krawczyk0698@gmail.com`); vars `LEAD_TO`,
-`LEAD_FROM`, `TURNSTILE_SITE_KEY`; secrets `TURNSTILE_SECRET`, `IP_SALT`. If the Pages dashboard does not pick up
-`[[send_email]]` from `wrangler.toml`, add it under Settings → Bindings → Send Email, name `LEAD_MAIL`.
+Live E2E (Turnstile bypassed with the E2E key; the row is tagged `[e2e]`):
+
+```bash
+K=$(cat /home/adam/.hermes/state/wvrevive/e2e-key)
+curl -s -X POST https://wisevision.tech/api/lead -H 'content-type: application/json' -H "x-wv-e2e: $K" \
+  --data '{"form":"contact","email":"adam.krawczyk0698+wvtest@gmail.com","org":"WiseVision E2E test","use_case":"e2e","consent":true}'
+unset K
+$W d1 execute wv-leads --remote --command "select id,ts,form,org from leads order by id desc limit 3"
+```
+
+To disable the bypass entirely: `$W pages secret delete E2E_KEY --project-name wisevision`.
 
 Useful after launch:
 
 ```bash
-# leads in the last 30 days with a real org (OUTCOME predicate input)
-wrangler d1 execute wv-leads --remote --command "select count(*) from leads where ts > datetime('now','-30 days') and org is not null"
+# real leads in the last 30 days (excludes e2e rows)
+$W d1 execute wv-leads --remote --command "select count(*) from leads where ts > strftime('%Y-%m-%dT%H:%M:%fZ','now','-30 days') and coalesce(use_case,'') not like '[e2e]%'"
 # retention: delete rows older than 24 months
-wrangler d1 execute wv-leads --remote --command "delete from leads where ts < strftime('%Y-%m-%dT%H:%M:%fZ','now','-24 months')"
-# deletion request (hello@): 
-wrangler d1 execute wv-leads --remote --command "delete from leads where email = 'person@example.org'"
+$W d1 execute wv-leads --remote --command "delete from leads where ts < strftime('%Y-%m-%dT%H:%M:%fZ','now','-24 months')"
+# deletion request (hello@):
+$W d1 execute wv-leads --remote --command "delete from leads where email = 'person@example.org'"
 ```

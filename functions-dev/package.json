@@ -6,8 +6,7 @@
     "test": "vitest run",
     "coverage": "vitest run --coverage",
     "typecheck": "tsc -p .",
-    "smoke": "./scripts/smoke.sh",
-    "stage": "./scripts/stage.sh"
+    "smoke": "./scripts/smoke.sh"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.22.0",

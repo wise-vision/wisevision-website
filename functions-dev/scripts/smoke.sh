@@ -16,7 +16,8 @@ cp -r "$HERE/test-fixtures/dist" "$STATE/dist"
 [ -e "$REPO/.dev.vars" ] && { echo "refusing to overwrite $REPO/.dev.vars"; exit 1; }
 printf 'TURNSTILE_SECRET=%s\nIP_SALT=local-smoke-salt\n' "1x0000000000000000000000000000000AA" > "$REPO/.dev.vars"
 PID=""
-cleanup() { [ -n "$PID" ] && kill "$PID" 2>/dev/null || true; rm -f "$REPO/.dev.vars"; }
+MPID=""
+cleanup() { for p in $PID $MPID; do kill "$p" 2>/dev/null || true; done; rm -f "$REPO/.dev.vars"; }
 trap cleanup EXIT
 cd "$REPO"
 P=(--persist-to "$STATE/state")
@@ -28,6 +29,13 @@ echo "== apply migrations (local)"
 echo "== count before"
 d1 "select count(*) as n from leads"
 
+# The companion mailer Worker (owns send_email). `wrangler dev` registers it in the local dev registry, so
+# the Pages project's LEAD_MAILER service binding resolves to it; its send_email writes a local .eml.
+MAILER_DIR="$REPO/workers/lead-mailer"
+[ -d "$MAILER_DIR/node_modules" ] || (cd "$MAILER_DIR" && npm ci)
+"$WRANGLER" dev --config "$MAILER_DIR/wrangler.toml" --port "$((PORT + 1))" --ip 127.0.0.1 --persist-to "$STATE/mailer" > "$STATE/mailer-dev.log" 2>&1 &
+MPID=$!
+sleep 4
 "$WRANGLER" pages dev "$STATE/dist" "${P[@]}" --port "$PORT" --ip 127.0.0.1 > "$STATE/pages-dev.log" 2>&1 &
 PID=$!
 for _ in $(seq 1 60); do curl -sf "http://127.0.0.1:$PORT/" >/dev/null && break; sleep 1; done
@@ -49,15 +57,16 @@ echo "== POST cross-origin (expect 403)"
 curl -sS -X POST "$URL" -H 'content-type: application/json' -H 'origin: https://evil.example' --data '{}'
 echo
 sleep 1
-EML_SRC="$(find "$STATE" "$REPO/.wrangler/tmp" -name '*.eml' 2>/dev/null | head -n 1)"
-[ -n "$EML_SRC" ] && cp "$EML_SRC" "$STATE/last-lead.eml"
-kill $PID 2>/dev/null || true; wait $PID 2>/dev/null || true; PID=""
+# The local send_email logs the path of the .eml it wrote.
+EML_SRC="$(sed -n 's/^Email: \(.*\.eml\)$/\1/p' "$STATE/mailer-dev.log" | tail -n 1)"
+if [ -n "$EML_SRC" ] && [ -f "$EML_SRC" ]; then cp "$EML_SRC" "$STATE/last-lead.eml"; fi
+kill $PID $MPID 2>/dev/null || true; wait $PID $MPID 2>/dev/null || true; PID=""; MPID=""
 echo "== count after"
 d1 "select count(*) as n from leads"
 echo "== last row"
 d1 "select id, ts, form, email, org, consent, length(ip_hash) as ip_hash_len from leads order by id desc limit 1"
 echo "== send_email / mail lines from pages dev log"
-grep -iE "email|mail|lead_" "$STATE/pages-dev.log" | head -n 20 || true
+grep -iE "email|mail|lead_" "$STATE/pages-dev.log" "$STATE/mailer-dev.log" | head -n 20 || true
 EML="$STATE/last-lead.eml"
 if [ -f "$EML" ]; then
   echo "== captured .eml headers (local send_email)"
