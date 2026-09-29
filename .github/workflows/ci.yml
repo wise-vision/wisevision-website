@@ -42,15 +42,21 @@ jobs:
         run: npm run check
       - name: vitest + coverage (>=80% lines on scripts/** and src/lib/**)
         run: npm test
+      - name: node:test (claims lint, redirects, link audit)
+        run: node --test 'scripts/tests/*.test.mjs'
       - name: contrast gate (WCAG AA on every declared pair)
         run: npm run contrast
       - name: build
         run: npm run build
       - name: dist grep gate (no people, no office@, no Cookiebot, no MIT)
         run: bash scripts/dist-grep-gate.sh dist
+      - name: claims lint on copy AND built dist/ (banned terms + anchored capability claims)
+        run: node scripts/claims-lint.mjs
+      - name: link audit (every internal href/src and every _redirects target resolves in dist/)
+        run: node scripts/link-audit.mjs dist --list-external
       - name: expected routes exist
         run: |
-          for f in index.html ros2-mcp/index.html wiseos/index.html defence/index.html contact/index.html privacy/index.html 404.html docs/index.html docs/ros2-mcp/quickstart/index.html llms.txt sitemap-index.xml robots.txt; do
+          for f in index.html og/home.png og/ros2-mcp.png ros2-mcp/index.html wiseos/index.html defence/index.html contact/index.html privacy/index.html 404.html docs/index.html docs/ros2-mcp/quickstart/index.html llms.txt sitemap-index.xml robots.txt; do
             test -f "dist/$f" || { echo "missing dist/$f"; exit 1; }
           done
       - name: upload dist for the deploy job
