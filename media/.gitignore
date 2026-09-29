@@ -1,0 +1,5 @@
+# Big binaries never enter git. Rebuild with: bash media/proof/make-proof.sh && bash media/render-all.sh
+renders/
+proof/*.mp4
+compositions/*/renders/
+compositions/*/snapshots/
