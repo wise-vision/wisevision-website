@@ -86,6 +86,8 @@ const m = POSTERS.mobile;
        flows below it instead of over the drone */
     .hero { min-height: 0; grid-template-rows: calc(100svh - var(--layout-header)) auto; }
     .hero-slot, .hero-scrim { bottom: auto; height: calc(100svh - var(--layout-header)); }
+    /* the foot sits on the page background: fade the stage's floor out instead of a hard poster edge */
+    .hero-slot { mask-image: linear-gradient(180deg, #000 84%, transparent); }
     .hero-poster img { object-position: var(--pos-m); }
     .hero-copy { grid-row: 1; align-self: start; padding-block: var(--space-12) 0; }
     .hero-foot { grid-row: 2; padding-block: var(--space-6) var(--space-8); }
