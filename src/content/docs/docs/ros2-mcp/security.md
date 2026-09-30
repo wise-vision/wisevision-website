@@ -1,12 +1,8 @@
 ---
 title: Security model
 description: Which ROS2 MCP tools can change robot state, and how to lock them out with read-only mode.
-review: pending-adam
+review: approved-adam-2026-09-30
 ---
-
-:::note[Page ownership]
-Owned by WiseVision; reviewed by a human before it is final. Review status: pending.
-:::
 
 An agent connected to ROS2 MCP acts with the permissions of a ROS 2 node on your network. With the default configuration it can move a robot. Read this page before you connect an agent to real hardware.
 
