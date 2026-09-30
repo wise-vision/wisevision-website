@@ -31,7 +31,13 @@ claude mcp add ros2 -- docker run -i --rm wisevision/ros2_mcp:jazzy
 For other clients, see [Connect your agent](/docs/ros2-mcp/connect/). Restart the client (or reload its MCP servers) after changing the config.
 
 :::tip[Start read-only]
-On a real robot, start with `-e ROS2_MCP_READONLY=1` so the agent can observe but cannot publish, call services or send action goals. See the [security model](/docs/ros2-mcp/security/).
+On a real robot, start with `-e ROS2_MCP_READONLY=1` so the agent can observe but cannot publish, call services or send action goals. With Claude Code:
+
+```bash
+claude mcp add ros2 -- docker run -i --rm -e ROS2_MCP_READONLY=1 wisevision/ros2_mcp:jazzy
+```
+
+See the [security model](/docs/ros2-mcp/security/).
 :::
 
 ## 3. Ask your agent

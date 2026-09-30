@@ -19,6 +19,12 @@ The `-i` flag is required: it keeps stdin open, and stdin is the MCP channel.
 claude mcp add ros2 -- docker run -i --rm wisevision/ros2_mcp:jazzy
 ```
 
+Read-only (the agent can observe but not move the robot):
+
+```bash
+claude mcp add ros2 -- docker run -i --rm -e ROS2_MCP_READONLY=1 wisevision/ros2_mcp:jazzy
+```
+
 Add `--scope project` to write it to `.mcp.json` in the current project and share it with your team:
 
 ```json
