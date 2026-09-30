@@ -28,7 +28,12 @@ for (const vp of [
     const lcp: string[] = await page.evaluate(() => (window as any).__lcp);
     expect(lcp.at(-1)).toContain(vp.poster);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(/The AI layer for ROS\s2 robots/);
-    await expect(page.locator('.hero-copy .btn-primary')).toHaveText('Try ROS2 MCP');
+    // copy comes from content/copy/home.md (CTA label + arrow glyph), proof line + chip render in the hero foot
+    await expect(page.locator('.hero-copy .btn-primary')).toHaveText(/^Try ROS2 MCP/);
+    await expect(page.locator('.hero-foot .proof-line')).toContainText('MPL-2.0');
+    await expect(page.locator('.hero-foot .chip')).toContainText('Why did unit 7 stop?');
+    // the old CSS placeholder is gone: the poster is the only background layer
+    await expect(page.locator('.hero-fallback, .grid-lines, .glow')).toHaveCount(0);
     // the WebGL runtime chunk (three.js) must never be fetched when the gate fails
     const fetched = await page.evaluate(() => performance.getEntriesByType('resource').some((r) => /\/runtime\.[\w-]+\.js$/.test(r.name)));
     expect(fetched).toBe(false);

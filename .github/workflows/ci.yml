@@ -118,6 +118,26 @@ jobs:
         run: npx wrangler deploy --dry-run --outdir "$RUNNER_TEMP/mailer"
         working-directory: workers/lead-mailer
 
+  hero-e2e:
+    # Separate job so the required build + test job is not slowed by the Playwright browser install.
+    name: hero e2e (WebGL off, Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: build
+        run: npm run build
+      - name: poster is LCP, gate keeps it, zero console errors (desktop + mobile)
+        run: npx playwright test
+
   claims-lint:
     name: claims-lint
     runs-on: ubuntu-latest
