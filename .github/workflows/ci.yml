@@ -115,11 +115,16 @@ jobs:
             echo "scripts/claims-lint.mjs not present yet; skipping"
           fi
 
+  # SECURITY: this job runs on a SELF-HOSTED runner (adam-xps-wvsite, label wvsite-deploy)
+  # because the Cloudflare token is IP-allowlisted and GitHub-hosted egress is not in the list.
+  # The repo is public, so this job must NEVER run for pull_request / pull_request_target:
+  # the `if:` below gates it to push-to-main only, and the wvsite-deploy label is used by
+  # nothing else. Fork PRs additionally need maintainer approval (all_external_contributors).
   deploy:
     name: deploy (Cloudflare Pages wisevision + Worker wv-lead-mailer)
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [build-test, functions, claims-lint]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, wvsite-deploy]
     timeout-minutes: 15
     concurrency:
       group: deploy-production
@@ -134,9 +139,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           lfs: false
+          clean: true
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+      # The self-hosted workspace persists between runs: never deploy a stale dist.
+      - name: clear previous dist
+        run: rm -rf dist
       - uses: actions/download-artifact@v4
         with:
           name: dist
