@@ -60,7 +60,7 @@ jobs:
         run: node scripts/link-audit.mjs dist --list-external
       - name: expected routes exist
         run: |
-          for f in index.html og/home.png og/ros2-mcp.png ros2-mcp/index.html wiseos/index.html defence/index.html contact/index.html privacy/index.html 404.html docs/index.html docs/ros2-mcp/quickstart/index.html docs/ros2-mcp/quickstart.md docs/ros2-mcp/connect/index.html docs/ros2-mcp/security/index.html docs/ros2-mcp/tools/index.html docs/ros2-mcp/prompts/index.html docs/ros2-mcp/data-black-box/index.html docs/wiseos/index.html docs/faq/index.html _headers llms.txt sitemap-index.xml robots.txt; do
+          for f in .well-known/security.txt favicon.ico index.html og/home.png og/ros2-mcp.png ros2-mcp/index.html wiseos/index.html defence/index.html contact/index.html privacy/index.html 404.html docs/index.html docs/ros2-mcp/quickstart/index.html docs/ros2-mcp/quickstart.md docs/ros2-mcp/connect/index.html docs/ros2-mcp/security/index.html docs/ros2-mcp/tools/index.html docs/ros2-mcp/prompts/index.html docs/ros2-mcp/data-black-box/index.html docs/wiseos/index.html docs/faq/index.html _headers llms.txt sitemap-index.xml robots.txt; do
             test -f "dist/$f" || { echo "missing dist/$f"; exit 1; }
           done
       - name: media shipped in dist (every media-v1 asset lands in dist/media for the deploy artifact)
@@ -82,6 +82,8 @@ jobs:
           path: dist
           retention-days: 7
           if-no-files-found: error
+          # upload-artifact >= 4.4 drops dotfiles by default; dist/.well-known/security.txt must reach the deploy.
+          include-hidden-files: true
 
   functions:
     name: functions + lead-mailer (Workers runtime tests)
@@ -191,6 +193,8 @@ jobs:
         with:
           name: dist
           path: dist
+      - name: artifact carries the dot-directory files (security.txt)
+        run: test -f dist/.well-known/security.txt || { echo "dist/.well-known/security.txt missing from the artifact"; exit 1; }
       # The mailer goes first: the Pages project's LEAD_MAILER service binding points at it.
       - name: deploy Worker wv-lead-mailer (no routes, workers_dev=false)
         working-directory: workers/lead-mailer
@@ -205,6 +209,8 @@ jobs:
           for i in 1 2 3 4 5; do curl -sf -o /dev/null https://wisevision.tech/ && break; sleep 10; done
           curl -sf -o /dev/null https://wisevision.tech/
           curl -sf -o /dev/null https://wisevision.tech/llms.txt
+          curl -sf -o /dev/null https://wisevision.tech/.well-known/security.txt
+          curl -sf -o /dev/null https://wisevision.tech/favicon.ico
           code=$(curl -s -o /dev/null -w '%{http_code}' https://wisevision.tech/api/lead)
           [ "$code" = "405" ] || { echo "GET /api/lead answered $code, expected 405 (Functions not deployed?)"; exit 1; }
-          echo "smoke ok: /, /llms.txt, /api/lead (405)"
+          echo "smoke ok: /, /llms.txt, /.well-known/security.txt, /favicon.ico, /api/lead (405)"
