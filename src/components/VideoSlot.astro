@@ -15,6 +15,7 @@ const poster = `/media/${name}.poster.jpg`;
 {(hasVideo || hasPoster) && (
   <figure class:list={['media', cls]} data-reveal>
     {hasVideo ? (
+      <>
       <video
         data-inview-video
         preload="none"
@@ -22,13 +23,15 @@ const poster = `/media/${name}.poster.jpg`;
         loop
         playsinline
         disablepictureinpicture
-        poster={hasPoster ? poster : undefined}
+        data-poster={hasPoster ? poster : undefined}
         width="1920"
         height="1080"
         aria-label={label}
       >
         <source src={src} type="video/mp4" />
       </video>
+      {hasPoster && <noscript><img src={poster} alt={label} width="1920" height="1080" loading="lazy" decoding="async" class="noscript-poster" /></noscript>}
+      </>
     ) : (
       <img src={poster} alt={label} width="1920" height="1080" loading="lazy" decoding="async" />
     )}
@@ -40,22 +43,48 @@ const poster = `/media/${name}.poster.jpg`;
     border: 1px solid var(--color-bg-line); background: var(--color-bg-surface);
   }
   .media video, .media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .media { position: relative; }
+  .media .noscript-poster { position: absolute; inset: 0; }
 </style>
 <script>
-  // One observer for every in-view video on the page. Play only when ≥35% visible; pause when out of view.
+  // <video poster> has no native lazy loading, so posters are attached from data-poster when the video
+  // nears the viewport (keeps ~500 KB of below-fold JPGs off the critical path). Without JS or
+  // IntersectionObserver the poster is attached at once. Playback: only when >=35% visible, never under
+  // reduced motion.
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const vids = document.querySelectorAll<HTMLVideoElement>('video[data-inview-video]');
-  if (!reduce && 'IntersectionObserver' in window && vids.length) {
-    const io = new IntersectionObserver(
+  const attachPoster = (v: HTMLVideoElement) => {
+    const p = v.dataset.poster;
+    if (p && !v.poster) v.poster = p;
+  };
+  if (!('IntersectionObserver' in window)) {
+    vids.forEach(attachPoster);
+  } else if (vids.length) {
+    const near = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
-          const v = e.target as HTMLVideoElement;
-          if (e.isIntersecting) v.play().catch(() => { /* missing file or autoplay refused: the poster stays */ });
-          else v.pause();
+          if (!e.isIntersecting) continue;
+          attachPoster(e.target as HTMLVideoElement);
+          near.unobserve(e.target);
         }
       },
-      { threshold: 0.35 },
+      { rootMargin: '600px 0px' },
     );
-    vids.forEach((v) => io.observe(v));
+    vids.forEach((v) => near.observe(v));
+    if (!reduce) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            const v = e.target as HTMLVideoElement;
+            if (e.isIntersecting) {
+              attachPoster(v);
+              v.play().catch(() => { /* missing file or autoplay refused: the poster stays */ });
+            } else v.pause();
+          }
+        },
+        { threshold: 0.35 },
+      );
+      vids.forEach((v) => io.observe(v));
+    }
   }
 </script>

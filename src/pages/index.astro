@@ -33,14 +33,14 @@ const products = [
 ---
 <CopyPage slug="home">
   <Hero>
-    {hero.fields.eyebrow && <p class="eyebrow" data-reveal>{hero.fields.eyebrow}</p>}
-    <h1 id="hero-title" class="display" data-reveal style="--reveal-i:1" set:html={html(headingOf(hero, 1)).replace(/ROS 2/g, 'ROS&nbsp;2')} />
-    {lede && lede.type === 'paragraph' && <p class="hero-lede" data-reveal style="--reveal-i:2" set:html={html(lede.text)} />}
-    <Actions links={hero.links} />
+    {hero.fields.eyebrow && <p class="eyebrow">{hero.fields.eyebrow}</p>}
+    <h1 id="hero-title" class="display" set:html={html(headingOf(hero, 1)).replace(/ROS 2/g, 'ROS&nbsp;2')} />
+    {lede && lede.type === 'paragraph' && <p class="hero-lede" set:html={html(lede.text)} />}
+    <Actions links={hero.links} reveal={false} />
     <Fragment slot="foot">
-      {proof && proof.type === 'paragraph' && <p class="proof-line" data-reveal style="--reveal-i:4" set:html={html(proof.text)} />}
+      {proof && proof.type === 'paragraph' && <p class="proof-line" set:html={html(proof.text)} />}
       {chipQ && chipQ.type === 'quote' && (
-        <a class="chip" href={resolveHref('/docs/')} data-reveal style="--reveal-i:4">
+        <a class="chip" href={resolveHref('/docs/')}>
           <span class="chip-q">“{chipQ.text}”</span>
           {chipLink && chipLink.type === 'paragraph' && <span class="chip-a">{chipLink.text.replace(/\s*→.*$/, '')} <span aria-hidden="true">→</span></span>}
         </a>

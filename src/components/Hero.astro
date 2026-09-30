@@ -18,7 +18,7 @@ const m = POSTERS.mobile;
       <source media={MOBILE_MEDIA} type="image/avif" srcset={posterSrc('mobile', 'avif')} width={m.width} height={m.height} />
       <source media={MOBILE_MEDIA} type="image/webp" srcset={posterSrc('mobile', 'webp')} width={m.width} height={m.height} />
       <source type="image/avif" srcset={posterSrc('desktop', 'avif')} width={d.width} height={d.height} />
-      <img src={posterSrc('desktop', 'webp')} alt="" width={d.width} height={d.height} fetchpriority="high" decoding="async" />
+      <img src={posterSrc('desktop', 'webp')} alt="" width={d.width} height={d.height} fetchpriority="high" decoding="sync" />
     </picture>
   </div>
   <div class="hero-scrim" aria-hidden="true"></div>
