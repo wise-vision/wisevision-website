@@ -4,15 +4,16 @@
  *   const { destroy } = mountHero(el, { scrollProgress: () => lenisProgress });
  *
  * `el` must already contain the poster (<img>/<picture>, the LCP element) plus the HTML headline/CTA.
- * If the capability gate fails, nothing is loaded and the poster stays (no-op handle).
+ * The capability gate resolves asynchronously (GPU probe in a worker); if it fails, nothing is loaded and the
+ * poster stays.
  * Otherwise the three.js runtime is fetched as a separate chunk and a canvas fades in over the poster
  * only after its first frame has rendered, so the swap never flashes.
  */
-import { shouldRunWebGL, type CapabilityResult } from './capability';
+import { shouldRunWebGLAsync, type CapabilityResult } from './capability';
 
 export type { BeatState } from './beats';
 export { beatState, BEATS } from './beats';
-export { shouldRunWebGL } from './capability';
+export { shouldRunWebGL, shouldRunWebGLAsync } from './capability';
 
 export interface HeroOptions {
   /** 0..1 scroll progress through the hero's pinned range (Lenis on the site). */
@@ -41,29 +42,9 @@ export interface HeroHandle {
 }
 
 export function mountHero(container: HTMLElement, opts: HeroOptions = {}): HeroHandle {
-  const cap = shouldRunWebGL(undefined, { reducedMotion: opts.reducedMotion });
-  if (!cap.ok) {
-    container.dataset.hero = `poster:${cap.reason}`;
-    opts.onFallback?.(cap);
-    return { destroy() {}, invalidate() {}, mode: 'poster' };
-  }
   let inner: { destroy(): void; invalidate(): void } | null = null;
   let dead = false;
-  container.dataset.hero = 'loading';
-  import('./runtime')
-    .then((m) => {
-      if (dead) return;
-      return m.startHero(container, opts, () => dead).then((h) => {
-        if (dead) h.destroy();
-        else inner = h;
-      });
-    })
-    .catch(() => {
-      // chunk failed to load or WebGL init threw: keep the poster, never surface an error
-      container.dataset.hero = 'poster:runtime-error';
-      opts.onFallback?.({ ok: false, reason: 'no-webgl2' });
-    });
-  return {
+  const handle = {
     destroy() {
       dead = true;
       inner?.destroy();
@@ -72,6 +53,33 @@ export function mountHero(container: HTMLElement, opts: HeroOptions = {}): HeroH
     invalidate() {
       inner?.invalidate();
     },
-    mode: 'webgl',
+    // 'poster' until the gate passes; the poster is what is on screen until then anyway
+    mode: 'poster' as HeroHandle['mode'],
   };
+  container.dataset.hero = 'probing';
+  // the GPU probe runs in a worker where possible (see shouldRunWebGLAsync): no main-thread long task
+  shouldRunWebGLAsync(undefined, { reducedMotion: opts.reducedMotion })
+    .then((cap) => {
+      if (dead) return;
+      if (!cap.ok) {
+        container.dataset.hero = `poster:${cap.reason}`;
+        opts.onFallback?.(cap);
+        return;
+      }
+      handle.mode = 'webgl';
+      container.dataset.hero = 'loading';
+      return import('./runtime').then((m) => {
+        if (dead) return;
+        return m.startHero(container, opts, () => dead).then((h) => {
+          if (dead) h.destroy();
+          else inner = h;
+        });
+      });
+    })
+    .catch(() => {
+      // gate threw, chunk failed to load or WebGL init threw: keep the poster, never surface an error
+      container.dataset.hero = 'poster:runtime-error';
+      opts.onFallback?.({ ok: false, reason: 'no-webgl2' });
+    });
+  return handle;
 }

@@ -25,7 +25,7 @@ for (const webgl of [true, false]) {
     try {
       await page.waitForFunction(() => {
         const s = document.getElementById('hero-slot')?.dataset.hero;
-        return s && s !== 'loading';
+        return s && s !== 'loading' && s !== 'probing';
       }, null, { timeout: 15000 });
     } catch {}
     const state = await slot.getAttribute('data-hero');

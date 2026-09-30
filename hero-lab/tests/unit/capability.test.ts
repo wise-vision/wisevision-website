@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { shouldRunWebGL, type CapabilityEnv } from '../../../src/hero/capability';
+import { shouldRunWebGL, shouldRunWebGLAsync, type CapabilityEnv } from '../../../src/hero/capability';
 
 function env(over: Partial<{ reduced: boolean; saveData: boolean; deviceMemory: number; cores: number; webgl2: boolean; noNav: boolean; renderer: string }> = {}): CapabilityEnv {
   const o = { reduced: false, saveData: false, deviceMemory: 8, cores: 8, webgl2: true, ...over };
@@ -68,5 +68,42 @@ describe('shouldRunWebGL', () => {
   it('runs on real GPUs', () => {
     for (const r of ['ANGLE (Intel, Mesa Intel(R) UHD Graphics (CML GT2), OpenGL 4.6)', 'Apple GPU', 'Adreno (TM) 740', 'Mali-G78'])
       expect(shouldRunWebGL(env({ renderer: r }))).toEqual({ ok: true, reason: 'ok' });
+  });
+});
+
+describe('shouldRunWebGLAsync (probe off the main thread: a cold WebGL context costs a long task there)', () => {
+  const noMainCanvas = (e: CapabilityEnv): CapabilityEnv => ({
+    ...e,
+    createCanvas: () => {
+      throw new Error('main-thread canvas must not be touched when the worker probe is available');
+    },
+  });
+  it('uses the worker probe when present and never creates a main-thread context', async () => {
+    const e = noMainCanvas({ ...env(), probeWorker: async () => ({ webgl2: true, renderer: 'Apple GPU' }) });
+    await expect(shouldRunWebGLAsync(e)).resolves.toEqual({ ok: true, reason: 'ok' });
+  });
+  it('keeps the poster on a software rasteriser reported by the worker', async () => {
+    const e = noMainCanvas({ ...env(), probeWorker: async () => ({ webgl2: true, renderer: 'ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero)), SwiftShader driver)' }) });
+    await expect(shouldRunWebGLAsync(e)).resolves.toEqual({ ok: false, reason: 'software-gl' });
+  });
+  it('keeps the poster when the worker has no WebGL2', async () => {
+    const e = noMainCanvas({ ...env(), probeWorker: async () => ({ webgl2: false, renderer: '' }) });
+    await expect(shouldRunWebGLAsync(e)).resolves.toEqual({ ok: false, reason: 'no-webgl2' });
+  });
+  it('runs the cheap checks first: no probe at all under reduced motion / save-data / low-end', async () => {
+    let probed = 0;
+    const probeWorker = async () => (probed++, { webgl2: true, renderer: 'Apple GPU' });
+    await expect(shouldRunWebGLAsync({ ...env({ reduced: true }), probeWorker })).resolves.toEqual({ ok: false, reason: 'reduced-motion' });
+    await expect(shouldRunWebGLAsync({ ...env({ saveData: true }), probeWorker })).resolves.toEqual({ ok: false, reason: 'save-data' });
+    await expect(shouldRunWebGLAsync({ ...env({ cores: 2 }), probeWorker })).resolves.toEqual({ ok: false, reason: 'low-end' });
+    expect(probed).toBe(0);
+  });
+  it('falls back to the main-thread probe when the worker cannot answer (no OffscreenCanvas WebGL: older Safari)', async () => {
+    await expect(shouldRunWebGLAsync({ ...env({ renderer: 'Apple GPU' }), probeWorker: async () => undefined })).resolves.toEqual({ ok: true, reason: 'ok' });
+    await expect(shouldRunWebGLAsync({ ...env({ renderer: 'llvmpipe (LLVM 15.0.7, 256 bits)' }), probeWorker: async () => undefined })).resolves.toEqual({ ok: false, reason: 'software-gl' });
+  });
+  it('fails closed when the worker probe rejects', async () => {
+    const e = noMainCanvas({ ...env(), probeWorker: async () => { throw new Error('CSP'); } });
+    await expect(shouldRunWebGLAsync(e)).resolves.toEqual({ ok: false, reason: 'no-webgl2' });
   });
 });

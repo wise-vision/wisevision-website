@@ -2,7 +2,7 @@
 /**
  * Home hero: the poster is the LCP element (art-directed <picture>, AVIF/WebP, fetchpriority=high) with the
  * page's headline + CTA (default slot) as real HTML over it and an optional `foot` slot (proof line, chip) below. After first paint + idle, the WebGL island mounts src/hero on the same
- * slot, gated by shouldRunWebGL() inside mountHero(); its canvas fades in over the poster on its first rendered
+ * slot, gated by shouldRunWebGLAsync() inside mountHero() (GPU probe in a worker, off the main thread); its canvas fades in over the poster on its first rendered
  * frame. The camera emulates object-fit: cover about the same principal point, so the swap does not jump.
  */
 import { POSTERS, MOBILE_MEDIA, objectPosition, posterSrc } from '../hero/poster';
