@@ -42,17 +42,38 @@ jobs:
         run: npm run check
       - name: vitest + coverage (>=80% lines on scripts/** and src/lib/**)
         run: npm test
+      - name: node:test (claims lint, redirects, link audit)
+        run: node --test 'scripts/tests/*.test.mjs'
       - name: contrast gate (WCAG AA on every declared pair)
         run: npm run contrast
-      - name: build
+      - name: build (prebuild syncs the ROS2 MCP tool reference; fails if the pin is not the latest release)
         run: npm run build
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: docs .md twins match their pages (and are linked from <head>)
+        run: node scripts/md-twin-parity.mjs dist
       - name: dist grep gate (no people, no office@, no Cookiebot, no MIT)
         run: bash scripts/dist-grep-gate.sh dist
+      - name: claims lint on copy AND built dist/ (banned terms + anchored capability claims)
+        run: node scripts/claims-lint.mjs
+      - name: link audit (every internal href/src and every _redirects target resolves in dist/)
+        run: node scripts/link-audit.mjs dist --list-external
       - name: expected routes exist
         run: |
-          for f in index.html ros2-mcp/index.html wiseos/index.html defence/index.html contact/index.html privacy/index.html 404.html docs/index.html docs/ros2-mcp/quickstart/index.html llms.txt sitemap-index.xml robots.txt; do
+          for f in index.html og/home.png og/ros2-mcp.png ros2-mcp/index.html wiseos/index.html defence/index.html contact/index.html privacy/index.html 404.html docs/index.html docs/ros2-mcp/quickstart/index.html docs/ros2-mcp/quickstart.md docs/ros2-mcp/connect/index.html docs/ros2-mcp/security/index.html docs/ros2-mcp/tools/index.html docs/ros2-mcp/prompts/index.html docs/ros2-mcp/data-black-box/index.html docs/wiseos/index.html docs/faq/index.html _headers llms.txt sitemap-index.xml robots.txt; do
             test -f "dist/$f" || { echo "missing dist/$f"; exit 1; }
           done
+      - name: media shipped in dist (every media-v1 asset lands in dist/media for the deploy artifact)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view media-v1 -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            ls dist/media/*.mp4 >/dev/null || { echo "media-v1 exists but dist/media has no .mp4"; exit 1; }
+            for f in public/media/*; do test -f "dist/media/$(basename "$f")" || { echo "missing dist/media/$(basename "$f")"; exit 1; }; done
+            ls -la dist/media
+          else
+            echo "release media-v1 not found; no media check"
+          fi
       - name: upload dist for the deploy job
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
