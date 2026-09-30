@@ -50,11 +50,23 @@ export function escapeMdHtml(md) {
     .join('\n');
 }
 
+/**
+ * Fenced code inside <details> (the 24 "Input schema (JSON)" blocks) becomes a plain, escaped <pre>.
+ * Expressive Code would render each schema line as ~5 spans plus a copy button: ~2.5k extra DOM nodes on the
+ * tool page, which pushed its mobile Total Blocking Time past 2 s (the schemas are collapsed by default).
+ */
+export function plainSchemaBlocks(md) {
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return md.replace(/(<details>(?:(?!<\/details>)[\s\S])*?)\n(`{3,})[^\n]*\n([\s\S]*?)\n\2[ \t]*\n([\s\S]*?<\/details>)/g, (_m, head, _f, code, tail) =>
+    `${head}\n<pre class="schema" tabindex="0"><code>${esc(code)}</code></pre>\n${tail}`,
+  );
+}
+
 /** Turn the generated tools.md into a Starlight page with provenance in the frontmatter. */
 export function toStarlightPage(md, { tag, sha }) {
   const m = md.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
   if (!m) throw new Error('sync-tool-docs: generated tools.md has no frontmatter');
-  const body = escapeMdHtml(m[2].replace(/<!-- GENERATED[^\n]*-->\n*/, ''));
+  const body = plainSchemaBlocks(escapeMdHtml(m[2].replace(/<!-- GENERATED[^\n]*-->\n*/, '')));
   const front = [
     m[1],
     'editUrl: false',

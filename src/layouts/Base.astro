@@ -3,7 +3,10 @@ import '../styles/global.css';
 import displayFont from '@fontsource/space-grotesk/files/space-grotesk-latin-700-normal.woff2?url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { SITE, canonicalFor, organizationJsonLd } from '../lib/site.mjs';
+import { SITE, canonicalFor, organizationJsonLd, cfBeaconLoader } from '../lib/site.mjs';
+import { revealInViewport } from '../lib/reveal';
+
+const revealBoot = `if(!matchMedia('(prefers-reduced-motion: reduce)').matches)(${revealInViewport.toString()})(document.querySelectorAll('[data-reveal]'),innerHeight);`;
 
 interface Props {
   title?: string;
@@ -50,6 +53,7 @@ const ld = [organizationJsonLd(), ...jsonLd];
     {noindex && <meta name="robots" content="noindex" />}
     <meta name="theme-color" content="#07080B" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
     <link rel="sitemap" href="/sitemap-index.xml" />
     {markdownAlternate && <link rel="alternate" type="text/markdown" href={markdownAlternate} />}
@@ -75,6 +79,10 @@ const ld = [organizationJsonLd(), ...jsonLd];
       <slot />
     </main>
     <Footer />
+    {/* F1: reveal whatever is already on screen synchronously, before the first frame and before the module
+        bundle loads, so no heading on any page can be LCP-gated by the reveal. motion.ts animates the rest. */}
+    <script is:inline set:html={revealBoot} />
+    <script is:inline set:html={cfBeaconLoader()} />
     <script>
       import '../scripts/motion.ts';
     </script>

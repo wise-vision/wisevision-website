@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import {
   PIN_TAG,
   escapeMdHtml,
+  plainSchemaBlocks,
   toStarlightPage,
   checkProvenance,
   syncToolDocs,
@@ -66,6 +67,24 @@ describe('escapeMdHtml', () => {
     expect(out).toContain('<details><summary>Input schema (JSON)</summary>');
     expect(out).toContain('</details>');
     expect(out).toContain('<!-- GENERATED');
+  });
+});
+
+describe('plainSchemaBlocks', () => {
+  it('turns fenced code inside <details> into a plain escaped <pre> (no Expressive Code: ~2.5k fewer DOM nodes on the tool page)', () => {
+    const out = plainSchemaBlocks(TOOLS_MD);
+    expect(out).toContain('<pre class="schema" tabindex="0"><code>{ &quot;a&quot;: &quot;&lt;b&gt;&quot; }</code></pre>');
+    expect(out).not.toMatch(/```json/);
+    expect(out).toContain('<details><summary>Input schema (JSON)</summary>');
+  });
+  it('leaves fenced code outside <details> alone', () => {
+    const md = '```bash\necho <x>\n```\n';
+    expect(plainSchemaBlocks(md)).toBe(md);
+  });
+  it('toStarlightPage applies it', () => {
+    const page = toStarlightPage(TOOLS_MD, { tag: '2610', sha: 'abc' });
+    expect(page).toContain('<pre class="schema"');
+    expect(page).not.toMatch(/```json/);
   });
 });
 

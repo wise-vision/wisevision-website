@@ -2,6 +2,7 @@
 // so no GPU is needed. Asserts the poster is the LCP element, the capability gate keeps it, the island never
 // throws, and headline + CTA are real HTML over it.
 import { test, expect } from '@playwright/test';
+import { stubRum } from './rum-stub';
 
 for (const vp of [
   { name: 'desktop', width: 1440, height: 900, poster: '/hero/hero-desktop.avif' },
@@ -11,6 +12,7 @@ for (const vp of [
     const errors: string[] = [];
     page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
     page.on('pageerror', (e) => errors.push(String(e)));
+    await stubRum(page);
     await page.setViewportSize({ width: vp.width, height: vp.height });
     await page.addInitScript(() => {
       (window as any).__lcp = [];

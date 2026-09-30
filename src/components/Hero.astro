@@ -44,7 +44,10 @@ const m = POSTERS.mobile;
         return Math.min(1, Math.max(0, y / Math.max(1, slot.offsetHeight)));
       };
       const handle = mountHero(slot, { scrollProgress: progress, label: 'base_link' });
-      (window as Window & { __lenis?: Lenis }).__lenis?.on('scroll', () => handle.invalidate());
+      const lenis = (window as Window & { __lenis?: Lenis }).__lenis;
+      // touch devices run without Lenis (motion.ts): fall back to the native scroll event
+      if (lenis) lenis.on('scroll', () => handle.invalidate());
+      else window.addEventListener('scroll', () => handle.invalidate(), { passive: true });
     });
   }
 
