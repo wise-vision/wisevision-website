@@ -17,6 +17,11 @@ export const NAV = [
   { label: 'Contact', href: '/contact/' },
 ];
 
+// Cloudflare Web Analytics (cookieless RUM beacon, launch audit F3). The token is a PUBLIC site token.
+export const CF_BEACON_TOKEN = '74bf92e463694feb871bc3f0a6e8abc3';
+export const CF_BEACON_SRC = 'https://static.cloudflareinsights.com/beacon.min.js';
+export const CF_BEACON = JSON.stringify({ token: CF_BEACON_TOKEN });
+
 export const CTA = { label: 'Try ROS2 MCP', href: '/ros2-mcp/#install' };
 
 const withSlash = (p) => (p.endsWith('/') ? p : `${p}/`);

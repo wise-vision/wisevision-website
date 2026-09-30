@@ -11,7 +11,7 @@ const updated = doc.order.map((id) => doc.sections[id].fields.updated).find(Bool
 ---
 <CopyPage slug="privacy">
   <PageHero s={section(doc, 'hero')}>
-    {updated && <p class="updated" data-reveal>Last updated <time datetime={updated}>{updated}</time></p>}
+    {updated && <p class="updated">Last updated <time datetime={updated}>{updated}</time></p>}
   </PageHero>
   <div class="section container notice">
     <nav aria-label="On this page" class="toc">

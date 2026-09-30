@@ -17,3 +17,33 @@
   --sl-color-black: var(--color-bg-base);
   --sl-color-text-accent: var(--color-accent-text);
 }
+
+/* Tool reference (/docs/ros2-mcp/tools/) on phones (launch audit F14): every table row becomes a stacked
+   card, so nothing scrolls sideways inside the table. Scoped to the generated tool page (the only page whose
+   tables link to #ros2_* anchors); labels come from CSS because the Markdown is generated. */
+@media (max-width: 599.98px) {
+  .sl-markdown-content:has(td:first-child > a[href^='#ros2_']) table {
+    display: block; overflow: visible; width: 100%; border: 0;
+  }
+  .sl-markdown-content:has(td:first-child > a[href^='#ros2_']) :is(thead, tbody, tr, td) { display: block; }
+  .sl-markdown-content:has(td:first-child > a[href^='#ros2_']) thead {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  .sl-markdown-content:has(td:first-child > a[href^='#ros2_']) tr {
+    margin-block: 0 var(--space-3, 0.75rem); padding: 0.75rem 0.9rem;
+    border: 1px solid var(--sl-color-gray-5); border-radius: 10px; background: var(--sl-color-gray-6);
+  }
+  .sl-markdown-content:has(td:first-child > a[href^='#ros2_']) :is(td, th) {
+    border: 0; padding: 0; margin: 0; width: auto; overflow-wrap: anywhere; background: none;
+  }
+  .sl-markdown-content:has(td:first-child > a[href^='#ros2_']) td + td { margin-top: 0.35rem; }
+  .sl-markdown-content:has(td:first-child > a[href^='#ros2_']) td:first-child { font-weight: 600; }
+  /* summary table: Tool | Mutates robot state | Summary */
+  .sl-markdown-content table:has(td:first-child > a[href^='#ros2_']) td:nth-child(2)::before { content: 'Mutates robot state: '; }
+  /* per-tool parameter tables: Parameter | Type | Required | Notes */
+  .sl-markdown-content:has(td:first-child > a[href^='#ros2_']) table:has(th:nth-child(4)) td:nth-child(2)::before { content: 'Type: '; }
+  .sl-markdown-content:has(td:first-child > a[href^='#ros2_']) table:has(th:nth-child(4)) td:nth-child(3)::before { content: 'Required: '; }
+  .sl-markdown-content:has(td:first-child > a[href^='#ros2_']) :is(td:nth-child(2), td:nth-child(3))::before {
+    color: var(--sl-color-gray-3); font-size: var(--sl-text-xs, 0.8125rem);
+  }
+}

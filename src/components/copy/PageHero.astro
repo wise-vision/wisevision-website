@@ -1,5 +1,6 @@
 ---
 // Inner-page hero from a copy section: eyebrow, H1, body paragraphs, CTA links.
+// First viewport = no data-reveal (launch audit F1): the hero renders at opacity 1 so the H1 is never LCP-gated.
 import Blocks from './Blocks.astro';
 import Actions from './Actions.astro';
 import type { Section } from '../../lib/copy';
@@ -12,10 +13,10 @@ const { s } = Astro.props;
 <section class="page-hero">
   <div class="bg" aria-hidden="true"></div>
   <div class="container inner">
-    {s.fields.eyebrow && <p class="eyebrow" data-reveal>{s.fields.eyebrow}</p>}
-    <h1 data-reveal style="--reveal-i:1" set:html={inline(headingOf(s, 1), { resolve: resolveHref })} />
-    <Blocks blocks={bodyOf(s, 1)} class="hero-body" />
-    <Actions links={s.links.filter((l) => l.key !== 'mail')} />
+    {s.fields.eyebrow && <p class="eyebrow">{s.fields.eyebrow}</p>}
+    <h1 set:html={inline(headingOf(s, 1), { resolve: resolveHref })} />
+    <Blocks blocks={bodyOf(s, 1)} class="hero-body" reveal={false} />
+    <Actions links={s.links.filter((l) => l.key !== 'mail')} reveal={false} />
     <slot />
   </div>
 </section>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { NAV, isActive, canonicalFor, organizationJsonLd, SITE } from '../src/lib/site.mjs';
+import { NAV, isActive, canonicalFor, organizationJsonLd, SITE, CF_BEACON, CF_BEACON_SRC } from '../src/lib/site.mjs';
 
 describe('site IA', () => {
   it('has exactly the 6 locked IA items in order', () => {
@@ -25,5 +25,9 @@ describe('site IA', () => {
     const s = JSON.stringify(ld);
     expect(s).not.toMatch(/founder|employee|Person|office@|dobrza|macuda/i);
     expect(ld.sameAs).toContain(SITE.github);
+  });
+  it('Cloudflare Web Analytics beacon: official script + a 32-hex public site token', () => {
+    expect(CF_BEACON_SRC).toBe('https://static.cloudflareinsights.com/beacon.min.js');
+    expect(JSON.parse(CF_BEACON)).toEqual({ token: expect.stringMatching(/^[0-9a-f]{32}$/) });
   });
 });
