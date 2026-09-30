@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import sitemap from '@astrojs/sitemap';
 import starlightLlmsTxt from 'starlight-llms-txt';
-import { CF_BEACON, CF_BEACON_SRC } from './src/lib/site.mjs';
+import { cfBeaconLoader } from './src/lib/site.mjs';
 
 export default defineConfig({
   site: 'https://wisevision.tech',
@@ -20,7 +20,7 @@ export default defineConfig({
       head: [
         { tag: 'link', attrs: { rel: 'icon', href: '/favicon.ico', sizes: '32x32' } },
         // Cloudflare Web Analytics (cookieless) so /docs is counted too (launch audit F3).
-        { tag: 'script', attrs: { defer: true, src: CF_BEACON_SRC, 'data-cf-beacon': CF_BEACON } },
+        { tag: 'script', content: cfBeaconLoader() },
       ],
       customCss: ['./src/styles/tokens.css', './src/styles/starlight.css'],
       social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/wise-vision' }],

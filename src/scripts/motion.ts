@@ -11,7 +11,10 @@ declare global {
   interface Window { __lenis?: Lenis }
 }
 
-if (!reduce && !window.__lenis) {
+// Touch devices keep native scroll (momentum is already smooth there): no Lenis RAF loop on phones.
+const coarse = window.matchMedia('(pointer: coarse)').matches;
+
+if (!reduce && !coarse && !window.__lenis) {
   const lenis = new Lenis({ autoRaf: true, anchors: true });
   window.__lenis = lenis;
 }

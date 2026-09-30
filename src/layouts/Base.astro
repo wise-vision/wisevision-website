@@ -3,7 +3,7 @@ import '../styles/global.css';
 import displayFont from '@fontsource/space-grotesk/files/space-grotesk-latin-700-normal.woff2?url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { SITE, canonicalFor, organizationJsonLd, CF_BEACON, CF_BEACON_SRC } from '../lib/site.mjs';
+import { SITE, canonicalFor, organizationJsonLd, cfBeaconLoader } from '../lib/site.mjs';
 import { revealInViewport } from '../lib/reveal';
 
 const revealBoot = `if(!matchMedia('(prefers-reduced-motion: reduce)').matches)(${revealInViewport.toString()})(document.querySelectorAll('[data-reveal]'),innerHeight);`;
@@ -82,7 +82,7 @@ const ld = [organizationJsonLd(), ...jsonLd];
     {/* F1: reveal whatever is already on screen synchronously, before the first frame and before the module
         bundle loads, so no heading on any page can be LCP-gated by the reveal. motion.ts animates the rest. */}
     <script is:inline set:html={revealBoot} />
-    <script is:inline defer src={CF_BEACON_SRC} data-cf-beacon={CF_BEACON}></script>
+    <script is:inline set:html={cfBeaconLoader()} />
     <script>
       import '../scripts/motion.ts';
     </script>

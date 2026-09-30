@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { NAV, isActive, canonicalFor, organizationJsonLd, SITE, CF_BEACON, CF_BEACON_SRC } from '../src/lib/site.mjs';
+import { NAV, isActive, canonicalFor, organizationJsonLd, SITE, CF_BEACON, CF_BEACON_SRC, cfBeaconLoader } from '../src/lib/site.mjs';
 
 describe('site IA', () => {
   it('has exactly the 6 locked IA items in order', () => {
@@ -29,5 +29,24 @@ describe('site IA', () => {
   it('Cloudflare Web Analytics beacon: official script + a 32-hex public site token', () => {
     expect(CF_BEACON_SRC).toBe('https://static.cloudflareinsights.com/beacon.min.js');
     expect(JSON.parse(CF_BEACON)).toEqual({ token: expect.stringMatching(/^[0-9a-f]{32}$/) });
+  });
+  it('cfBeaconLoader inserts the official defer tag only after load + idle', () => {
+    const appended = [];
+    const listeners = {};
+    const el = () => ({ attrs: {}, setAttribute(k, v) { this.attrs[k] = v; } });
+    const g = {
+      document: { readyState: 'loading', createElement: el, head: { appendChild: (n) => appended.push(n) } },
+      addEventListener: (ev, cb) => (listeners[ev] = cb),
+      requestIdleCallback: (cb) => cb(),
+    };
+    new Function('document', 'addEventListener', 'requestIdleCallback', 'window', cfBeaconLoader())(
+      g.document, g.addEventListener, g.requestIdleCallback, g,
+    );
+    expect(appended).toHaveLength(0);
+    listeners.load();
+    expect(appended).toHaveLength(1);
+    expect(appended[0].src).toBe(CF_BEACON_SRC);
+    expect(appended[0].defer).toBe(true);
+    expect(appended[0].attrs['data-cf-beacon']).toBe(CF_BEACON);
   });
 });
