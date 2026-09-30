@@ -4,6 +4,7 @@ import CopyPage from '../layouts/CopyPage.astro';
 import Blocks from '../components/copy/Blocks.astro';
 import Actions from '../components/copy/Actions.astro';
 import VideoSlot from '../components/VideoSlot.astro';
+import Hero from '../components/Hero.astro';
 import { loadCopy, section, headingOf, bodyOf, groupsOf, resolveHref } from '../lib/pages';
 import { inline } from '../lib/copy';
 import { mediaState } from '../lib/media';
@@ -31,18 +32,12 @@ const products = [
 ];
 ---
 <CopyPage slug="home">
-  <section class="hero" aria-labelledby="hero-title">
-    <div id="hero-slot" class="hero-slot" aria-hidden="true">
-      <div class="hero-fallback">
-        <div class="grid-lines"></div>
-        <div class="glow"></div>
-      </div>
-    </div>
-    <div class="container hero-copy">
-      {hero.fields.eyebrow && <p class="eyebrow" data-reveal>{hero.fields.eyebrow}</p>}
-      <h1 id="hero-title" class="display" data-reveal style="--reveal-i:1" set:html={html(headingOf(hero, 1))} />
-      {lede && lede.type === 'paragraph' && <p class="hero-lede" data-reveal style="--reveal-i:2" set:html={html(lede.text)} />}
-      <Actions links={hero.links} />
+  <Hero>
+    {hero.fields.eyebrow && <p class="eyebrow" data-reveal>{hero.fields.eyebrow}</p>}
+    <h1 id="hero-title" class="display" data-reveal style="--reveal-i:1" set:html={html(headingOf(hero, 1)).replace(/ROS 2/g, 'ROS&nbsp;2')} />
+    {lede && lede.type === 'paragraph' && <p class="hero-lede" data-reveal style="--reveal-i:2" set:html={html(lede.text)} />}
+    <Actions links={hero.links} />
+    <Fragment slot="foot">
       {proof && proof.type === 'paragraph' && <p class="proof-line" data-reveal style="--reveal-i:4" set:html={html(proof.text)} />}
       {chipQ && chipQ.type === 'quote' && (
         <a class="chip" href={resolveHref('/docs/')} data-reveal style="--reveal-i:4">
@@ -50,8 +45,8 @@ const products = [
           {chipLink && chipLink.type === 'paragraph' && <span class="chip-a">{chipLink.text.replace(/\s*→.*$/, '')} <span aria-hidden="true">→</span></span>}
         </a>
       )}
-    </div>
-  </section>
+    </Fragment>
+  </Hero>
 
   <section class="section container beats" aria-label="What your agent can do">
     <ol>
@@ -107,25 +102,11 @@ const products = [
   </section>
 </CopyPage>
 <style>
-  .hero { position: relative; min-height: calc(100svh - var(--layout-header)); display: grid; align-items: end; overflow: hidden; }
-  .hero-slot { position: absolute; inset: 0; z-index: 0; pointer-events: none; contain: strict; }
-  /* Static fallback until worker H's hero island mounts into #hero-slot (it may replace these children). */
-  .hero-fallback { position: absolute; inset: 0; }
-  .grid-lines {
-    position: absolute; inset: -1px;
-    background-image: linear-gradient(var(--color-bg-line) 1px, transparent 1px), linear-gradient(90deg, var(--color-bg-line) 1px, transparent 1px);
-    background-size: 72px 72px;
-    mask-image: radial-gradient(ellipse 80% 70% at 70% 30%, #000 20%, transparent 75%);
-    opacity: 0.55;
-  }
-  .glow {
-    position: absolute; width: 70vmax; height: 70vmax; right: -25vmax; top: -30vmax; border-radius: 50%;
-    background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 16%, transparent) 0%, transparent 62%);
-  }
-  .hero-copy { position: relative; z-index: 1; padding-block: var(--space-24) var(--space-16); }
-  .display { font-size: var(--size-display); line-height: var(--leading-tight); max-width: 13ch; }
-  .hero-lede { max-width: 30ch; font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem); line-height: 1.35; color: var(--color-text); }
-  .proof-line { margin-top: var(--space-12); font-family: var(--font-mono); font-size: var(--size-xs); letter-spacing: 0.04em; color: var(--color-text-muted); max-width: none; }
+  /* hero type: the poster's copy zone (src/hero/poster.ts copyZone) was measured at this scale; re-run
+     hero-lab/scripts/copy-zone.mjs + the composition gate if it changes */
+  .display { font-size: clamp(3rem, 1rem + 4.45vw, 5rem); line-height: 0.98; letter-spacing: -0.035em; margin-bottom: var(--space-6); }
+  .hero-lede { max-width: 30ch; font-size: var(--size-lg); color: var(--color-text-muted); }
+  .proof-line { margin-top: 0; font-family: var(--font-mono); font-size: var(--size-xs); letter-spacing: 0.04em; color: var(--color-text-muted); }
   .chip {
     display: inline-flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); align-items: center; margin-top: var(--space-2);
     padding: var(--space-3) var(--space-4); border-radius: var(--radius-pill); text-decoration: none;
@@ -173,5 +154,9 @@ const products = [
     .beats ol { grid-template-columns: 1fr; }
     .product-grid, .flip .product-grid { grid-template-columns: 1fr; }
     .flip .product-copy { order: 0; }
+  }
+  @media (max-width: 767px), (max-aspect-ratio: 4/5) {
+    .display { font-size: 2.5rem; margin-bottom: var(--space-4); }
+    .hero-lede { font-size: var(--size-base); }
   }
 </style>
