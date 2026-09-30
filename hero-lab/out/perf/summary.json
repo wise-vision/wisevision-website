@@ -1,0 +1,36 @@
+{
+  "renderer": "ANGLE (Intel, Mesa Intel(R) UHD Graphics (CML GT2), OpenGL ES 3.2), headless Chromium via Playwright",
+  "durationMs": 6000,
+  "results": [
+    {
+      "run": "desktop",
+      "cpuThrottle": 1,
+      "frames": 358,
+      "rafAvgFps": 59.5,
+      "rafP95FrameMs": 16.8,
+      "traceDrawFrames": 359,
+      "traceFps": 56.8,
+      "renderCostAvgMs": 2.07,
+      "renderCostP95Ms": 2.6,
+      "renderBoundFps": 385,
+      "harnessCeilingFps_noHero": 60.7,
+      "trace": "/home/adam/.worktrees/wv-site/w2/hero-lab/out/perf/desktop.trace.json",
+      "consoleErrors": []
+    },
+    {
+      "run": "mobile-4x-throttle",
+      "cpuThrottle": 4,
+      "frames": 304,
+      "rafAvgFps": 50.7,
+      "rafP95FrameMs": 33.4,
+      "traceDrawFrames": 320,
+      "traceFps": 53.2,
+      "renderCostAvgMs": 11.81,
+      "renderCostP95Ms": 26.6,
+      "renderBoundFps": 38,
+      "harnessCeilingFps_noHero": 60.8,
+      "trace": "/home/adam/.worktrees/wv-site/w2/hero-lab/out/perf/mobile-4x-throttle.trace.json",
+      "consoleErrors": []
+    }
+  ]
+}

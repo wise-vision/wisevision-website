@@ -1,0 +1,98 @@
+---
+/**
+ * Home hero: the poster is the LCP element (art-directed <picture>, AVIF/WebP, fetchpriority=high) with the
+ * page's headline + CTA (default slot) as real HTML over it and an optional `foot` slot (proof line, chip) below. After first paint + idle, the WebGL island mounts src/hero on the same
+ * slot, gated by shouldRunWebGLAsync() inside mountHero() (GPU probe in a worker, off the main thread); its canvas fades in over the poster on its first rendered
+ * frame. The camera emulates object-fit: cover about the same principal point, so the swap does not jump.
+ */
+import { POSTERS, MOBILE_MEDIA, objectPosition, posterSrc } from '../hero/poster';
+
+const [dx, dy] = objectPosition('desktop');
+const [mx, my] = objectPosition('mobile');
+const d = POSTERS.desktop;
+const m = POSTERS.mobile;
+---
+<section class="hero" data-hero-root aria-labelledby="hero-title" style={`--pos-d:${dx}% ${dy}%;--pos-m:${mx}% ${my}%`}>
+  <div id="hero-slot" class="hero-slot" aria-hidden="true">
+    <picture class="hero-poster" data-hero-poster>
+      <source media={MOBILE_MEDIA} type="image/avif" srcset={posterSrc('mobile', 'avif')} width={m.width} height={m.height} />
+      <source media={MOBILE_MEDIA} type="image/webp" srcset={posterSrc('mobile', 'webp')} width={m.width} height={m.height} />
+      <source type="image/avif" srcset={posterSrc('desktop', 'avif')} width={d.width} height={d.height} />
+      <img src={posterSrc('desktop', 'webp')} alt="" width={d.width} height={d.height} fetchpriority="high" decoding="sync" />
+    </picture>
+  </div>
+  <div class="hero-scrim" aria-hidden="true"></div>
+  <!-- headline, lede, CTAs: the page's copy (content/copy/home.md), kept inside the poster's measured copy zone -->
+  <div class="container hero-copy"><slot /></div>
+  <!-- proof line + question chip: under the CTAs on desktop, below the poster stage on mobile (never over a unit) -->
+  {Astro.slots.has('foot') && <div class="container hero-foot"><slot name="foot" /></div>}
+</section>
+
+<script>
+  import type Lenis from 'lenis';
+
+  const slot = document.getElementById('hero-slot');
+  const root = slot?.closest<HTMLElement>('[data-hero-root]');
+
+  function start() {
+    if (!slot || !root) return;
+    import('../hero/index').then(({ mountHero }) => {
+      // beats play while the hero stage scrolls away: 0 at rest, 1 once the stage's bottom reaches the header
+      const progress = () => {
+        const lenis = (window as Window & { __lenis?: Lenis }).__lenis;
+        const y = lenis ? lenis.scroll : window.scrollY;
+        return Math.min(1, Math.max(0, y / Math.max(1, slot.offsetHeight)));
+      };
+      const handle = mountHero(slot, { scrollProgress: progress, label: 'base_link' });
+      (window as Window & { __lenis?: Lenis }).__lenis?.on('scroll', () => handle.invalidate());
+    });
+  }
+
+  // after first paint and once the main thread is idle: the poster owns LCP, WebGL is enhancement only
+  const idle = (cb: () => void) => {
+    if (typeof window.requestIdleCallback === 'function') window.requestIdleCallback(cb, { timeout: 3000 });
+    else setTimeout(cb, 1500);
+  };
+  if (document.readyState === 'complete') idle(start);
+  else window.addEventListener('load', () => idle(start), { once: true });
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: calc(100svh - var(--layout-header));
+    display: grid;
+    /* copy centred in the stage (where the poster's copy zone was measured); the foot hangs under the CTAs */
+    grid-template-rows: 1fr auto 1fr;
+    overflow: hidden;
+    background: radial-gradient(120% 90% at 30% 42%, var(--color-bg-raised) 0%, var(--color-bg-base) 70%);
+  }
+  .hero-slot { position: absolute; inset: 0; z-index: 0; contain: strict; }
+  .hero-poster, .hero-poster img { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .hero-poster img { object-fit: cover; object-position: var(--pos-d); }
+  .hero-scrim {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: linear-gradient(90deg, rgb(7 8 11 / 0.55) 0%, rgb(7 8 11 / 0.25) 34%, rgb(7 8 11 / 0) 52%);
+  }
+  .hero-copy, .hero-foot { position: relative; z-index: 2; }
+  .hero-copy { grid-row: 2; }
+  .hero-foot { grid-row: 3; align-self: start; padding-bottom: var(--space-8); }
+  .hero-copy > :global(*) { max-width: min(41vw, 640px); }
+  /* the proof line + chip sit beside the rover's front wheels: narrower than the headline column */
+  .hero-foot > :global(*) { max-width: min(34vw, 500px); }
+  /* same query as MOBILE_MEDIA in src/hero/poster.ts (CSS can't import it) */
+  @media (max-width: 767px), (max-aspect-ratio: 4/5) {
+    /* the stage (poster + canvas) keeps the viewport-high frame the mobile poster was composed for; the foot
+       flows below it instead of over the drone */
+    .hero { min-height: 0; grid-template-rows: calc(100svh - var(--layout-header)) auto; }
+    .hero-slot, .hero-scrim { bottom: auto; height: calc(100svh - var(--layout-header)); }
+    /* the foot sits on the page background: fade the stage's floor out instead of a hard poster edge */
+    .hero-slot { mask-image: linear-gradient(180deg, #000 84%, transparent); }
+    .hero-poster img { object-position: var(--pos-m); }
+    .hero-copy { grid-row: 1; align-self: start; padding-block: var(--space-12) 0; }
+    .hero-foot { grid-row: 2; padding-block: var(--space-6) var(--space-8); }
+    .hero-copy > :global(*), .hero-foot > :global(*) { max-width: none; }
+    .hero-copy :global(.actions .btn-ghost) { display: none; }
+    .hero-scrim { background: linear-gradient(180deg, rgb(7 8 11 / 0.6) 0%, rgb(7 8 11 / 0.3) 38%, rgb(7 8 11 / 0) 55%); }
+  }
+</style>

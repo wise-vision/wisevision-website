@@ -1,0 +1,686 @@
+/**
+ * The hero scene: ROS grid + mirror, lead rover, fleet in three opacity bands, TF triads, LaserScan ring,
+ * signal paths, WiseOS prism. Pure construction + an `apply(state)` that only touches uniforms.
+ */
+import {
+  Scene,
+  Mesh,
+  Points,
+  BufferGeometry,
+  Float32BufferAttribute,
+  ShaderMaterial,
+  PlaneGeometry,
+  CylinderGeometry,
+  EdgesGeometry,
+  Matrix4,
+  Quaternion,
+  Vector3,
+  Euler,
+  AdditiveBlending,
+  NormalBlending,
+  PerspectiveCamera,
+  MeshBasicMaterial,
+  Box3,
+} from 'three';
+import { Segs, lineMaterial, createShared, type Shared } from './lines';
+import { leadRover, quadruped, drone, sensorMast } from './robots';
+import { C, hexToRgb, HEX } from './palette';
+import { UNIT_DISTANCES, type BeatState } from './beats';
+import { POSTERS } from './poster';
+
+export type { HeroLayout as Layout } from './poster';
+import type { HeroLayout as Layout } from './poster';
+
+/**
+ * Per-layout composition. Desktop is the approved A/B winner (unchanged). Mobile is composed separately:
+ * the rover is turned so its six-wheel profile faces the camera (unambiguous "rover", not an arm), and the
+ * fleet is spread so the quadruped, drone and mast each own a clear patch of the portrait frame.
+ * Bearings are measured from the rover's lidar (rad, 0 = -Z, + toward +X); ranges are UNIT_DISTANCES.
+ */
+export interface Composition {
+  roverPos: Vector3;
+  roverYaw: number;
+  bearings: number[];
+  heights: number[];
+  yaws: number[];
+  prismPos: Vector3;
+  /** base_link label position relative to the projected base_link origin, CSS px (text baseline-left) */
+  label: [number, number];
+  /** per-unit uniform scale (quadruped, drone, mast): mobile enlarges the far units so they read at 390 px */
+  scales: number[];
+  /** per-unit line opacity band (near, mid, far) */
+  bands: number[];
+  /** base_link along the rover's own +x (forward), metres. Chosen per camera with scripts/baselink-search.mjs so the
+   *  projected triad clears every tyre (checkComposition "base_link triad overlaps wheel N"); both stay inside the tub */
+  baseLinkX: number;
+  /** base_link height, metres: 0.36 = the lower tub's centre (a body frame INSIDE the chassis; its ground projection is the footprint cross) */
+  baseLinkY: number;
+  /** base_link axis length, metres (shorter than the unit triads: it is a body frame, not a callout) */
+  baseLinkLen: number;
+  /** always-on TF triad at the sensor mast's lidar (mobile: the mast must read as a sensor, not a streetlamp) */
+  mastTriad: boolean;
+}
+export const COMPOSITIONS: Record<Layout, Composition> = {
+  // composed so that at the desktop rig: quadruped ≈ (86%, 60%), drone ≈ (78%, 18%), sensor mast ≈ (51%, 23–53%)
+  desktop: {
+    roverPos: new Vector3(1.48, 0, -4.8),
+    roverYaw: 0.62,
+    bearings: [0.587, 0.448, 0.1],
+    heights: [0, 2.2, 0],
+    yaws: [2.3, 0.5, 0.3],
+    prismPos: new Vector3(3.4, 0, -15.5),
+    label: [60, -150],
+    scales: [1, 1, 1],
+    bands: [0.9, 0.66, 0.4],
+    baseLinkX: 0.16,
+    baseLinkY: 0.36,
+    baseLinkLen: 0.18,
+    mastTriad: false,
+  },
+  // tuned at the site's real mobile hero aspect (390×780) with scripts/compose-search.mjs + compose.mjs
+  // (checkComposition clean): rover three-quarter bottom-left,
+  // quadruped (arc target) right, drone between mast and lidar so its tether lands on free floor, mast far left
+  mobile: {
+    roverPos: new Vector3(-0.6, 0, -4.98),
+    roverYaw: -0.76,
+    bearings: [0.41, -0.26, 0.35],
+    heights: [0, 1.93, 0],
+    yaws: [2.78, 0.4, 0.2],
+    prismPos: new Vector3(0.3, 0, -17),
+    label: [120, 90],
+    // drone + mast 1.5× and one opacity band brighter: at 390 px they read as "a speck" / "a streetlamp" otherwise
+    scales: [1, 1.5, 1.5],
+    bands: [0.9, 0.9, 0.66],
+    baseLinkX: -0.35,
+    baseLinkY: 0.36,
+    baseLinkLen: 0.18,
+    mastTriad: true,
+  },
+};
+/** kept for back-compat with the harness/tests */
+export const ROVER_POS = COMPOSITIONS.desktop.roverPos;
+export const ROVER_YAW = COMPOSITIONS.desktop.roverYaw;
+
+const Q = (x: number, y: number, z: number) => new Quaternion().setFromEuler(new Euler(x, y, z));
+const pose = (p: Vector3, yaw: number, s = 1) => new Matrix4().compose(p, Q(0, yaw, 0), new Vector3(s, s, s));
+
+const POINT_VERT = /* glsl */ `
+attribute vec4 aColor;
+attribute float aSize;
+attribute float aJit;
+uniform float uPx;
+uniform float uRadius;
+uniform float uRing;
+uniform vec3 uCentre;
+uniform float uCollapse;
+uniform float uCollapseY;
+uniform vec2 uArc;
+uniform vec3 uMaskC;
+uniform vec2 uMaskR;
+varying vec4 vColor;
+varying float vArc;
+void main() {
+  vArc = 1.0;
+  vec3 p = position;
+  if (uRing > 0.5) {
+    float r = uRadius * (1.0 + aJit) ;
+    p = uCentre + vec3(cos(position.x) * r, position.y, sin(position.x) * r);
+    // scan front: only the arc ahead of the lead rover, right of the type column, reads
+    float b = atan(cos(position.x), -sin(position.x)); // bearing, 0 = -Z
+    vArc = smoothstep(uArc.x, uArc.x + 0.35, b) * (1.0 - smoothstep(uArc.y - 0.35, uArc.y, b));
+  }
+  vec4 mv = modelViewMatrix * vec4(p, 1.0);
+  if (mv.z > -0.1) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
+  gl_Position = projectionMatrix * mv;
+  if (uRing > 0.5 && uMaskR.x > 0.0) {
+    // the nearest unit (quadruped) occludes the scan behind it: points farther than the unit that project inside its
+    // silhouette ellipse are hidden, so the band never threads through its legs
+    vec4 mc = viewMatrix * vec4(uMaskC, 1.0);
+    if (mv.z < mc.z) {
+      vec4 cc = projectionMatrix * mc;
+      vec2 d = gl_Position.xy / gl_Position.w - cc.xy / cc.w;
+      vec2 rr = vec2(uMaskR.x * projectionMatrix[0][0], uMaskR.y * projectionMatrix[1][1]) / -mc.z;
+      float e = length(d / rr);
+      vArc *= smoothstep(0.85, 1.1, e);
+    }
+  }
+  gl_Position.y = mix(gl_Position.y, uCollapseY * gl_Position.w, uCollapse);
+  gl_PointSize = aSize * uPx * clamp(6.0 / -mv.z, 0.55, 1.6);
+  vColor = aColor;
+  vColor.a *= 1.0 - smoothstep(22.0, 40.0, -mv.z);
+}`;
+const POINT_FRAG = /* glsl */ `
+uniform float uOpacity;
+varying vec4 vColor;
+varying float vArc;
+void main() {
+  vec2 d = gl_PointCoord - 0.5;
+  float r = length(d) * 2.0;
+  float a = smoothstep(1.0, 0.55, r);
+  float core = smoothstep(0.5, 0.0, r);
+  gl_FragColor = vec4(vColor.rgb + core * 0.25, vColor.a * a * uOpacity * vArc);
+  if (gl_FragColor.a < 0.003) discard;
+}`;
+
+function pointMaterial(shared: Shared, ring: boolean, additive = true): ShaderMaterial {
+  return new ShaderMaterial({
+    vertexShader: POINT_VERT,
+    fragmentShader: POINT_FRAG,
+    transparent: true,
+    depthWrite: false,
+    depthTest: false,
+    blending: additive ? AdditiveBlending : NormalBlending,
+    uniforms: {
+      uPx: shared.uPx,
+      uCollapse: shared.uCollapse,
+      uCollapseY: shared.uCollapseY,
+      uOpacity: { value: 1 },
+      uRadius: { value: 1 },
+      uRing: { value: ring ? 1 : 0 },
+      uCentre: { value: new Vector3() },
+      uArc: { value: [-0.3, 1.9] },
+      uMaskC: { value: new Vector3() },
+      uMaskR: { value: [0, 0] },
+    },
+  });
+}
+
+/** Deterministic PRNG so the poster and the live scene are pixel-identical. */
+function rng(seed: number) {
+  let s = seed >>> 0;
+  return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+}
+
+export interface HeroScene {
+  scene: Scene;
+  shared: Shared;
+  layout: Layout;
+  comp: Composition;
+  lidarWorld: Vector3;
+  /** base_link: chassis centre on the ground plane (REP-105) */
+  baseLinkWorld: Vector3;
+  pointCount: number;
+  /** world wireframe endpoints of each robot, for the screen-space composition check */
+  unitPoints: Record<'rover' | 'quadruped' | 'drone' | 'mast', Vector3[]>;
+  /** the poster signal arc (lidar → quadruped), world points */
+  arcPoints: Vector3[];
+  /** each rover tyre's world wire points, and base_link's origin + three axis tips: for the "triad not at a wheel" gate */
+  wheelPoints: Vector3[][];
+  baseLinkTriadPoints: Vector3[];
+  /** rover pose + its chassis solid (local AABB): the composition gate drops tyre wires hidden behind the tub */
+  roverMatrix: Matrix4;
+  chassisBox: Box3;
+  /** always-on unit TF triads (origin + axis tips, world), for the copy-zone gate */
+  unitTriadPoints: Partial<Record<'quadruped' | 'drone' | 'mast', Vector3[]>>;
+  setVanishingPoint(x: number, y: number): void;
+  apply(s: BeatState): void;
+  dispose(): void;
+}
+
+/** Synchronous build (lab tuning, tests). */
+export function buildScene(layout: Layout = 'desktop', override?: Partial<Composition>): HeroScene {
+  const g = buildSceneSteps(layout, override);
+  for (;;) {
+    const r = g.next();
+    if (r.done) return r.value;
+  }
+}
+
+/** Yield to the main thread (scheduler.yield where available). */
+export const yieldToMain = (): Promise<void> => {
+  const sch = (globalThis as { scheduler?: { yield?: () => Promise<void> } }).scheduler;
+  return sch?.yield ? sch.yield() : new Promise((r) => setTimeout(r, 0));
+};
+
+/** Production build: same steps, but the main thread is handed back between them (no long task > ~50 ms per step on mid-range phones). */
+export async function buildSceneAsync(layout: Layout = 'desktop', override?: Partial<Composition>): Promise<HeroScene> {
+  const g = buildSceneSteps(layout, override);
+  for (;;) {
+    const r = g.next();
+    if (r.done) return r.value;
+    await yieldToMain();
+  }
+}
+
+function* buildSceneSteps(layout: Layout, override?: Partial<Composition>): Generator<void, HeroScene> {
+  const comp: Composition = { ...COMPOSITIONS[layout], ...override };
+  const ROVER_POS = comp.roverPos, ROVER_YAW = comp.roverYaw;
+  const UNIT_BEARINGS = comp.bearings, UNIT_HEIGHTS = comp.heights, UNIT_YAW = comp.yaws;
+  const scene = new Scene();
+  const shared = createShared();
+  const disposables: { dispose(): void }[] = [];
+  const add = <T extends Mesh | Points>(o: T, order: number) => {
+    o.frustumCulled = false;
+    o.renderOrder = order;
+    scene.add(o);
+    disposables.push(o.geometry, o.material as ShaderMaterial);
+    return o;
+  };
+
+  // ---------- base: radial #0B0E14 → #07080B centred on the vanishing point (screen space) ----------
+  const bgMat = new ShaderMaterial({
+    depthTest: false,
+    depthWrite: false,
+    uniforms: { uVp: { value: [0.3, 0.41] }, uRes: shared.uRes, uA: { value: new Vector3(...hexToRgb(HEX.base1)) }, uB: { value: new Vector3(...hexToRgb(HEX.base0)) } },
+    vertexShader: `void main(){ gl_Position = vec4(position.xy, 0.0, 1.0); }`,
+    fragmentShader: `uniform vec2 uVp; uniform vec2 uRes; uniform vec3 uA; uniform vec3 uB;
+      void main(){ vec2 uv = gl_FragCoord.xy / uRes; uv.y = 1.0 - uv.y; vec2 d = (uv - uVp) * vec2(uRes.x / uRes.y, 1.0);
+        float t = smoothstep(0.0, 1.05, length(d * vec2(0.8, 1.25)));
+        // 1/255 dither so the gradient never bands in the AVIF poster
+        float n = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) / 255.0;
+        gl_FragColor = vec4(mix(uA, uB, t) + n, 1.0); }`,
+  });
+  const bg = new Mesh(new PlaneGeometry(2, 2), bgMat);
+  add(bg, -10);
+  const bgUniforms = bgMat.uniforms;
+
+  // warm key pool on the floor around the lead rover (product-shot lighting, no shadow maps, no bloom)
+  const poolMat = new ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    blending: AdditiveBlending,
+    uniforms: { uCol: { value: new Vector3(...C.key) }, uCool: { value: new Vector3(...C.fill) }, uOpacity: { value: 1 }, uCollapse: shared.uCollapse },
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);} `,
+    fragmentShader: `uniform vec3 uCol; uniform vec3 uCool; uniform float uOpacity; uniform float uCollapse; varying vec2 vUv;
+      void main(){ vec2 d = (vUv - vec2(0.5, 0.5)) * 2.0; float r = length(d);
+        float warm = exp(-r * r * 3.0) * 0.12; float cool = exp(-dot(d - vec2(-0.55, 0.3), d - vec2(-0.55, 0.3)) * 2.5) * 0.035;
+        gl_FragColor = vec4(uCol * warm + uCool * cool, 1.0) * uOpacity * (1.0 - uCollapse); }`,
+  });
+  const pool = new Mesh(new PlaneGeometry(11, 9), poolMat);
+  pool.rotation.x = -Math.PI / 2;
+  pool.position.set(ROVER_POS.x + 0.8, 0.002, ROVER_POS.z - 1.6);
+  add(pool, 0);
+
+  yield; // step boundary: buildSceneAsync hands the main thread back here
+  // ---------- ROS grid (1 m cells, 5 m majors), near band 2x opacity ----------
+  const grid = new Segs();
+  const ext = 36, zNear = 3, zFar = -70;
+  for (let x = -ext; x <= ext; x++) {
+    const major = x % 5 === 0;
+    grid.seg(new Vector3(x, 0, zNear), new Vector3(x, 0, zFar), C.grid, major ? 0.5 : 0.26);
+  }
+  for (let z = zNear; z >= zFar; z--) {
+    const major = z % 5 === 0;
+    grid.seg(new Vector3(-ext, 0, z), new Vector3(ext, 0, z), C.grid, major ? 0.5 : 0.26);
+  }
+  const gridMat = lineMaterial(shared, { width: 1, fog: [14, 46], nearBand: [5, 11] });
+  add(new Mesh(grid.build(), gridMat), 0);
+
+  // ---------- contact shadow sprite under the lead rover ----------
+  const shadowMat = new ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    uniforms: { uCol: { value: new Vector3(...hexToRgb(HEX.base0)) }, uOpacity: { value: 0.9 }, uCollapse: shared.uCollapse },
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);} `,
+    fragmentShader: `uniform vec3 uCol; uniform float uOpacity; uniform float uCollapse; varying vec2 vUv;
+      void main(){ vec2 d = (vUv-0.5)*2.0; float r = length(d); float a = smoothstep(1.0, 0.15, r);
+      gl_FragColor = vec4(uCol, a*uOpacity*(1.0-uCollapse)); }`,
+  });
+  const shadow = new Mesh(new PlaneGeometry(2.1, 1.5), shadowMat);
+  shadow.rotation.set(-Math.PI / 2, 0, ROVER_YAW);
+  shadow.position.copy(ROVER_POS).setY(0.004);
+  add(shadow, 1);
+
+  yield; // step boundary: buildSceneAsync hands the main thread back here
+  // ---------- robots ----------
+  const rover = new Segs();
+  rover.collectOccluders = true;
+  const roverM = pose(ROVER_POS, ROVER_YAW);
+  const roverMark = rover.mark();
+  const { lidar, wheels: wheelsLocal } = yield* leadRover(rover, roverM, C.wire, 1);
+  const UNIT_BAND = comp.bands;
+  const lidarWorld = lidar.clone().applyMatrix4(roverM);
+  const lidarGround = lidarWorld.clone().setY(0);
+
+  const fleet = new Segs();
+  fleet.collectOccluders = true;
+  const unitAnchors: Vector3[] = [];
+  const unitBases: Vector3[] = [];
+  const fleetPts: Vector3[][] = [];
+  for (let i = 0; i < UNIT_DISTANCES.length; i++) {
+    yield;
+    const d = UNIT_DISTANCES[i];
+    const b = UNIT_BEARINGS[i];
+    const p = new Vector3(lidarGround.x + Math.sin(b) * d, UNIT_HEIGHTS[i], lidarGround.z - Math.cos(b) * d);
+    const m = pose(p, UNIT_YAW[i], comp.scales[i]);
+    const build = [quadruped, drone, sensorMast][i];
+    const mk = fleet.mark();
+    const anchor = build(fleet, m, C.wire, comp.bands[i]).applyMatrix4(m);
+    fleetPts.push(fleet.pointsSince(mk));
+    unitAnchors.push(anchor);
+    unitBases.push(p.clone());
+  }
+
+  const roverPts = rover.pointsSince(roverMark);
+  const roverGeo = rover.build();
+  const fleetGeo = fleet.build();
+  const roverMat = lineMaterial(shared, { width: 1.35, lit: true, fog: [30, 60] });
+  const fleetMat = lineMaterial(shared, { width: 1.1, lit: true, fog: [30, 60] });
+  // hidden-line removal: depth-only solids, pushed back so their own edges survive
+  const occMat = new MeshBasicMaterial({ colorWrite: false, polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 4 });
+  const occ = new Mesh(rover.buildOccluder(), occMat);
+  occ.frustumCulled = false;
+  occ.renderOrder = 2.5;
+  scene.add(occ);
+  const occF = new Mesh(fleet.buildOccluder(), occMat);
+  occF.frustumCulled = false;
+  occF.renderOrder = 2.5;
+  scene.add(occF);
+  disposables.push(occ.geometry, occF.geometry, occMat);
+  add(new Mesh(roverGeo, roverMat), 3);
+  add(new Mesh(fleetGeo, fleetMat), 3);
+  // floor mirror (~4% reflection below y=0)
+  const roverMir = lineMaterial(shared, { width: 1.35, lit: true, mirror: true, fog: [20, 40] });
+  const fleetMir = lineMaterial(shared, { width: 1.1, lit: true, mirror: true, fog: [20, 40] });
+  add(new Mesh(roverGeo, roverMir), 2);
+  add(new Mesh(fleetGeo, fleetMir), 2);
+
+  yield; // step boundary: buildSceneAsync hands the main thread back here
+  // ---------- aux: rover footprint (RViz footprint polygon) + drone altitude tether (ground anchor) ----------
+  const aux = new Segs();
+  {
+    const fq = Q(0, ROVER_YAW, 0);
+    const hx = 0.78, hz = 0.52;
+    const corners = [[hx, hz], [hx, -hz], [-hx, -hz], [-hx, hz]].map(([x, z]) => new Vector3(x, 0.006, z).applyQuaternion(fq).add(ROVER_POS));
+    for (let i = 0; i < 4; i++) aux.seg(corners[i], corners[(i + 1) % 4], C.grid, 0.55);
+    const d = unitAnchors[1];
+    const g = d.clone().setY(0.006);
+    const n = 9;
+    for (let k = 0; k < n; k++) {
+      const a0 = (k / n) * (d.y - 0.16), a1 = ((k + 0.5) / n) * (d.y - 0.16);
+      aux.seg(g.clone().setY(0.006 + a0), g.clone().setY(0.006 + a1), C.grid, 0.5 * UNIT_BAND[1]);
+    }
+    aux.circle(g, 0.32, 'y', 28, C.grid, 0.6 * UNIT_BAND[1]);
+  }
+  add(new Mesh(aux.build(), lineMaterial(shared, { width: 1, fog: [30, 60] })), 2);
+
+  // ---------- TF triads (unlabelled; clamped to >= 16 px) ----------
+  const triad = (s: Segs, o: Vector3, len: number, yaw: number) => {
+    const q = Q(0, yaw, 0);
+    s.seg(o, o.clone().add(new Vector3(len, 0, 0).applyQuaternion(q)), C.tfX, 1);
+    s.seg(o, o.clone().add(new Vector3(0, len, 0)), C.tfY, 1);
+    s.seg(o, o.clone().add(new Vector3(0, 0, len).applyQuaternion(q)), C.tfZ, 1);
+  };
+  const leadTriad = new Segs();
+  // laser frame at the sensor head: drawn on top (it is the signal origin)
+  triad(leadTriad, lidarWorld.clone().add(new Vector3(0, 0.1, 0)), 0.34, ROVER_YAW);
+  add(new Mesh(leadTriad.build(), lineMaterial(shared, { width: 2, minPx: 16, fog: [40, 80], depthTest: false })), 6);
+  // base_link (REP-105): rigid body frame at the chassis centre, a hair behind it (comp.baseLinkX) so the low 3/4
+  // camera never projects it onto a tyre. Depth-tested against the chassis occluder so it reads as INSIDE / UNDER the
+  // body, plus a faint x-ray pass (RViz's alpha-robot look) so its origin is still findable. Its ground projection
+  // (base_footprint) is a cross on the grid that runs out to the footprint polygon, visible either side of the tub.
+  const roverQ = Q(0, ROVER_YAW, 0);
+  const baseLinkWorld = new Vector3(comp.baseLinkX, comp.baseLinkY, 0).applyQuaternion(roverQ).add(ROVER_POS);
+  const baseTriad = new Segs();
+  triad(baseTriad, baseLinkWorld, comp.baseLinkLen, ROVER_YAW);
+  const baseTriadGeo = baseTriad.build();
+  add(new Mesh(baseTriadGeo, lineMaterial(shared, { width: 2, fog: [40, 80] })), 6);
+  const baseGhost = new Mesh(baseTriadGeo, lineMaterial(shared, { width: 1.6, fog: [40, 80], depthTest: false, opacity: 0.62 }));
+  baseGhost.frustumCulled = false;
+  baseGhost.renderOrder = 5.5;
+  scene.add(baseGhost);
+  disposables.push(baseGhost.material as ShaderMaterial);
+  const baseLinkAxes = [new Vector3(comp.baseLinkLen, 0, 0).applyQuaternion(roverQ), new Vector3(0, comp.baseLinkLen, 0), new Vector3(0, 0, comp.baseLinkLen).applyQuaternion(roverQ)].map((v) => v.add(baseLinkWorld));
+  {
+    const fp = new Segs();
+    const c = baseLinkWorld.clone().setY(0.007);
+    const hx = 0.78, hz = 0.52;
+    for (const [ax, az, len] of [[1, 0, hx - comp.baseLinkX], [-1, 0, hx + comp.baseLinkX], [0, 1, hz], [0, -1, hz]] as const) {
+      const dir = new Vector3(ax, 0, az).applyQuaternion(roverQ);
+      // dashed: 5 dashes from the centre out to the footprint edge
+      for (let k = 0; k < 5; k++) fp.seg(c.clone().addScaledVector(dir, (k / 5) * len), c.clone().addScaledVector(dir, ((k + 0.55) / 5) * len), C.grid, 0.55);
+    }
+    add(new Mesh(fp.build(), lineMaterial(shared, { width: 1, fog: [30, 60] })), 2);
+  }
+
+  const unitTriadMats: ShaderMaterial[] = [];
+  unitAnchors.forEach((a, i) => {
+    const s = new Segs();
+    // each unit's frame sits at its body / sensor head (the signal endpoint), never at a foot
+    const base = a.clone();
+    triad(s, base, 0.3, UNIT_YAW[i]);
+    const mat = lineMaterial(shared, { width: 1.8, minPx: 16, fog: [40, 80], depthTest: false, opacity: 0 });
+    mat.uniforms.uGrow.value = 0;
+    mat.uniforms.uGrowOrigin.value = base.clone();
+    unitTriadMats.push(mat);
+    add(new Mesh(s.build(), mat), 6);
+  });
+  const unitTriadPoints: HeroScene['unitTriadPoints'] = {};
+  if (comp.mastTriad) {
+    // the mast's own laser frame, always on: without it a far tripod + pole reads as a streetlamp
+    const s = new Segs();
+    const L = 0.24 * comp.scales[2];
+    triad(s, unitAnchors[2], L, UNIT_YAW[2]);
+    const q = Q(0, UNIT_YAW[2], 0);
+    unitTriadPoints.mast = [unitAnchors[2].clone(), ...[new Vector3(L, 0, 0).applyQuaternion(q), new Vector3(0, L, 0), new Vector3(0, 0, L).applyQuaternion(q)].map((v) => v.add(unitAnchors[2]))];
+    add(new Mesh(s.build(), lineMaterial(shared, { width: 1.5, minPx: 12, fog: [40, 80], depthTest: false, opacity: 0.85 })), 6);
+  }
+
+  // ---------- signal paths: lead lidar → unit anchor, accent, draw-in, green endpoint ----------
+  // cubic Bézier whose last control point sits straight above the endpoint: the arc lands ON the unit's frame origin
+  // travelling downward, so it never cuts through the unit's top edges on the way in
+  const pathMats: ShaderMaterial[] = [];
+  const arcs: Vector3[][] = [];
+  unitAnchors.forEach((end) => {
+    const s = new Segs();
+    const start = lidarWorld.clone().add(new Vector3(0, 0.1, 0));
+    const lift = Math.max(start.y, end.y) + 0.35 + start.distanceTo(end) * 0.06;
+    const c1 = start.clone().lerp(end, 0.25).setY(lift);
+    const c2 = end.clone().setY(lift);
+    const pts: Vector3[] = [];
+    for (let k = 0; k <= 48; k++) {
+      const t = k / 48, u = 1 - t;
+      pts.push(
+        start.clone().multiplyScalar(u * u * u)
+          .addScaledVector(c1, 3 * u * u * t)
+          .addScaledVector(c2, 3 * u * t * t)
+          .addScaledVector(end, t * t * t),
+      );
+    }
+    arcs.push(pts);
+    s.poly(pts, C.accent, 1);
+    const mat = lineMaterial(shared, { width: 2, fog: [40, 80], depthTest: false, keepOnCollapse: 1 });
+    mat.uniforms.uDraw.value = 0;
+    pathMats.push(mat);
+    add(new Mesh(s.build(), mat), 7);
+  });
+
+  yield; // step boundary: buildSceneAsync hands the main thread back here
+  // ---------- WiseOS node: the only solid-shaded prism ----------
+  const prismPos = comp.prismPos.clone();
+  const prismGeo = new CylinderGeometry(0.9, 0.9, 1.9, 6, 1);
+  prismGeo.translate(0, 0.95, 0);
+  const prismMat = new ShaderMaterial({
+    transparent: true,
+    uniforms: {
+      uReveal: { value: 0 },
+      uCollapse: shared.uCollapse,
+      uKey: shared.uKey,
+      uFill: shared.uFill,
+      uKeyCol: shared.uKeyCol,
+      uFillCol: shared.uFillCol,
+      uBase: { value: new Vector3(...C.prism) },
+      uAccent: { value: new Vector3(...C.accent) },
+    },
+    vertexShader: /* glsl */ `varying vec3 vN; varying vec3 vW; varying float vY;
+      void main(){ vN = normalize(mat3(modelMatrix)*normal); vec4 w = modelMatrix*vec4(position,1.0); vW = w.xyz; vY = position.y;
+      gl_Position = projectionMatrix*viewMatrix*w; }`,
+    fragmentShader: /* glsl */ `uniform float uReveal; uniform float uCollapse; uniform vec3 uKey; uniform vec3 uFill; uniform vec3 uKeyCol; uniform vec3 uFillCol; uniform vec3 uBase; uniform vec3 uAccent;
+      varying vec3 vN; varying vec3 vW; varying float vY;
+      void main(){ vec3 N = normalize(vN); vec3 V = normalize(cameraPosition - vW);
+        float key = max(dot(N,uKey),0.0); float fill = max(dot(N,uFill),0.0); float fres = pow(1.0-abs(dot(N,V)),3.0);
+        vec3 c = uBase + uKeyCol*key*0.22 + uFillCol*fill*0.12 + uAccent*fres*0.35;
+        // top cap glows faintly with the accent: the node is "on"
+        c += uAccent * smoothstep(0.9, 1.0, N.y) * 0.18;
+        if (vY / 1.9 > uReveal) discard;
+        gl_FragColor = vec4(c, uReveal*(1.0-uCollapse)); }`,
+  });
+  const prism = new Mesh(prismGeo, prismMat);
+  prism.position.copy(prismPos);
+  add(prism, 4);
+  const prismEdges = new Segs();
+  {
+    const eg = new EdgesGeometry(prismGeo, 20);
+    const p = eg.getAttribute('position');
+    for (let i = 0; i < p.count; i += 2) {
+      const A = new Vector3().fromBufferAttribute(p, i).add(prismPos);
+      const B = new Vector3().fromBufferAttribute(p, i + 1).add(prismPos);
+      prismEdges.seg(A, B, C.accent, 0.9);
+    }
+    eg.dispose();
+  }
+  const prismEdgeMat = lineMaterial(shared, { width: 1.4, fog: [60, 90], opacity: 0 });
+  add(new Mesh(prismEdges.build(), prismEdgeMat), 5);
+  // uplinks: every unit + the rover → the prism top
+  const up = new Segs();
+  const prismTop = prismPos.clone().add(new Vector3(0, 1.9, 0));
+  [lidarWorld, ...unitAnchors].forEach((a) => {
+    const mid = a.clone().lerp(prismTop, 0.5);
+    mid.y += 0.8;
+    const pts: Vector3[] = [];
+    for (let k = 0; k <= 30; k++) {
+      const t = k / 30;
+      pts.push(a.clone().lerp(mid, t).lerp(mid.clone().lerp(prismTop, t), t));
+    }
+    up.poly(pts, C.accent, 0.55);
+  });
+  const upMat = lineMaterial(shared, { width: 1.2, fog: [60, 90], depthTest: false, opacity: 0 });
+  upMat.uniforms.uDraw.value = 0;
+  add(new Mesh(up.build(), upMat), 7);
+
+  yield; // step boundary: buildSceneAsync hands the main thread back here
+  // ---------- LaserScan ring (point sprites) + endpoints ----------
+  const R = rng(7);
+  const ringPos: number[] = [], ringCol: number[] = [], ringSize: number[] = [], ringJit: number[] = [];
+  const RING_N = 1400;
+  const TRAIL = [0, -0.035, -0.075, -0.12];
+  TRAIL.forEach((off, ti) => {
+    for (let i = 0; i < RING_N; i++) {
+      const t = (i / RING_N) * Math.PI * 2 + R() * 0.004;
+      ringPos.push(t, 0.03, 0);
+      const fade = [1, 0.5, 0.26, 0.12][ti];
+      const c = C.scan;
+      ringCol.push(c[0], c[1], c[2], fade * (0.55 + R() * 0.45));
+      ringSize.push(ti === 0 ? 4.2 : 3.0);
+      ringJit.push(off + (R() - 0.5) * (ti === 0 ? 0.012 : 0.02));
+    }
+  });
+  const ringGeo = new BufferGeometry();
+  ringGeo.setAttribute('position', new Float32BufferAttribute(ringPos, 3));
+  ringGeo.setAttribute('aColor', new Float32BufferAttribute(ringCol, 4));
+  ringGeo.setAttribute('aSize', new Float32BufferAttribute(ringSize, 1));
+  ringGeo.setAttribute('aJit', new Float32BufferAttribute(ringJit, 1));
+  const ringMat = pointMaterial(shared, true);
+  ringMat.uniforms.uCentre.value.copy(lidarGround);
+  // occlusion proxy for the quadruped (body + legs): centre at mid-height, half-extents in metres
+  ringMat.uniforms.uMaskC.value.copy(unitBases[0]).setY(0.42 * comp.scales[0]);
+  ringMat.uniforms.uMaskR.value = [0.62 * comp.scales[0], 0.46 * comp.scales[0]];
+  add(new Points(ringGeo, ringMat), 8);
+
+  const epPos: number[] = [], epCol: number[] = [], epSize: number[] = [], epJit: number[] = [];
+  unitAnchors.forEach((a) => {
+    epPos.push(a.x, a.y, a.z);
+    epCol.push(...C.accent, 1);
+    epSize.push(11);
+    epJit.push(0);
+  });
+  // lidar origin dot
+  epPos.push(lidarWorld.x, lidarWorld.y + 0.1, lidarWorld.z);
+  epCol.push(...C.accent, 0.9);
+  epSize.push(7);
+  epJit.push(0);
+  const epGeo = new BufferGeometry();
+  epGeo.setAttribute('position', new Float32BufferAttribute(epPos, 3));
+  epGeo.setAttribute('aColor', new Float32BufferAttribute(epCol, 4));
+  epGeo.setAttribute('aSize', new Float32BufferAttribute(epSize, 1));
+  epGeo.setAttribute('aJit', new Float32BufferAttribute(epJit, 1));
+  const epMat = pointMaterial(shared, false, false);
+  add(new Points(epGeo, epMat), 9);
+  const epColAttr = epGeo.getAttribute('aColor') as Float32BufferAttribute;
+
+  const pointCount = RING_N * TRAIL.length + unitAnchors.length + 1;
+
+  function apply(s: BeatState) {
+    shared.uCollapse.value = s.collapse;
+    ringMat.uniforms.uRadius.value = s.ringRadius;
+    ringMat.uniforms.uOpacity.value = s.ringOpacity * s.fleet;
+    s.found.forEach((f, i) => {
+      unitTriadMats[i].uniforms.uOpacity.value = f * UNIT_BAND[i] + f * (1 - UNIT_BAND[i]) * 0.5;
+      unitTriadMats[i].uniforms.uGrow.value = f;
+    });
+    s.paths.forEach((p, i) => {
+      pathMats[i].uniforms.uDraw.value = p;
+      pathMats[i].uniforms.uOpacity.value = p > 0 ? 1 - s.collapse : 0;
+      epColAttr.setW(i, p >= 1 ? 1 - s.collapse : 0);
+    });
+    epColAttr.setW(unitAnchors.length, 0.9 * (1 - s.collapse));
+    epColAttr.needsUpdate = true;
+    prismMat.uniforms.uReveal.value = s.wiseos;
+    prismEdgeMat.uniforms.uOpacity.value = s.wiseos;
+    upMat.uniforms.uDraw.value = s.uplinks;
+    upMat.uniforms.uOpacity.value = s.uplinks > 0 ? 1 : 0;
+  }
+
+  return {
+    scene,
+    shared,
+    setVanishingPoint(x: number, y: number) {
+      bgUniforms.uVp.value = [x, y];
+    },
+    layout,
+    comp,
+    lidarWorld,
+    baseLinkWorld,
+    pointCount,
+    unitPoints: { rover: roverPts, quadruped: fleetPts[0], drone: fleetPts[1], mast: fleetPts[2] },
+    arcPoints: arcs[0],
+    wheelPoints: wheelsLocal,
+    roverMatrix: roverM,
+    unitTriadPoints,
+    // lower tub (1.24×0.22×0.66 at y 0.36) ∪ deck; bogie rails excluded (they are thin)
+    chassisBox: new Box3(new Vector3(-0.62, 0.25, -0.33), new Vector3(0.62, 0.59, 0.33)),
+    baseLinkTriadPoints: [baseLinkWorld.clone(), ...baseLinkAxes],
+    apply,
+    dispose() {
+      disposables.forEach((d) => d.dispose());
+    },
+  };
+}
+
+/** Camera rigs. Pure translation during the dolly keeps the vanishing point locked. */
+export interface Rig {
+  pos: Vector3;
+  dollyPos: Vector3;
+  fov: number;
+  /** principal point in NDC: where the grid's Z family converges */
+  vp: [number, number];
+  /** optional look-at target (mobile); desktop looks straight down -Z so the VP is exactly the principal point */
+  target?: Vector3;
+  /** aspect (w/h) the poster for this layout is rendered at; applyRig emulates object-fit: cover against it */
+  posterAspect: number;
+}
+
+
+export const RIGS: Record<Layout, Rig> = {
+  // VP at x=30%, y=41% from top: under the headline's first line in the left column
+  desktop: { pos: new Vector3(0, 0.9, 0), dollyPos: new Vector3(0.9, 2.2, 6.5), fov: 30, vp: POSTERS.desktop.vp, posterAspect: POSTERS.desktop.width / POSTERS.desktop.height },
+  // separate mobile composition: looks across the fleet from front-left, scene sits under the stacked type
+  mobile: { pos: new Vector3(0.3, 2.42, 1.24), dollyPos: new Vector3(0.3, 3.4, 8.5), fov: 53.57, vp: POSTERS.mobile.vp, target: new Vector3(-0.01, 0.53, -8.12), posterAspect: POSTERS.mobile.width / POSTERS.mobile.height },
+};
+
+export function applyRig(cam: PerspectiveCamera, rig: Rig, dolly: number, parallax: [number, number]) {
+  // emulate object-fit: cover against the poster: wider than the poster → crop top/bottom instead of showing more
+  const k = cam.aspect > rig.posterAspect ? rig.posterAspect / cam.aspect : 1;
+  cam.fov = (2 * Math.atan(Math.tan((rig.fov * Math.PI) / 360) * k) * 180) / Math.PI;
+  cam.position.copy(rig.pos).lerp(rig.dollyPos, dolly);
+  cam.position.x += parallax[0] * 0.18;
+  cam.position.y += parallax[1] * 0.07;
+  if (rig.target) cam.lookAt(rig.target.x + parallax[0] * 0.18, rig.target.y, rig.target.z);
+  else cam.quaternion.identity();
+  cam.updateMatrixWorld();
+  cam.updateProjectionMatrix();
+  const e = cam.projectionMatrix.elements;
+  e[8] = -rig.vp[0];
+  e[9] = -rig.vp[1];
+  cam.projectionMatrixInverse.copy(cam.projectionMatrix).invert();
+}
